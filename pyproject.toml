@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "gurobipy>=13.0.1",
     "matplotlib>=3.10.8",
     "networkx>=3.6.1",
     "numpy>=2.4.2",

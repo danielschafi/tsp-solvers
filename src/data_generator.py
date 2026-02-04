@@ -71,6 +71,18 @@ def plot_graph(adj: np.ndarray):
     plt.show()
 
 
+def generate_graph(domain_size: np.ndarray, n_nodes: int = 20):
+    """
+    Generates a random graph with n_nodes within a domain of size domain_size.
+    Returns the adjacency matrix of the graph.
+    """
+    DOMAIN_SIZE = domain_size
+
+    nodes = generate_nodes(10)
+    adj = generate_edges(nodes)
+    return adj
+
+
 def main():
     nodes = generate_nodes(10)
     adj = generate_edges(nodes)
