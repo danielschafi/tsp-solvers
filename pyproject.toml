@@ -1,12 +1,26 @@
 [project]
-name = "tsp-gurobi"
+name = "tsp-solvers"
 version = "0.1.0"
-description = "Add your description here"
+description = "Solve TSP Problems with popular solvers"
 readme = "README.md"
 requires-python = "==3.11.*"
 dependencies = [
+    "argparse>=1.4.0",
+    "cuopt-server-cu12==26.2.0",
+    "cuopt-sh-client==26.2.0",
     "gurobipy>=13.0.1",
     "matplotlib>=3.10.8",
-    "numpy>=2.4.2",
-    "pandas>=3.0.0",
+    "numpy>=1.24,<2.3",
+    "nvidia-cuda-runtime-cu12==12.6.*",
+    "pandas>=2.0,<2.4",
+    "tsplib95>=0.7.1",
 ]
+
+[tool.uv]
+# This tells uv to only resolve for Linux, avoiding the "win32" error
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[[tool.uv.index]]
+name = "nvidia"
+url = "https://pypi.nvidia.com"
+explicit = false  # Allows uv to search here and PyPI simultaneously
