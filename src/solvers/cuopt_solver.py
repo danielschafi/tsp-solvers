@@ -36,35 +36,26 @@ class CuOptSolver(TSPSolver):
         dm.add_transit_time_matrix(cost_matrix.copy(deep=True))
 
         ss = routing.SolverSettings()
-        sol = routing.Solve(dm, ss)
+        routing.Solve(dm, ss)
         print("Finshed warmup")
-        if sol.get_status() == 0:
-            sol.display_routes()
-            print(self.result["tour"])
-        else:
-            print("Solver failed to find a solution.")
 
     def setup_problem(self, tsp_file: str):
         """
         Prepares the data for the cuOpt solver.
         Builds the adjacendy matrix,
         """
-        if not Path(tsp_file).exists():
-            raise FileNotFoundError(f"tsp_file: {tsp_file} does not exist.")
+        self.load_tsp_file(tsp_file)
+        n_locations = self.problem.dimension
+        edge_weights = np.zeros((n_locations, n_locations))
 
-        self._tsp_file = Path(tsp_file)
-
-        problem = tsplib95.load(self._tsp_file)
-        edge_weights = np.zeros((problem.dimension, problem.dimension))
-
-        n_locations = problem.dimension
         for i in range(n_locations):
             for j in range(n_locations):
                 # problem.node_coords dict starts at index 1
-                edge_weights[i][j] = problem.get_weight(i + 1, j + 1)
+                edge_weights[i][j] = self.problem.get_weight(i + 1, j + 1)
 
         cost_matrix = cudf.DataFrame(edge_weights, dtype="float32")
-
+        self.edges = cost_matrix
+        self.nodes = np.array(list(self.problem.node_coords.values()))
         # Create data model
         n_vehicles = 1
         self.data_model = routing.DataModel(n_locations, n_vehicles)
@@ -75,7 +66,6 @@ class CuOptSolver(TSPSolver):
         """
         Solves the TSP using cuOpt
         """
-        print("Start solving TSP")
         # Configure solver settings
         ss = routing.SolverSettings()
         ss.set_time_limit(36)  # 360 seconds
@@ -84,34 +74,36 @@ class CuOptSolver(TSPSolver):
         self._start_time = time.perf_counter()
         sol = routing.Solve(self.data_model, ss)
         self._end_time = time.perf_counter()
-        self.result["total_time"] = self._end_time - self._start_time
+        self.result["time_to_solve"] = self._end_time - self._start_time
 
         # Display results
         if sol.get_status() == 0:
-            sol.display_routes()
-            self.result["tour"] = sol.get_route().to_arrow().to_pylist()
+            result = sol.get_route().to_arrow().to_pylist()
 
-        else:
-            print("Solver failed to find a solution.")
+            route = [point["location"] for point in result]
+            arrival_times = [point["arrival_stamp"] for point in result]
 
-        # print(sol.get_route())
+            self.result["solution_status"] = "success"
+            self.result["tour"] = route
+            self.result["cost"] = arrival_times[-1]
 
-    def print_solution(self):
-        print(f"Total time:\t {self.result['total_time']}")
-        print(f"Tour length:\t {self.result['tour_length']}")
-        print(f"Tour:\t {self.result['tour']}")
+        elif sol.get_status() == 1:
+            self.result["solution_status"] = "fail"
+        elif sol.get_status() == 2:
+            self.result["solution_status"] = "timeout"
+        elif sol.get_status() == 3:
+            self.result["solution_status"] = "empty"
 
-    def plot_solution(self):
-        raise NotImplementedError()
+        if sol.get_status() in [1, 2, 3]:
+            print("!!! WARNING !!!")
+            print("SOLVER NOT SUCCESSFUL")
 
 
 def main():
-
     solver = CuOptSolver()
-    solver.setup_problem(
-        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsplib/att48.tsp"
+    solver.run(
+        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsplib/burma14.tsp"
     )
-    solver.solve_tsp()
 
 
 if __name__ == "__main__":
