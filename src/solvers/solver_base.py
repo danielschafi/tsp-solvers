@@ -154,23 +154,6 @@ class TSPSolver(ABC):
             linewidth=1,
             alpha=0.7,
         )
-        # tour = self.result["tour"]
-        # for i in range(len(tour)):
-        #     start_pos = tour[i]
-        #
-        #     if i + 1 < len(tour):
-        #         end_pos = tour[i + 1]
-        #     else:
-        #         end_pos = tour[0]
-        #
-        #     ax[1].annotate(
-        #         "",
-        #         xy=start_pos,
-        #         xycoords="data",
-        #         xytext=end_pos,
-        #         textcoords="data",
-        #         arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),
-        #     )
         plt.tight_layout()
         plt.savefig("test.png")
         plt.show()
