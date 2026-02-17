@@ -31,6 +31,14 @@ class ConcordeSolver(TSPSolver):
         Builds the adjacendy matrix,
         """
         self.load_tsp_file(tsp_file)
+        n_locations = self.problem.dimension
+        self.edges = np.zeros((n_locations, n_locations))
+
+        for i in range(n_locations):
+            for j in range(n_locations):
+                # problem.node_coords dict starts at index 1
+                self.edges[i][j] = self.problem.get_weight(i + 1, j + 1)
+
         self.nodes = np.array(list(self.problem.node_coords.values()))
 
     def extract_tour_from_sol_file(self, tempdir: Path) -> None:
@@ -107,14 +115,12 @@ class ConcordeSolver(TSPSolver):
             self._end_time = time.perf_counter()
             self.result["time_to_solve"] = self._end_time - self._start_time
 
-            split_text_cleaned = self.extract_tour_from_sol_file(tempdir)
-            self.result["tour"] = split_text_cleaned
+            tour = self.extract_tour_from_sol_file(tempdir)
+            self.result["tour"] = tour
 
             structured_output = self.parse_concorde_output(result)
 
-            self.result["cost"] = structured_output[
-                "upper_bound"
-            ]  # this is the best path found
+            self.result["cost"] = self.calculate_tour_cost(tour)
             self.result["additional_metadata"]["lower_bound"] = structured_output[
                 "lower_bound"
             ]

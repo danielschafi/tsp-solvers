@@ -46,15 +46,14 @@ class CuOptSolver(TSPSolver):
         """
         self.load_tsp_file(tsp_file)
         n_locations = self.problem.dimension
-        edge_weights = np.zeros((n_locations, n_locations))
+        self.edges = np.zeros((n_locations, n_locations))
 
         for i in range(n_locations):
             for j in range(n_locations):
                 # problem.node_coords dict starts at index 1
-                edge_weights[i][j] = self.problem.get_weight(i + 1, j + 1)
+                self.edges[i][j] = self.problem.get_weight(i + 1, j + 1)
 
-        cost_matrix = cudf.DataFrame(edge_weights, dtype="float32")
-        self.edges = cost_matrix
+        cost_matrix = cudf.DataFrame(self.edges, dtype="float32")
         self.nodes = np.array(list(self.problem.node_coords.values()))
         # Create data model
         n_vehicles = 1
@@ -80,12 +79,12 @@ class CuOptSolver(TSPSolver):
         if sol.get_status() == 0:
             result = sol.get_route().to_arrow().to_pylist()
 
-            route = [point["location"] for point in result]
+            tour = [point["location"] for point in result]
             arrival_times = [point["arrival_stamp"] for point in result]
 
             self.result["solution_status"] = "success"
-            self.result["tour"] = route
-            self.result["cost"] = arrival_times[-1]
+            self.result["tour"] = tour
+            self.result["cost"] = self.calculate_tour_cost(tour)  # arrival_times[-1]
 
         elif sol.get_status() == 1:
             self.result["solution_status"] = "fail"

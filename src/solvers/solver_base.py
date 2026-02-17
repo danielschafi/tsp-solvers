@@ -108,19 +108,40 @@ class TSPSolver(ABC):
 
         print("Setting up problem")
         self.setup_problem(tsp_file)
+
         print("Start solving TSP")
-
         self.solve_tsp()
-        print("Printing solution")
 
-        self.print_solution()
+        print("Printing tour")
+        self.print_tour(self.result["tour"])
+
+        print("Printing results")
+        self.print_results()
+
         print("Making plot of solution")
         self.plot_solution()
 
         print("Done!")
 
+    def calculate_tour_cost(self, tour):
+        """
+        Calculate tour cost by summing up edge weights along the tour
+        Assumes tour is a list of node indices: [0, 5, 2, 1]
+        """
+        total_cost = 0
+        n = len(tour)
+        print(tour)
+        for k in range(n):
+            i = tour[k]
+            j = tour[(k + 1) % n]  # Connects back to start
+            # Look up symmetric distance
+            # TODO: This assumes symmetric TSP, need to change this for non symmetric case
+            total_cost += max(self.edges[i, j], self.edges[j, i])
+
+        return total_cost
+
     def print_tour(self, tour: List[int]):
-        print("Route:")
+        print("Tour:")
         route_str = str(tour[0])
         for i, node in enumerate(tour[1:]):
             if (i + 1) % 10 == 0:
@@ -128,7 +149,7 @@ class TSPSolver(ABC):
             route_str += " -> " + str(node)
         print(route_str)
 
-    def print_solution(self):
+    def print_results(self):
         """Prints the solution found by the sover on the terminal"""
         print(json.dumps(self.result, indent=4))
 
@@ -141,28 +162,31 @@ class TSPSolver(ABC):
         nodes_array = np.array(self.nodes)
         tour = self.result["tour"]
         tour_coords = nodes_array[tour]
+        # 1. Create figure and set aspect ratio
+        plt.figure(figsize=(10, 10))
+        plt.axis("equal")
 
-        fig, ax = plt.subplots(2, figsize=(12, 5), sharex=True, sharey=True)
-        # Plot raw nodes
-        ax[0].set_title("Raw nodes")
-        ax[0].scatter(nodes_array[:, 0], nodes_array[:, 1], color="blue", s=20)
+        # 2. Plot nodes
+        plt.title(f"{self.solver} Tour (Cost:{self.result['cost']:.2f})")
+        plt.scatter(nodes_array[:, 0], nodes_array[:, 1], color="blue", s=20, zorder=2)
 
-        # PLot tour
-        ax[1].set_title(f"{self.solver} Tour (Cost:{self.result['cost']:.2f})")
-        ax[1].scatter(nodes_array[:, 0], nodes_array[:, 1], color="blue", s=20)
-
-        # Draw path
-        ax[1].plot(
+        # 3. Draw path
+        plt.plot(
             tour_coords[:, 0],
             tour_coords[:, 1],
             color="red",
             linestyle="-",
             linewidth=1,
             alpha=0.7,
+            zorder=1,
         )
-        plt.tight_layout()
+
+        # 4. Save and show
+
+        solver_results_dir = Path(self.RESULTS_DIR / self.result["solver"])
+        solver_results_dir.mkdir(parents=True, exist_ok=True)
         plt.savefig(
-            self.RESULTS_DIR
+            solver_results_dir
             / f"{self.result['timestamp']}_{self.result['problem']}_{self.result['solver']}_{self.result['problem_size']}.png"
         )
         plt.show()
