@@ -33,7 +33,7 @@ class TSPSolver(ABC):
             "cost": 0,
             "tour": [],
             "solution_status": None,
-            "addtional_metadata": {},
+            "additional_metadata": {},
         }
         self._start_time = None
         self._end_time = None
@@ -60,8 +60,8 @@ class TSPSolver(ABC):
         if not Path(tsp_file).exists():
             raise FileNotFoundError(f"tsp_file: {tsp_file} does not exist.")
 
-        self._tsp_file = Path(tsp_file)
-        self.problem = tsplib95.load(self._tsp_file)
+        self.tsp_file = Path(tsp_file)
+        self.problem = tsplib95.load(self.tsp_file)
         self._tsp_problem_dict = self.problem.as_name_dict()
 
         self.result.update(

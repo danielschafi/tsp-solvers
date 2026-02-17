@@ -1,57 +1,146 @@
+import os
+import re
 import subprocess
-from typing import List
+import tempfile
+import time
+from pathlib import Path
+
+import numpy as np
+from dotenv import load_dotenv
+from solver_base import TSPSolver
+
+load_dotenv()
 
 
 class ConcordeSolver(TSPSolver):
     """
-    Concorde TSP Solver
+    Solver for TSP using concorde
     """
 
     def __init__(self):
-        super().__init__(solver="Concorde")
-        self.result: dict = {"total_time": 0, "tour_length": 0, "tour": []}
-        self._start_time = None
-        self._end_time = None
+        super().__init__(solver="concorde")
+        self.CONCORDE_BIN = os.getenv("CONCORDE_BIN", None)
+        if not self.CONCORDE_BIN:
+            raise ValueError(
+                "CONCORDE_BIN needs to be specified in the .env file to use the ConcordeSolver "
+            )
 
-    @abstractmethod
     def setup_problem(self, tsp_file: str):
         """
-        Sets up the TSP Problem.
-        Reads a .tsp file and prepares the data for the solver
+        Prepares the data for the solver.
+        Builds the adjacendy matrix,
+        """
+        self.load_tsp_file(tsp_file)
+        self.nodes = np.array(list(self.problem.node_coords.values()))
+
+    def extract_tour_from_sol_file(self, tempdir: Path) -> None:
+        # Get the info we need.
+        tsp_solution = Path(tempdir) / f"{Path(self.tsp_file).stem}.sol"
+        text_sol = tsp_solution.read_text()
+        print(text_sol)
+
+        text_sol = text_sol.replace("\n", " ")
+        split_text = text_sol.split(" ")
+        split_text_cleaned = [int(node) for node in split_text if len(node) > 0]
+        # remove node count.
+        split_text_cleaned.pop(0)
+        return split_text_cleaned
+
+    def parse_concorde_output(self, process_result: str):
+        """Extract the info we need from concordes output string"""
+        stdout = process_result.stdout
+
+        # Define patterns for the data we want
+        patterns = {
+            "lower_bound": r"Final lower bound\s+([\d.]+)",
+            "upper_bound": r"upper bound\s+([\d.]+)",
+            "optimal_val": r"Optimal Solution:\s+([\d.]+)",
+            "gap": r"DIFF:\s+([\d.]+)",
+            "total_time": r"Total Running Time:\s+([\d.]+)",
+            "seed": r"Using random seed\s+(\d+)",
+        }
+
+        results = {}
+        for key, pattern in patterns.items():
+            match = re.search(pattern, stdout)
+            if match:
+                # Convert to float/int if possible, otherwise keep as string
+                val = match.group(1)
+                try:
+                    results[key] = float(val) if "." in val else int(val)
+                except ValueError:
+                    results[key] = val
+
+        # Check for success/failure in returncode or stderr
+        results["success"] = process_result.returncode == 0
+
+        return results
+
+    def solve_tsp(self, seed: int = 42):
+        """
+        Solves the TSP using concorde
         """
 
-        # TODO:Check if it is a valid file here
+        # Tempdir to capture output files
+        with tempfile.TemporaryDirectory() as tempdir:
+            print(f"Tempdir {tempdir}")
+            # Solve the routing problem
+            self._start_time = time.perf_counter()
 
-        self.tsp_file_path = tsp_file
+            try:
+                result = subprocess.run(
+                    [self.CONCORDE_BIN, "-s", str(seed), self.tsp_file],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                    cwd=tempdir,
+                )
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {self.tsp_file}: {e}")
+                return None
 
-    @abstractmethod
-    def solve_tsp(self):
-        """
-        Solves the TSP problem with the solver
-        """
-        subprocess.run("")
+            self._end_time = time.perf_counter()
+            self.result["time_to_solve"] = self._end_time - self._start_time
 
-    def print_tour(self, tour: List[int]):
-        print("Route:")
-        route_str = str(tour[0])
-        for i, node in enumerate(tour[1:]):
-            if (i + 1) % 10 == 0:
-                route_str += "\n"
-            route_str += " -> " + str(node)
-        print(route_str)
+            split_text_cleaned = self.extract_tour_from_sol_file(tempdir)
+            self.result["tour"] = split_text_cleaned
 
-    def print_solution(self):
+            structured_output = self.parse_concorde_output(result)
 
-        print(f"Total time:\t {self.result['total_time']}")
-        print(f"Tour length:\t {self.result['tour_length']}")
-        print(f"Tour:\t {self.result['tour']}")
+            self.result["cost"] = structured_output[
+                "upper_bound"
+            ]  # this is the best path found
+            self.result["additional_metadata"]["lower_bound"] = structured_output[
+                "lower_bound"
+            ]
+            self.result["additional_metadata"]["upper_bound"] = structured_output[
+                "upper_bound"
+            ]
+            self.result["additional_metadata"]["gap"] = structured_output["gap"]
+            self.result["additional_metadata"]["seed"] = structured_output["seed"]
 
-    @classmethod
-    def track_results():
-        """
-        Tracks the results of each solver on each problem, saves them in a suitable format to disk
-        """
-        raise NotImplementedError
+            if structured_output["gap"] == 0:
+                status = "Success: Exact solution found. gap is zero"
+            elif result.returncode != 0:
+                status = "Process call to concorde returned with an error code"
+                print("!!! WARNING !!!")
+                print("SOLVER NOT SUCCESSFUL")
+            elif len(self.result["tour"]) == 0:
+                status = "Failed to find tour"
+                print("!!! WARNING !!!")
+                print("SOLVER NOT SUCCESSFUL")
 
-    def plot_solution(self):
-        raise NotImplementedError()
+            self.result["solution_status"] = status
+
+        print(result)
+
+
+def main():
+    solver = ConcordeSolver()
+    solver.run(
+        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsplib/burma14.tsp"
+    )
+
+
+if __name__ == "__main__":
+    main()
