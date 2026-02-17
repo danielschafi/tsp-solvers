@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -9,6 +10,9 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import tsplib95
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class TSPSolver(ABC):
@@ -42,6 +46,8 @@ class TSPSolver(ABC):
         self.edges: np.ndarray = None
         self._results_dir: Path = Path("results")
 
+        self.RESULTS_DIR = Path(os.getenv("RESULTS_DIR", None))
+
     @abstractmethod
     def setup_problem(self, tsp_file):
         """
@@ -66,7 +72,7 @@ class TSPSolver(ABC):
 
         self.result.update(
             {
-                "timestamp": str(datetime.fromtimestamp(time.time())),
+                "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S"),
                 "problem": self._tsp_problem_dict["name"],
                 "problem_size": self._tsp_problem_dict["dimension"],
                 "type": self._tsp_problem_dict["type"],
@@ -155,7 +161,10 @@ class TSPSolver(ABC):
             alpha=0.7,
         )
         plt.tight_layout()
-        plt.savefig("test.png")
+        plt.savefig(
+            self.RESULTS_DIR
+            / f"{self.result['timestamp']}_{self.result['problem']}_{self.result['solver']}_{self.result['problem_size']}.png"
+        )
         plt.show()
 
     @classmethod
