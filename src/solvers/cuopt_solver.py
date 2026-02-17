@@ -1,11 +1,12 @@
 import time
-from pathlib import Path
 
 import cudf
 import numpy as np
-import tsplib95
 from cuopt import routing
+from dotenv import load_dotenv
 from solver_base import TSPSolver
+
+load_dotenv()
 
 
 class CuOptSolver(TSPSolver):
