@@ -44,6 +44,11 @@ class ConcordeSolver(TSPSolver):
         split_text_cleaned = [int(node) for node in split_text if len(node) > 0]
         # remove node count.
         split_text_cleaned.pop(0)
+
+        # Finish cycle (add start node to end)
+        if split_text_cleaned[0] != split_text_cleaned[-1]:
+            split_text_cleaned.append(split_text_cleaned[0])
+
         return split_text_cleaned
 
     def parse_concorde_output(self, process_result: str):
