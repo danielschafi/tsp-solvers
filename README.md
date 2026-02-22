@@ -56,5 +56,24 @@ It is
 *tbd*
 
 ### CuOpt
+
 #### Installation
+
 - Already installed through uv
+
+## Data
+
+The data for the TSP instances is available in the `data/` folder. The files are in the TSPLib format, which is a standard format for representing TSP instances.
+
+### TSPLib files
+
+```bash
+cd data/
+git clone https://github.com/mastqe/tsplib
+```
+
+### Generating benchmark TSP data based on actual cities
+
+```bash
+python build_dataset.py
+```
