@@ -5,12 +5,16 @@ The generated problem instances are saved in TSPLib format for use in TSP solver
 
 import argparse
 import random
+import shutil
 from pathlib import Path
+from typing import List
 
 import networkx as nx
 import numpy as np
 import osmnx as ox
+from joblib import Parallel, delayed
 from tqdm import tqdm
+from tsplib95.models import StandardProblem
 
 
 def build_city_graph(city_name: str = "Zurich, Switzerland") -> nx.MultiDiGraph:
@@ -64,23 +68,21 @@ def create_travel_time_matrix(graph: nx.MultiDiGraph, nodes: list) -> np.ndarray
     np.ndarray: A 2D array representing the travel time matrix.
     """
     num_nodes = len(nodes)
-    travel_time_matrix = np.zeros((num_nodes, num_nodes))
+    node_to_idx = {node: i for i, node in enumerate(nodes)}
+    travel_time_matrix = np.full((num_nodes, num_nodes), fill_value=float("inf"))
 
-    for i in range(num_nodes):
-        for j in range(num_nodes):
-            if i != j:
-                try:
-                    travel_time = nx.shortest_path_length(
-                        graph, source=nodes[i], target=nodes[j], weight="travel_time"
-                    )
-                    travel_time_matrix[i][j] = travel_time
-                except nx.NetworkXNoPath:
-                    travel_time_matrix[i][j] = float("inf")  # No path exists
+    # Run Dijkstra from each sampled node to all other sampled nodes
+    for i, source_node in enumerate(nodes):
+        distances = nx.single_source_dijkstra_path_length(
+            graph, source_node, weight="travel_time"
+        )
+
+        for target_node, distance in distances.items():
+            if target_node in node_to_idx:
+                j = node_to_idx[target_node]
+                travel_time_matrix[i, j] = distance
 
     return travel_time_matrix
-
-
-from tsplib95.models import StandardProblem
 
 
 def save_problem_instance(
@@ -112,6 +114,70 @@ def save_problem_instance(
     problem.save(save_path)
 
 
+def process_single_instance(
+    G: nx.MultiDiGraph,
+    size: int,
+    n: int,
+    save_dir: Path,
+    city: str,
+    city_basename: str,
+    seed: int,
+):
+    """
+    Generates a single TSP problem instance for the specified graph, sample size, and repetition number, and saves it in TSPLib format.
+    """
+    np.random.seed(seed + n)
+    random.seed(seed + n)
+
+    # if restarting, skip if already exists
+    filepath = save_dir / f"{city_basename}_{size}_{n}.tsp"
+
+    if Path(filepath).exists():
+        print(f"File {filepath} already exists, skipping...")
+        return
+
+    # Create problem instance
+    sampled_nodes = sample_nodes(G, num_samples=size)
+    travel_time_matrix = create_travel_time_matrix(G, sampled_nodes)
+    node_coords = [(G.nodes[node]["y"], G.nodes[node]["x"]) for node in sampled_nodes]
+
+    # Save Problem instance in TSPLib format
+    save_problem_instance(
+        travel_time_matrix,
+        node_coords,
+        filepath,
+        seed=seed,
+        city=city,
+    )
+
+
+def start_problem_generation(
+    city: str,
+    city_basename: str,
+    output_dir: Path,
+    repetitions: int,
+    seed: int,
+    sizes: List[int],
+):
+    """
+    Starts the process of building TSP problem instances for the specified city and sample sizes.
+    Runs in parallel
+    """
+    print("Building city graph...")
+    graph = build_city_graph(city)
+
+    for size in sizes:
+        save_dir = output_dir / str(size)
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        Parallel(n_jobs=-1)(
+            delayed(process_single_instance)(
+                graph, size, n, save_dir, city, city_basename, seed
+            )
+            for n in tqdm(range(repetitions), desc=f"Size {size}")
+        )
+
+
 def main():
     arg_parser = argparse.ArgumentParser(description="Build TSP dataset for a city.")
     arg_parser.add_argument(
@@ -141,9 +207,6 @@ def main():
             2000,
             5000,
             10000,
-            20000,
-            50000,
-            100000,
         ],
         help="List of sample sizes to generate.",
     )
@@ -155,6 +218,11 @@ def main():
     )
     arg_parser.add_argument(
         "--seed", type=int, default=42, help="Random seed for reproducibility."
+    )
+    arg_parser.add_argument(
+        "--clean_build",
+        action="store_true",
+        help="Whether to clean the output directory before building the dataset. If not set, the dataset will be built incrementally, allowing for resuming if the process is interrupted.",
     )
 
     args = arg_parser.parse_args()
@@ -169,40 +237,18 @@ def main():
     sizes = args.sizes
     output_dir = Path(args.out_dir)
     seed = args.seed
+    clean_build = args.clean_build
+
+    if clean_build and output_dir.exists():
+        print(f"Cleaning output directory: {output_dir}")
+        shutil.rmtree(output_dir)
 
     city_basename = city.split(",")[0].strip().replace(" ", "_").lower()
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    random.seed(seed)
-
-    print("Building city graph...")
-    G = build_city_graph(city)
-
-    for size in sizes:
-        save_dir = output_dir / str(size)
-        save_dir.mkdir(parents=True, exist_ok=True)
-
-        for n in tqdm(range(repetitions), desc=f"Size {size}"):
-            # Create problem instance
-            sampled_nodes = sample_nodes(G, num_samples=size)
-            travel_time_matrix = create_travel_time_matrix(G, sampled_nodes)
-            node_coords = [
-                (G.nodes[node]["y"], G.nodes[node]["x"]) for node in sampled_nodes
-            ]
-
-            # Save Problem instance in TSPLib format
-            save_problem_instance(
-                travel_time_matrix,
-                node_coords,
-                save_dir / f"{city_basename}_{size}_{n}.tsp",
-                seed=seed,
-                city=city,
-            )
+    start_problem_generation(city, city_basename, output_dir, repetitions, seed, sizes)
 
 
 if __name__ == "__main__":
     main()
-
-# nodes_geodf = ox.graph_to_gdfs(G, nodes=True, edges=False)
-# print(nodes_geodf.loc[sampled_nodes][["y", "x"]])
