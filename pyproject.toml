@@ -10,6 +10,7 @@ dependencies = [
     "cuopt-sh-client==26.2.0",
     "gurobipy>=13.0.1",
     "joblib>=1.5.3",
+    "lxml>=6.0.2",
     "matplotlib>=3.10.8",
     "networkx>=2.8.8",
     "numpy>=1.24,<2.3",
