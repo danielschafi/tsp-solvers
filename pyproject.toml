@@ -16,6 +16,7 @@ dependencies = [
     "osmnx>=2.1.0",
     "pandas>=2.0,<2.4",
     "python-dotenv>=1.2.1",
+    "tqdm>=4.67.3",
     "tsplib95>=0.7.1",
 ]
 

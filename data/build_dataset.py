@@ -10,6 +10,7 @@ from pathlib import Path
 import networkx as nx
 import numpy as np
 import osmnx as ox
+from tqdm import tqdm
 
 
 def build_city_graph(city_name: str = "Zurich, Switzerland") -> nx.MultiDiGraph:
@@ -169,6 +170,8 @@ def main():
     output_dir = Path(args.out_dir)
     seed = args.seed
 
+    city_basename = city.split(",")[0].strip().replace(" ", "_").lower()
+
     output_dir.mkdir(parents=True, exist_ok=True)
 
     random.seed(seed)
@@ -180,29 +183,19 @@ def main():
         save_dir = output_dir / str(size)
         save_dir.mkdir(parents=True, exist_ok=True)
 
-        for n in range(repetitions):
-            print("Sampling nodes...")
+        for n in tqdm(range(repetitions), desc=f"Size {size}"):
+            # Create problem instance
             sampled_nodes = sample_nodes(G, num_samples=size)
-
-            print("Creating travel time matrix...")
             travel_time_matrix = create_travel_time_matrix(G, sampled_nodes)
+            node_coords = [
+                (G.nodes[node]["y"], G.nodes[node]["x"]) for node in sampled_nodes
+            ]
 
-            print("Sampled Nodes:", sampled_nodes)
-            print("Travel Time Matrix:\n", travel_time_matrix)
-
-            # print coordinates of the sampled nodes
-
-            print("Coordinates of Sampled Nodes:")
-            for node in sampled_nodes:
-                node_data = G.nodes[node]
-                print(
-                    f"Node ID: {node}, Latitude: {node_data['y']}, Longitude: {node_data['x']}"
-                )
-
+            # Save Problem instance in TSPLib format
             save_problem_instance(
                 travel_time_matrix,
-                [(G.nodes[node]["y"], G.nodes[node]["x"]) for node in sampled_nodes],
-                save_dir / f"instance_{n}.tsp",
+                node_coords,
+                save_dir / f"{city_basename}_{size}_{n}.tsp",
                 seed=seed,
                 city=city,
             )
