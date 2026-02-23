@@ -20,6 +20,9 @@ from joblib import Parallel, delayed
 from tqdm import tqdm
 from tsplib_extension import TSPProblemWithOSMIDs
 
+# Zurich is not big enough to yield a graph with 10'000 Nodes, so we take a bigger area around the city center
+DIST = 20000  # m radius around center
+
 
 def build_city_graph(city_name: str = "Zurich, Switzerland") -> nx.MultiDiGraph:
     """
@@ -32,7 +35,8 @@ def build_city_graph(city_name: str = "Zurich, Switzerland") -> nx.MultiDiGraph:
     nx.MultiDiGraph: A graph representing the city's road network.
     """
 
-    G = ox.graph_from_place(city_name, network_type="drive")
+    print(f"Downloading area around {city_name} (radius: {DIST}m)...")
+    G = ox.graph_from_address(city_name, dist=DIST, network_type="drive")
 
     # Keeps the graphs largest strongly connected component.
     # for all nodes in the graph, there is a path from each node to every other node.
@@ -185,15 +189,27 @@ def start_problem_generation(
     """
     Starts the process of building TSP problem instances for the specified city and sample sizes.
     Runs in parallel
-    """
-    print("Building city graph...")
-    graph = build_city_graph(city)
 
-    graphml_file = output_dir / f"graph_{city_basename}.graphml"
-    print(
-        f"Saving graph of {city} with {graph.number_of_nodes()} nodes and {graph.number_of_edges()} edges to {graphml_file}..."
-    )
-    ox.save_graphml(graph, filepath=graphml_file)
+    Parameters:
+    city (str): The city e.g. "Zurich, Switzerland"
+    city_basename (str): Just the city "Zurich"
+    output_dir (Path | str): Basedir where to put the generated files
+    repetitions (in): How many samples should be created per size
+    seed (int): seed for random generator reproducibility default 42
+    sizes (List[int]): List of sizes where each size represent the number of nodes in a graph -> size N results in NxN adjacency matrix
+    """
+
+    graphml_file = output_dir / f"graph_{city_basename}_dist_{DIST}.graphml"
+
+    if graphml_file.exists():
+        print(f"Loading existing city graph from {graphml_file}...")
+        # We ensure it's loaded as MultiDiGraph for NetworkX compatibility
+        graph = ox.load_graphml(graphml_file)
+    else:
+        print(f"Graph not found. Building city graph for {city}...")
+        graph = build_city_graph(city)
+        print(f"Saving graph with {graph.number_of_nodes()} nodes to {graphml_file}...")
+        ox.save_graphml(graph, filepath=graphml_file)
 
     for size in sizes:
         save_dir = output_dir / str(size)
@@ -265,9 +281,11 @@ def main() -> None:
     output_dir = Path(args.out_dir)
 
     if args.clean_build and output_dir.exists():
-        print(f"Cleaning output directory: {output_dir}")
-        shutil.rmtree(output_dir)
-
+        print(
+            f"Cleaning output directory: {output_dir}, keeping downloaded graphs for speed..."
+        )
+        for size_dir in [d for d in output_dir.iterdir() if d.is_dir()]:
+            shutil.rmtree(size_dir)
     city_basename = args.city.split(",")[0].strip().replace(" ", "_").lower()
     output_dir.mkdir(parents=True, exist_ok=True)
 

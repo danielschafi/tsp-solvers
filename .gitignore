@@ -1,6 +1,6 @@
-data/cache/
+*/cache/*
 *.graphml
-
+*cache*
 
 
 
