@@ -11,6 +11,8 @@ import tsplib95
 from dotenv import load_dotenv
 
 from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
+from src.visualization.viz_plain import plot_solution_plain
+from src.visualization.viz_streetmap import plot_solution_streetmap
 
 load_dotenv()
 
@@ -66,7 +68,6 @@ class TSPSolver(ABC):
             raise FileNotFoundError(f"tsp_file: {tsp_file} does not exist.")
 
         self.tsp_file = Path(tsp_file)
-        # self.problem = tsplib95.load(self.tsp_file)
         self.problem = tsplib95.load(self.tsp_file, problem_class=TSPProblemWithOSMIDs)
         self._tsp_problem_dict = self.problem.as_name_dict()
 
@@ -167,38 +168,42 @@ class TSPSolver(ABC):
             f.write(json.dumps(self.result, indent=4))
 
     def plot_solution(self):
-        """Plots the solution found by the solver and saves it"""
-        if not self.result["tour"] or self.nodes is None:
-            print("No tour or nodes available to plot.")
-            return
+        """Plots the solution plain and on streetmap"""
 
-        nodes_array = np.array(self.nodes)
-        tour = self.result["tour"]
-        tour_coords = nodes_array[tour]
-        # 1. Create figure and set aspect ratio
-        plt.figure(figsize=(10, 10))
-        plt.axis("equal")
+        plot_solution_plain(self.result, self.nodes)
+        plot_solution_streetmap(self.result, self.tsp_file)
 
-        # 2. Plot nodes
-        plt.title(f"{self.solver} Tour (Cost:{self.result['cost']:.2f})")
-        plt.scatter(nodes_array[:, 0], nodes_array[:, 1], color="blue", s=20, zorder=2)
-
-        # 3. Draw path
-        plt.plot(
-            tour_coords[:, 0],
-            tour_coords[:, 1],
-            color="red",
-            linestyle="-",
-            linewidth=1,
-            alpha=0.7,
-            zorder=1,
-        )
-
-        # 4. Save and show
-        solver_results_dir = Path(self.RESULTS_DIR / self.result["solver"])
-        solver_results_dir.mkdir(parents=True, exist_ok=True)
-        plt.savefig(
-            solver_results_dir
-            / f"{self.result['timestamp']}_{self.result['problem']}_{self.result['solver']}_plain.png"
-        )
-        plt.show()
+        # if not self.result["tour"] or self.nodes is None:
+        #     print("No tour or nodes available to plot.")
+        #     return
+        #
+        # nodes_array = np.array(self.nodes)
+        # tour = self.result["tour"]
+        # tour_coords = nodes_array[tour]
+        # # 1. Create figure and set aspect ratio
+        # plt.figure(figsize=(10, 10))
+        # plt.axis("equal")
+        #
+        # # 2. Plot nodes
+        # plt.title(f"{self.solver} Tour (Cost:{self.result['cost']:.2f})")
+        # plt.scatter(nodes_array[:, 0], nodes_array[:, 1], color="blue", s=20, zorder=2)
+        #
+        # # 3. Draw path
+        # plt.plot(
+        #     tour_coords[:, 0],
+        #     tour_coords[:, 1],
+        #     color="red",
+        #     linestyle="-",
+        #     linewidth=1,
+        #     alpha=0.7,
+        #     zorder=1,
+        # )
+        #
+        # # 4. Save and show
+        # solver_results_dir = Path(self.RESULTS_DIR / self.result["solver"])
+        # solver_results_dir.mkdir(parents=True, exist_ok=True)
+        # plt.savefig(
+        #     solver_results_dir
+        #     / f"{self.result['timestamp']}_{self.result['problem']}_{self.result['solver']}_plain.png"
+        # )
+        # plt.show()

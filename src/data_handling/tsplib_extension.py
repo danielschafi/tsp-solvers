@@ -42,6 +42,21 @@ class NodeLocations(fields.Field):
         return "\n".join(f"{lat} {lng}" for lat, lng in value)
 
 
+class SanitizePathField(fields.StringField):
+    """
+    A StringField that strips trailing whitespace and EOF markers.
+    Because tusing the normal StringField it always had EOF appended to the path
+    """
+
+    def parse(self, text: str) -> str:
+        # .strip() handles \n, \r, and spaces.
+        # We also filter out literal 'EOF' if it's present in the text block.
+        cleaned = text.strip()
+        if cleaned.endswith("EOF"):
+            cleaned = cleaned[:-3].strip()
+        return cleaned
+
+
 class TSPProblemWithOSMIDs(StandardProblem):
     """
     Extends the standard problem by storing the original OSM Node IDs in a custom field.
@@ -50,5 +65,5 @@ class TSPProblemWithOSMIDs(StandardProblem):
     """
 
     osm_ids = OSMIDField()
-    graphml_file = fields.StringField("GRAPHML_FILE")
+    graphml_file = SanitizePathField("GRAPHML_FILE")
     node_locations = NodeLocations()

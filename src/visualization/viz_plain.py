@@ -3,6 +3,10 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 RESULTS_DIR = Path(os.getenv("RESULTS_DIR", None))
 
@@ -29,13 +33,15 @@ def plot_solution_plain(result: dict, nodes: list):
     plt.axis("equal")
 
     # 2. Plot nodes
-    plt.title(f"{result['solver']} Tour (Cost:{result['cost']:.2f})")
-    plt.scatter(nodes_array[:, 0], nodes_array[:, 1], color="blue", s=20, zorder=2)
+    plt.title(
+        f"{result['problem']}: {result['solver']} Tour (Cost:{result['cost']:.2f})"
+    )
+    plt.scatter(nodes_array[:, 1], nodes_array[:, 0], color="blue", s=20, zorder=2)
 
     # 3. Draw path
     plt.plot(
-        tour_coords[:, 0],
         tour_coords[:, 1],
+        tour_coords[:, 0],
         color="red",
         linestyle="-",
         linewidth=1,

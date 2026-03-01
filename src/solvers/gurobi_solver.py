@@ -216,7 +216,7 @@ class TSPCallback:
 def main():
     solver = GurobiSolver()
     solver.run(
-        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/10_conv/zurich_10_0.tsp"
+        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/10/zurich_10_0.tsp"
     )
 
 
