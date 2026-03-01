@@ -7,7 +7,6 @@ Solvers:
 - Gurobi
 - Concorde
 - CuOpt
-- OR-Lib (google OR-Tools)
 
 ## Setup
 
