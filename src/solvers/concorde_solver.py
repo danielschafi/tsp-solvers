@@ -7,7 +7,8 @@ from pathlib import Path
 
 import numpy as np
 from dotenv import load_dotenv
-from solver_base import TSPSolver
+
+from src.solvers.solver_base import TSPSolver
 
 load_dotenv()
 
@@ -31,21 +32,13 @@ class ConcordeSolver(TSPSolver):
         Builds the adjacendy matrix,
         """
         self.load_tsp_file(tsp_file)
-        n_locations = self.problem.dimension
-        self.edges = np.zeros((n_locations, n_locations))
-
-        for i in range(n_locations):
-            for j in range(n_locations):
-                # problem.node_coords dict starts at index 1
-                self.edges[i][j] = self.problem.get_weight(i + 1, j + 1)
-
-        self.nodes = np.array(list(self.problem.node_coords.values()))
+        self.edges = np.array(self.problem.edge_weights)
+        self.nodes = np.array(self.problem.node_locations)
 
     def extract_tour_from_sol_file(self, tempdir: Path) -> None:
         # Get the info we need.
         tsp_solution = Path(tempdir) / f"{Path(self.tsp_file).stem}.sol"
         text_sol = tsp_solution.read_text()
-        print(text_sol)
 
         text_sol = text_sol.replace("\n", " ")
         split_text = text_sol.split(" ")
@@ -96,21 +89,16 @@ class ConcordeSolver(TSPSolver):
 
         # Tempdir to capture output files
         with tempfile.TemporaryDirectory() as tempdir:
-            print(f"Tempdir {tempdir}")
             # Solve the routing problem
             self._start_time = time.perf_counter()
 
-            try:
-                result = subprocess.run(
-                    [self.CONCORDE_BIN, "-s", str(seed), self.tsp_file],
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                    cwd=tempdir,
-                )
-            except subprocess.CalledProcessError as e:
-                print(f"Error running {self.tsp_file}: {e}")
-                return None
+            result = subprocess.run(
+                [self.CONCORDE_BIN, "-s", str(seed), str(self.tsp_file)],
+                capture_output=True,
+                text=True,
+                check=True,
+                cwd=tempdir,
+            )
 
             self._end_time = time.perf_counter()
             self.result["time_to_solve"] = self._end_time - self._start_time
@@ -143,13 +131,11 @@ class ConcordeSolver(TSPSolver):
 
             self.result["solution_status"] = status
 
-        print(result)
-
 
 def main():
     solver = ConcordeSolver()
     solver.run(
-        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsplib/burma14.tsp"
+        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/10_conv/zurich_10_0.tsp"
     )
 
 

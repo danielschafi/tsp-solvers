@@ -4,7 +4,8 @@ import cudf
 import numpy as np
 from cuopt import routing
 from dotenv import load_dotenv
-from solver_base import TSPSolver
+
+from src.solvers.solver_base import TSPSolver
 
 load_dotenv()
 
@@ -46,16 +47,10 @@ class CuOptSolver(TSPSolver):
         Builds the adjacendy matrix,
         """
         self.load_tsp_file(tsp_file)
-        n_locations = self.problem.dimension
-        self.edges = np.zeros((n_locations, n_locations))
-
-        for i in range(n_locations):
-            for j in range(n_locations):
-                # problem.node_coords dict starts at index 1
-                self.edges[i][j] = self.problem.get_weight(i + 1, j + 1)
+        self.edges = np.array(self.problem.edge_weights)
+        self.nodes = np.array(self.problem.node_locations)
 
         cost_matrix = cudf.DataFrame(self.edges, dtype="float32")
-        self.nodes = np.array(list(self.problem.node_coords.values()))
         # Create data model
         n_vehicles = 1
         self.data_model = routing.DataModel(n_locations, n_vehicles)
@@ -68,7 +63,7 @@ class CuOptSolver(TSPSolver):
         """
         # Configure solver settings
         ss = routing.SolverSettings()
-        ss.set_time_limit(36)  # 360 seconds
+        ss.set_time_limit(600)  # seconds
 
         # Solve the routing problem
         self._start_time = time.perf_counter()
@@ -102,7 +97,7 @@ class CuOptSolver(TSPSolver):
 def main():
     solver = CuOptSolver()
     solver.run(
-        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsplib/burma14.tsp"
+        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/10/zurich_10_0.tsp"
     )
 
 

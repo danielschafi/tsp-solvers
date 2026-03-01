@@ -32,7 +32,8 @@ import gurobipy as gp
 import numpy as np
 import tsplib95
 from gurobipy import GRB
-from solver_base import TSPSolver
+
+from src.solvers.solver_base import TSPSolver
 
 
 class GurobiSolver(TSPSolver):
@@ -49,23 +50,17 @@ class GurobiSolver(TSPSolver):
         Builds the adjacendy matrix,
         """
         self.load_tsp_file(tsp_file)
-        n_locations = self.problem.dimension
-
-        # Get edges for tour length calculation
-        self.edges = np.zeros((n_locations, n_locations))
-        for i in range(n_locations):
-            for j in range(n_locations):
-                # problem.node_coords dict starts at index 1
-                self.edges[i][j] = self.problem.get_weight(i + 1, j + 1)
+        self.edges = np.array(self.problem.edge_weights)
+        points = np.array(self.problem.node_locations)
         # Gurobi
-        self.node_idx_list = list(range(n_locations))
-        points = list(self.problem.node_coords.values())
+        self.node_idx_list = list(range(self.problem.dimension))
 
-        # Dictionary of Euclidean distance between each pair of points
+        # Gurobi requires a dictionary instead
+        # This is for the symmetric case
         self.distances = {
-            (i, j): math.sqrt(sum((points[i][k] - points[j][k]) ** 2 for k in range(2)))
-            for i, j in combinations(self.node_idx_list, 2)
+            (i, j): self.edges[i, j] for i, j in combinations(self.node_idx_list, 2)
         }
+
         self.nodes = np.array(points)
 
     def solve_tsp(self):
@@ -221,7 +216,7 @@ class TSPCallback:
 def main():
     solver = GurobiSolver()
     solver.run(
-        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsplib/burma14.tsp"
+        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/10_conv/zurich_10_0.tsp"
     )
 
 

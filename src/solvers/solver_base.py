@@ -1,16 +1,16 @@
 import json
 import os
-import time
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
 from typing import List
 
 import matplotlib.pyplot as plt
-import networkx as nx
 import numpy as np
 import tsplib95
 from dotenv import load_dotenv
+
+from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
 
 load_dotenv()
 
@@ -44,9 +44,8 @@ class TSPSolver(ABC):
 
         self.nodes: List = []
         self.edges: np.ndarray = None
-        self._results_dir: Path = Path("results")
 
-        self.RESULTS_DIR = Path(os.getenv("RESULTS_DIR", None))
+        self.RESULTS_DIR = Path(os.getenv("RESULTS_DIR", "results"))
 
     @abstractmethod
     def setup_problem(self, tsp_file):
@@ -67,7 +66,8 @@ class TSPSolver(ABC):
             raise FileNotFoundError(f"tsp_file: {tsp_file} does not exist.")
 
         self.tsp_file = Path(tsp_file)
-        self.problem = tsplib95.load(self.tsp_file)
+        # self.problem = tsplib95.load(self.tsp_file)
+        self.problem = tsplib95.load(self.tsp_file, problem_class=TSPProblemWithOSMIDs)
         self._tsp_problem_dict = self.problem.as_name_dict()
 
         self.result.update(
@@ -118,6 +118,9 @@ class TSPSolver(ABC):
         print("Printing results")
         self.print_results()
 
+        print("Saving results")
+        self.save_results()
+
         print("Making plot of solution")
         self.plot_solution()
 
@@ -130,7 +133,6 @@ class TSPSolver(ABC):
         """
         total_cost = 0
         n = len(tour)
-        print(tour)
         for k in range(n):
             i = tour[k]
             j = tour[(k + 1) % n]  # Connects back to start
@@ -138,14 +140,14 @@ class TSPSolver(ABC):
             # TODO: This assumes symmetric TSP, need to change this for non symmetric case
             total_cost += max(self.edges[i, j], self.edges[j, i])
 
-        return total_cost
+        return float(total_cost)
 
     def print_tour(self, tour: List[int]):
         print("Tour:")
         route_str = str(tour[0])
         for i, node in enumerate(tour[1:]):
             if (i + 1) % 10 == 0:
-                route_str += "\n"
+                route_str += "\n "
             route_str += " -> " + str(node)
         print(route_str)
 
@@ -153,8 +155,19 @@ class TSPSolver(ABC):
         """Prints the solution found by the sover on the terminal"""
         print(json.dumps(self.result, indent=4))
 
+    def save_results(self):
+        """Saves the results json to a file"""
+        solver_results_dir = Path(self.RESULTS_DIR / self.result["solver"])
+        solver_results_dir.mkdir(parents=True, exist_ok=True)
+        with open(
+            solver_results_dir
+            / f"{self.result['timestamp']}_{self.result['problem']}_{self.result['solver']}_{self.result['problem_size']}.json",
+            "w",
+        ) as f:
+            f.write(json.dumps(self.result, indent=4))
+
     def plot_solution(self):
-        """Plots the solution found by the solver and optionally saves it too"""
+        """Plots the solution found by the solver and saves it"""
         if not self.result["tour"] or self.nodes is None:
             print("No tour or nodes available to plot.")
             return
@@ -182,18 +195,10 @@ class TSPSolver(ABC):
         )
 
         # 4. Save and show
-
         solver_results_dir = Path(self.RESULTS_DIR / self.result["solver"])
         solver_results_dir.mkdir(parents=True, exist_ok=True)
         plt.savefig(
             solver_results_dir
-            / f"{self.result['timestamp']}_{self.result['problem']}_{self.result['solver']}_{self.result['problem_size']}.png"
+            / f"{self.result['timestamp']}_{self.result['problem']}_{self.result['solver']}_plain.png"
         )
         plt.show()
-
-    @classmethod
-    def track_results():
-        """
-        Tracks the results of each solver on each problem, saves them in a suitable format to disk
-        """
-        raise NotImplementedError

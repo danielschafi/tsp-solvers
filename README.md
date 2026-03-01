@@ -49,11 +49,13 @@ chmod +x concorde
 
 **Installation**
 We will use Gurobi through its Python API.
-It is
+The free version of Gurobi only allows the solving of small problems.
+You can obtain an academic license on their website. *Where?*
 
-**Get Gurobi license key**
+Place the license file in one of the following locations that Gurobi searches for by default:
 
-*tbd*
+- /opt/gurobi
+- /home/\{YourUsername\}
 
 ### CuOpt
 
@@ -64,13 +66,6 @@ It is
 ## Data
 
 The data for the TSP instances is available in the `data/` folder. The files are in the TSPLib format, which is a standard format for representing TSP instances.
-
-### TSPLib files
-
-```bash
-cd data/
-git clone https://github.com/mastqe/tsplib
-```
 
 ### Generating benchmark TSP data based on actual cities
 To generate the TSP Data based on real city graphs we rely on OpenStreetMaps and osmnx to download the city Graph and randomly select nodes to generate problems. 
@@ -83,6 +78,15 @@ The generated problems are saved to `data/tsp_dataset` by default. As TSPLib95 f
 The format has been extended to include the NodeIDs of the nodes that were used in the problem.
 They can then be used to do visualizations on the graph (the saved .graphml file)
 
+## Solving a TSP with a solver
+
+From the root of the project run:
+
+```bash
+uv run -m src.solvers.{gurobi_solver, cuopt_solver, concorde_solver, ...}
+```
+
+TODO: Provide some cmd line args: like gurobi_solver --tsp-file zurich_10.tsp --outdir --vizualize  etc. 
 
 ## Visualizations
 

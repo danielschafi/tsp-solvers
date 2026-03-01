@@ -19,6 +19,29 @@ class OSMIDField(fields.Field):
         return " ".join(map(str, value))
 
 
+class NodeLocations(fields.Field):
+    """
+    Custom field to store lat/long coordinates.
+    Format in file:
+    val1 val2
+    val3 val4
+
+    Format in Python: [(val1, val2), (val3, val4)]
+    """
+
+    def __init__(self, keyword: str = "NODE_LOCATION"):
+        super().__init__(keyword)
+
+    def parse(self, text: str) -> List[tuple]:
+        # Splits the text into a flat list of floats, then groups them into pairs
+        numbers = [float(x) for x in text.split()]
+        return list(zip(numbers[0::2], numbers[1::2]))
+
+    def render(self, value: List[tuple]) -> str:
+        # Converts each tuple into a space-separated string and joins with newlines
+        return "\n".join(f"{lat} {lng}" for lat, lng in value)
+
+
 class TSPProblemWithOSMIDs(StandardProblem):
     """
     Extends the standard problem by storing the original OSM Node IDs in a custom field.
@@ -28,3 +51,4 @@ class TSPProblemWithOSMIDs(StandardProblem):
 
     osm_ids = OSMIDField()
     graphml_file = fields.StringField("GRAPHML_FILE")
+    node_locations = NodeLocations()
