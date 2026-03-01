@@ -64,7 +64,8 @@ Place the license file in one of the following locations that Gurobi searches fo
 
 ## Data
 
-The data for the TSP instances is available in the `data/` folder. The files are in the TSPLib format, which is a standard format for representing TSP instances.
+The data for the TSP instances is in the `data/` folder. The files are in the TSPLib format, which is a standard format for representing TSP instances.
+However, for visualization puroposes we save some extra fields compared to the Standard. Check `src/data_handling/tsplib_extension.py` for the implementation.
 
 ### Generating benchmark TSP data based on actual cities
 To generate the TSP Data based on real city graphs we rely on OpenStreetMaps and osmnx to download the city Graph and randomly select nodes to generate problems. 
