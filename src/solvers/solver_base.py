@@ -27,7 +27,7 @@ class TSPSolver(ABC):
 
     all_results: dict = {}
 
-    def __init__(self, solver: str):
+    def __init__(self, solver: str, results_dir=None):
         self.solver = solver
         self.result: dict = {
             "timestamp": None,
@@ -48,7 +48,12 @@ class TSPSolver(ABC):
         self.nodes: List = []
         self.edges: np.ndarray = None
 
-        self.RESULTS_DIR = Path(os.getenv("RESULTS_DIR", "results"))
+        if results_dir is not None:
+            self.RESULTS_DIR = Path(results_dir)
+        else:
+            self.RESULTS_DIR = Path(os.getenv("RESULTS_DIR", "results"))
+
+        self.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     @abstractmethod
     def setup_problem(self, tsp_file):

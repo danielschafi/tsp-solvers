@@ -21,8 +21,8 @@ class ConcordeSolver(TSPSolver):
     Solver for TSP using concorde
     """
 
-    def __init__(self):
-        super().__init__(solver="concorde")
+    def __init__(self, results_dir=None):
+        super().__init__(solver="concorde", results_dir=results_dir)
         self.CONCORDE_BIN = os.getenv("CONCORDE_BIN", None)
         if not self.CONCORDE_BIN:
             raise ValueError(

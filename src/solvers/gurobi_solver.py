@@ -38,8 +38,8 @@ class GurobiSolver(TSPSolver):
     Solver for TSP using gurobi.
     """
 
-    def __init__(self):
-        super().__init__(solver="gurobi")
+    def __init__(self, results_dir=None):
+        super().__init__(solver="gurobi", results_dir=results_dir)
 
     def setup_problem(self, tsp_file: str):
         """

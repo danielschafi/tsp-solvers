@@ -18,8 +18,8 @@ class CuOptSolver(TSPSolver):
     Solver for TSP using cuOpt
     """
 
-    def __init__(self):
-        super().__init__(solver="cuOpt")
+    def __init__(self, results_dir=None):
+        super().__init__(solver="cuOpt", results_dir=results_dir)
         self._warmup()
 
     def _warmup(self):
@@ -106,6 +106,8 @@ class CuOptSolver(TSPSolver):
             print("!!! WARNING !!!")
             print("SOLVER NOT SUCCESSFUL")
 
+
+def solve_tsp(path: str):
 
 def main():
     arg_parser = argparse.ArgumentParser(
