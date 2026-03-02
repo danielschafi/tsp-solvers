@@ -4,6 +4,7 @@ The generated problem instances are saved in TSPLib format for use in TSP solver
 """
 
 import argparse
+import hashlib
 import random
 import shutil
 from pathlib import Path
@@ -152,8 +153,11 @@ def process_single_instance(
     """
     Generates a single TSP problem instance for the specified graph, sample size, and repetition number, and saves it in TSPLib format.
     """
-    np.random.seed(seed + n)
-    random.seed(seed + n)
+    instance_seed = int(hashlib.md5(f"{seed}-{size}-{n}".encode()).hexdigest(), 16) % (
+        2**31
+    )
+    np.random.seed(instance_seed)
+    random.seed(instance_seed)
 
     # if restarting, skip if already exists
     filepath = save_dir / f"{city_basename}_{size}_{n}.tsp"

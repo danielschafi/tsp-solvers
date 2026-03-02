@@ -67,7 +67,16 @@ class CuOptSolver(TSPSolver):
         """
         # Configure solver settings
         ss = routing.SolverSettings()
-        ss.set_time_limit(5)  # seconds
+
+        """
+        Accuracy may be impacted. Problem under 100 locations may be solved with reasonable accuracy under a second. 
+        Larger problems may need a few minutes. 
+        A generous upper bond is to set the number of seconds to num_locations. 
+        By default it is set to num_locations/5. 
+        If increased accuracy is desired, this needs to set to higher numbers.
+
+        """
+        ss.set_time_limit(self.problem.dimension)  # seconds
 
         # Solve the routing problem
         self._start_time = time.perf_counter()
