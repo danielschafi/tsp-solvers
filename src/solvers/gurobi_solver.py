@@ -18,19 +18,12 @@ Code copied:
 # Solutions to this model may contain subtours - tours that don't visit every
 # city.  The lazy constraint callback adds new constraints to cut them off.
 
-import json
 import logging
-import math
-import random
-import sys
-import time
 from collections import defaultdict
 from itertools import combinations
-from pathlib import Path
 
 import gurobipy as gp
 import numpy as np
-import tsplib95
 from gurobipy import GRB
 
 from src.solvers.solver_base import TSPSolver

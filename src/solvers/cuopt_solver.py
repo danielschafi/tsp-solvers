@@ -52,6 +52,7 @@ class CuOptSolver(TSPSolver):
 
         cost_matrix = cudf.DataFrame(self.edges, dtype="float32")
         # Create data model
+        n_locations = self.problem.dimension
         n_vehicles = 1
         self.data_model = routing.DataModel(n_locations, n_vehicles)
         self.data_model.add_cost_matrix(cost_matrix)
@@ -63,7 +64,7 @@ class CuOptSolver(TSPSolver):
         """
         # Configure solver settings
         ss = routing.SolverSettings()
-        ss.set_time_limit(600)  # seconds
+        ss.set_time_limit(5)  # seconds
 
         # Solve the routing problem
         self._start_time = time.perf_counter()
@@ -95,9 +96,10 @@ class CuOptSolver(TSPSolver):
 
 
 def main():
+    dimension = 2000
     solver = CuOptSolver()
     solver.run(
-        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/10/zurich_10_0.tsp"
+        f"/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/{dimension}/zurich_{dimension}_0.tsp"
     )
 
 
