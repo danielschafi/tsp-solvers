@@ -107,8 +107,6 @@ class CuOptSolver(TSPSolver):
             print("SOLVER NOT SUCCESSFUL")
 
 
-def solve_tsp(path: str):
-
 def main():
     arg_parser = argparse.ArgumentParser(
         description="Run the cuOpt solver on a .tsp file or all .tsp files in a folder."

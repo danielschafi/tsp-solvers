@@ -3,16 +3,15 @@ Runs a solver/list of solvers on a number of TSP Problems and computes metrics.
 """
 
 import argparse
-import datetime
 import os
 import shutil
+from datetime import datetime
 from pathlib import Path
 from typing import List
 
 from dotenv import load_dotenv
 
 from src.solvers.concorde_solver import ConcordeSolver
-from src.solvers.cuopt_solver import CuOptSolver
 from src.solvers.gurobi_solver import GurobiSolver
 from src.solvers.solver_base import TSPSolver
 
@@ -27,6 +26,8 @@ def get_new_solver(solver_name: str, results_dir: str = None) -> TSPSolver:
     elif solver_name.lower() == "concorde":
         return ConcordeSolver(results_dir=results_dir)
     elif solver_name.lower() == "cuopt":
+        from src.solvers.cuopt_solver import CuOptSolver
+
         return CuOptSolver(results_dir=results_dir)
     else:
         raise ValueError(f"Unknown solver: {solver_name}")
@@ -133,7 +134,7 @@ def main():
             "Invalid solver name. Must be one of 'gurobi', 'concorde', 'cuopt'."
         )
 
-    run_benchmark(solvers, data_dirs, results_dir)
+    run_benchmark(args.solvers, data_dirs, results_dir)
 
 
 if __name__ == "__main__":
