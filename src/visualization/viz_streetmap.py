@@ -1,4 +1,7 @@
+import argparse
+import json
 import os
+from functools import lru_cache
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -6,6 +9,7 @@ import networkx as nx
 import numpy as np
 import osmnx as ox
 import tsplib95
+from matplotlib.lines import Line2D
 
 from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
 
@@ -22,6 +26,28 @@ np.random.seed(42)
 RESULTS_DIR = Path(os.getenv("RESULTS_DIR", None))
 
 
+@lru_cache(maxsize=8)
+def _load_graph_cached(graph_file: str):
+    """
+    Loads the graph from the graphml file, with caching to speed up repeated calls for the same graph.
+    """
+    return ox.load_graphml(Path(graph_file))
+
+
+@lru_cache(maxsize=200000)
+def _shortest_path_cached(graph_file: str, start, end, weight: str = "travel_time"):
+    """
+    Shortest path between two nodes in the graph, with caching to speed up repeated calls.
+    """
+    graph = _load_graph_cached(graph_file)
+    return tuple(nx.shortest_path(graph, start, end, weight=weight))
+
+
+def clear_streetmap_caches():
+    _shortest_path_cached.cache_clear()
+    _load_graph_cached.cache_clear()
+
+
 def plot_solution_streetmap(result: dict, tsp_problem_file: str):
     """
     Parameters:
@@ -29,20 +55,21 @@ def plot_solution_streetmap(result: dict, tsp_problem_file: str):
     result (dict): The data about the solution including the tour and other metadata
     """
     problem = tsplib95.load(tsp_problem_file, problem_class=TSPProblemWithOSMIDs)
-    graph_file = Path(problem.graphml_file)
+    graph_file = Path(problem.graphml_file).expanduser().resolve()
     if not graph_file.exists():
         raise ValueError(
             f"Graphml {graph_file} file does not exists, cant visualize on streetmap"
         )
         return
-    G = ox.load_graphml(graph_file)
+    graph_key = str(graph_file)
+    G = _load_graph_cached(graph_key)
     # get the osm ids (Node identifiers) of the solution (-1 because nodes in tsplib are 1 indexed [1,2,3,...])
-    route_osm_ids = [problem.osm_ids[idx - 1] for idx in result["tour"]]
+    route_osm_ids = tuple(problem.osm_ids[idx - 1] for idx in result["tour"])
     full_street_route = []
     for i in range(len(route_osm_ids) - 1):
         start = route_osm_ids[i]
         end = route_osm_ids[i + 1]
-        path = nx.shortest_path(G, start, end, weight="travel_time")
+        path = _shortest_path_cached(graph_key, start, end, weight="travel_time")
         full_street_route.extend(path[:-1])
     full_street_route.append(route_osm_ids[-1])
 
@@ -94,9 +121,6 @@ def plot_solution_streetmap(result: dict, tsp_problem_file: str):
         label="TSP Stops",
     )
 
-    # Legend
-    from matplotlib.lines import Line2D
-
     legend_elements = [
         Line2D([0], [0], color=ROUTE_COLOR, linewidth=2.0, label="TSP Tour"),
         Line2D(
@@ -144,10 +168,37 @@ def plot_solution_streetmap(result: dict, tsp_problem_file: str):
 
 
 def main():
-    plot_solution_streetmap(
-        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/100/zurich_100_0.tsp",
-        "~/thesis/tsp-solvers/results/",
+    arg_parser = argparse.ArgumentParser(
+        description="Plot the TSP solution on a streetmap. Provide the path to the TSP problem file and the results json."
     )
+    arg_parser.add_argument(
+        "--tsp_file",
+        type=str,
+        required=True,
+        help="Path to the .tsp file containing the problem instance with OSM IDs and graphml file path.",
+    )
+    arg_parser.add_argument(
+        "--results_json",
+        type=str,
+        required=True,
+        help="Path to the results json file containing the solution tour and metadata.",
+    )
+
+    args = arg_parser.parse_args()
+    tsp_file = Path(args.tsp_file)
+    results_json = Path(args.results_json)
+
+    if not tsp_file.exists():
+        print(f"TSP file {tsp_file} does not exist.")
+        return
+    if not results_json.exists():
+        print(f"Results json file {results_json} does not exist.")
+        return
+
+    with open(results_json, "r") as f:
+        result = json.load(f)
+
+    plot_solution_streetmap(result, str(tsp_file))
 
 
 if __name__ == "__main__":

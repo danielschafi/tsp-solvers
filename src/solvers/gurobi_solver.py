@@ -18,15 +18,19 @@ Code copied:
 # Solutions to this model may contain subtours - tours that don't visit every
 # city.  The lazy constraint callback adds new constraints to cut them off.
 
+import argparse
 import logging
 from collections import defaultdict
 from itertools import combinations
+from pathlib import Path
 
 import gurobipy as gp
 import numpy as np
 from gurobipy import GRB
 
 from src.solvers.solver_base import TSPSolver
+
+np.random.seed(42)
 
 
 class GurobiSolver(TSPSolver):
@@ -207,10 +211,32 @@ class TSPCallback:
 
 
 def main():
-    solver = GurobiSolver()
-    solver.run(
-        "/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/10/zurich_10_0.tsp"
+    arg_parser = argparse.ArgumentParser(
+        description="Run the Gurobi solver on a .tsp file or all .tsp files in a folder."
     )
+    arg_parser.add_argument(
+        "--path",
+        type=str,
+        required=True,
+        help="Path to the .tsp file to solve.",
+    )
+
+    args = arg_parser.parse_args()
+    path = Path(args.path)
+
+    # check if it is a file or a folder    if path.is_file():
+    if path.is_file():
+        solver = GurobiSolver()
+        solver.run(str(path))
+    elif path.is_dir():
+        files = list(path.rglob("*.tsp"))
+        files = sorted(
+            files,
+        )
+        for i, tsp_file in enumerate(files):
+            print(f"Solving {tsp_file} ({i + 1}/{len(files)})")
+            solver = GurobiSolver()
+            solver.run(str(tsp_file))
 
 
 if __name__ == "__main__":

@@ -1,4 +1,6 @@
+import argparse
 import time
+from pathlib import Path
 
 import cudf
 import numpy as np
@@ -8,6 +10,7 @@ from dotenv import load_dotenv
 from src.solvers.solver_base import TSPSolver
 
 load_dotenv()
+np.random.seed(42)
 
 
 class CuOptSolver(TSPSolver):
@@ -96,11 +99,30 @@ class CuOptSolver(TSPSolver):
 
 
 def main():
-    dimension = 2000
-    solver = CuOptSolver()
-    solver.run(
-        f"/home/schafhdaniel@edu.local/thesis/tsp-solvers/data/tsp_dataset/{dimension}/zurich_{dimension}_0.tsp"
+    arg_parser = argparse.ArgumentParser(
+        description="Run the cuOpt solver on a .tsp file or all .tsp files in a folder."
     )
+    arg_parser.add_argument(
+        "--path",
+        type=str,
+        required=True,
+        help="Path to the .tsp file to solve.",
+    )
+
+    args = arg_parser.parse_args()
+    path = Path(args.path)
+
+    # check if it is a file or a folder    if path.is_file():
+    if path.is_file():
+        solver = CuOptSolver()
+        solver.run(str(path))
+    elif path.is_dir():
+        files = list(path.rglob("*.tsp"))
+        files = sorted(files)
+        for i, tsp_file in enumerate(files):
+            print(f"Solving {tsp_file} ({i + 1}/{len(files)})")
+            solver = CuOptSolver()
+            solver.run(str(tsp_file))
 
 
 if __name__ == "__main__":
