@@ -46,10 +46,6 @@ def _setup_logging() -> None:
 DIST = 20000  # m radius around center
 
 
-def DeezNuts():
-    print("Deez Nuts!")
-
-
 def build_city_graph(city_name: str = "Zurich, Switzerland") -> nx.MultiDiGraph:
     """
     Build a graph for the specified city using OSMnx.
