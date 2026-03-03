@@ -48,7 +48,7 @@ def clear_streetmap_caches():
     _load_graph_cached.cache_clear()
 
 
-def plot_solution_streetmap(result: dict, tsp_problem_file: str):
+def plot_solution_streetmap(result: dict, tsp_problem_file: str, results_dir: Path):
     """
     Parameters:
     tsp_problem_file (str): The TSP problem instance, containing the OSM IDs of the nodes and the path to the graphml file.
@@ -156,11 +156,8 @@ def plot_solution_streetmap(result: dict, tsp_problem_file: str):
     # osmnx sets axes to fill the full figure — shrink it down to leave title room
     ax.set_position([0, 0, 1, 0.88])
 
-    solver_results_dir = Path(RESULTS_DIR / result["solver"])
-    solver_results_dir.mkdir(parents=True, exist_ok=True)
     plt.savefig(
-        solver_results_dir
-        / f"{result['timestamp']}_{result['problem']}_{result['solver']}_streetmap.png",
+        results_dir / f"{result['problem']}_streetmap.png",
         dpi=300,
         facecolor=BACKGROUND,  # no bbox_inches="tight" — it was overriding subplots_adjust
     )
@@ -198,7 +195,7 @@ def main():
     with open(results_json, "r") as f:
         result = json.load(f)
 
-    plot_solution_streetmap(result, str(tsp_file))
+    plot_solution_streetmap(result, str(tsp_file), results_json.parent)
 
 
 if __name__ == "__main__":

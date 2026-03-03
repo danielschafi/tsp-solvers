@@ -51,11 +51,11 @@ def run_benchmark(solvers: List[str], data_dirs: List[Path], results_dir: Path) 
         files = sorted(files)
         for i, tsp_file in enumerate(files):
             print(f"Solving {tsp_file} ({i + 1}/{len(files)})")
-            for solver in solvers:
-                results_dir_solver = Path(results_dir) / benchmark_ts / solver
+            for solver_name in solvers:
+                results_dir_for_run = Path(results_dir) / benchmark_ts
 
-                solver = get_new_solver(solver, str(results_dir_solver))
-                solver.run(str(tsp_file))
+                solver_instance = get_new_solver(solver_name, str(results_dir_for_run))
+                solver_instance.run(str(tsp_file))
 
 
 def create_aggregated_results(results_dir: Path) -> None:

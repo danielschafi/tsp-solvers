@@ -134,9 +134,7 @@ def save_problem_instance(
     problem.edge_weight_type = "EXPLICIT"
     problem.edge_weight_format = "FULL_MATRIX"
     problem.edge_weights = travel_time_matrix.tolist()
-    problem.node_coords = {
-        i + 1: (coord[0], coord[1]) for i, coord in enumerate(node_coords)
-    }
+    problem.node_locations = node_coords
     problem.save(save_path)
 
 

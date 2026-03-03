@@ -11,7 +11,7 @@ load_dotenv()
 RESULTS_DIR = Path(os.getenv("RESULTS_DIR", None))
 
 
-def plot_solution_plain(result: dict, nodes: list):
+def plot_solution_plain(result: dict, nodes: list, results_dir: Path):
     """
     Plots the solution as a plain graph with straight edges found by the solver and saves it.
     Note: Length of an edge does not represent the cost from node to node (the travel time)
@@ -81,11 +81,8 @@ def plot_solution_plain(result: dict, nodes: list):
 
     fig.tight_layout(pad=1.5)
 
-    solver_results_dir = Path(RESULTS_DIR / result["solver"])
-    solver_results_dir.mkdir(parents=True, exist_ok=True)
     plt.savefig(
-        solver_results_dir
-        / f"{result['timestamp']}_{result['problem']}_{result['solver']}_plain.png",
+        results_dir / f"{result['problem']}_plain.png",
         dpi=300,
         bbox_inches="tight",
         facecolor=BACKGROUND,

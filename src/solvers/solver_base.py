@@ -164,17 +164,14 @@ class TSPSolver(ABC):
 
     def save_results(self):
         """Saves the results json to a file"""
-        solver_results_dir = Path(self.RESULTS_DIR / self.result["solver"])
-        solver_results_dir.mkdir(parents=True, exist_ok=True)
-        with open(
-            solver_results_dir
-            / f"{self.result['timestamp']}_{self.result['problem']}_{self.result['solver']}_{self.result['problem_size']}.json",
-            "w",
-        ) as f:
+        problem_dir = self.RESULTS_DIR / self.result["solver"] / f"n{self.result['problem_size']}"
+        problem_dir.mkdir(parents=True, exist_ok=True)
+        with open(problem_dir / f"{self.result['problem']}.json", "w") as f:
             f.write(json.dumps(self.result, indent=4))
 
     def plot_solution(self):
         """Plots the solution plain and on streetmap"""
-
-        plot_solution_plain(self.result, self.nodes)
-        plot_solution_streetmap(self.result, self.tsp_file)
+        problem_dir = self.RESULTS_DIR / self.result["solver"] / f"n{self.result['problem_size']}"
+        problem_dir.mkdir(parents=True, exist_ok=True)
+        plot_solution_plain(self.result, self.nodes, problem_dir)
+        plot_solution_streetmap(self.result, self.tsp_file, problem_dir)

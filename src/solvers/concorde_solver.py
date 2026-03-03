@@ -96,7 +96,7 @@ class ConcordeSolver(TSPSolver):
             self._start_time = time.perf_counter()
 
             result = subprocess.run(
-                [self.CONCORDE_BIN, "-s", str(seed), str(self.tsp_file)],
+                [self.CONCORDE_BIN, "-s", str(seed), str(self.tsp_file.resolve())],
                 capture_output=True,
                 text=True,
                 check=True,
