@@ -1,10 +1,17 @@
+import argparse
+import json
 import logging
 import os
+from multiprocessing import Pool
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
+import tsplib95
 from dotenv import load_dotenv
+
+from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
+from src.logger import setup_logging
 
 load_dotenv()
 
@@ -90,3 +97,72 @@ def plot_solution_plain(result: dict, nodes: list, results_dir: Path):
         facecolor=BACKGROUND,
     )
     plt.close(fig)
+
+
+def _plot_one_plain(json_path: Path) -> None:
+    """Plot a single result JSON as a plain graph, skipping if the PNG already exists."""
+    json_path = Path(json_path)
+    out_path = json_path.parent / f"{json_path.stem}_plain.png"
+    if out_path.exists():
+        logger.info(f"Skipping {json_path.name} (plain PNG already exists)")
+        return
+
+    with open(json_path) as f:
+        result = json.load(f)
+
+    tsp_file_path = result.get("tsp_file")
+    if not tsp_file_path or not Path(tsp_file_path).exists():
+        logger.warning(f"tsp_file not found for {json_path.name}, skipping")
+        return
+
+    problem = tsplib95.load(tsp_file_path, problem_class=TSPProblemWithOSMIDs)
+    nodes = np.array(problem.node_locations)
+    plot_solution_plain(result, nodes, json_path.parent)
+    logger.info(f"Plotted {json_path.name} → {out_path.name}")
+
+
+def main():
+    arg_parser = argparse.ArgumentParser(
+        description=(
+            "Plot TSP plain solution(s) from result JSON file(s). "
+            "Provide a path to a single JSON or a directory; directories are searched recursively. "
+            "Files that already have a matching *_plain.png are skipped."
+        )
+    )
+    arg_parser.add_argument(
+        "--path",
+        type=str,
+        required=True,
+        help="Path to a result JSON file or a directory containing result JSONs.",
+    )
+    arg_parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Number of parallel worker processes (default: 1).",
+    )
+
+    args = arg_parser.parse_args()
+    setup_logging()
+
+    path = Path(args.path)
+    if path.is_file():
+        json_files = [path]
+    elif path.is_dir():
+        json_files = sorted(path.rglob("*.json"))
+    else:
+        logger.error(f"Path {path} does not exist.")
+        return
+
+    logger.info(f"Found {len(json_files)} JSON file(s) under {path}")
+
+    if args.workers > 1:
+        with Pool(args.workers) as pool:
+            pool.map(_plot_one_plain, json_files)
+    else:
+        for json_file in json_files:
+            _plot_one_plain(json_file)
+
+
+if __name__ == "__main__":
+    main()

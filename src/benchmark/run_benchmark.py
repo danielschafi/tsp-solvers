@@ -43,6 +43,7 @@ def run_benchmark(
     data_dirs: List[Path],
     results_dir: Path,
     benchmark_ts: str = None,
+    plot: bool = False,
 ) -> None:
     """
     Runs the specified solvers on all the instances of the specified problem sizes and saves the results
@@ -52,6 +53,7 @@ def run_benchmark(
         data_dirs (List[Path]): List of directories containing the .tsp files to run the benchmark on. Each directory should correspond to a problem size.
         results_dir (Path): Base directory to save the results.
         benchmark_ts (str): Timestamp string for this run (used in results directory naming).
+        plot (bool): Whether to generate plots during the run. Disabled by default; use the viz scripts afterwards.
     """
 
     if benchmark_ts is None:
@@ -67,7 +69,7 @@ def run_benchmark(
                 results_dir_for_run = Path(results_dir) / benchmark_ts
 
                 solver_instance = get_new_solver(solver_name, str(results_dir_for_run))
-                solver_instance.run(str(tsp_file))
+                solver_instance.run(str(tsp_file), plot=plot)
 
 
 def create_aggregated_results(results_dir: Path) -> None:
@@ -121,6 +123,12 @@ def main():
         action="store_true",
         help="Whether to clean the old results directory before running the benchmark.",
     )
+    arg_parser.add_argument(
+        "--plot",
+        action="store_true",
+        default=False,
+        help="Generate plots inline during the benchmark run. Off by default — use viz_plain.py / viz_streetmap.py afterwards for faster batch plotting.",
+    )
 
     args = arg_parser.parse_args()
 
@@ -154,7 +162,7 @@ def main():
             "Invalid solver name. Must be one of 'gurobi', 'concorde', 'cuopt'."
         )
 
-    run_benchmark(args.solvers, data_dirs, results_dir, benchmark_ts)
+    run_benchmark(args.solvers, data_dirs, results_dir, benchmark_ts, plot=args.plot)
 
 
 if __name__ == "__main__":

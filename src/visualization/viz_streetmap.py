@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 from functools import lru_cache
+from multiprocessing import Pool
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -12,6 +13,7 @@ import tsplib95
 from matplotlib.lines import Line2D
 
 from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
+from src.logger import setup_logging
 
 if not hasattr(np, "float_"):
     np.float_ = np.float64
@@ -163,38 +165,68 @@ def plot_solution_streetmap(result: dict, tsp_problem_file: str, results_dir: Pa
     plt.close(fig)
 
 
+def _plot_one_streetmap(json_path: Path) -> None:
+    """Plot a single result JSON on streetmap, skipping if the PNG already exists."""
+    json_path = Path(json_path)
+    out_path = json_path.parent / f"{json_path.stem}_streetmap.png"
+    if out_path.exists():
+        logger.info(f"Skipping {json_path.name} (streetmap PNG already exists)")
+        return
+
+    with open(json_path) as f:
+        result = json.load(f)
+
+    tsp_file_path = result.get("tsp_file")
+    if not tsp_file_path or not Path(tsp_file_path).exists():
+        logger.warning(f"tsp_file not found for {json_path.name}, skipping")
+        return
+
+    plot_solution_streetmap(result, tsp_file_path, json_path.parent)
+    logger.info(f"Plotted {json_path.name} → {out_path.name}")
+
+
 def main():
     arg_parser = argparse.ArgumentParser(
-        description="Plot the TSP solution on a streetmap. Provide the path to the TSP problem file and the results json."
+        description=(
+            "Plot TSP streetmap solution(s) from result JSON file(s). "
+            "Provide a path to a single JSON or a directory; directories are searched recursively. "
+            "Files that already have a matching *_streetmap.png are skipped. "
+            "The graph is loaded once per unique city and cached across plots within the same process."
+        )
     )
     arg_parser.add_argument(
-        "--tsp_file",
+        "--path",
         type=str,
         required=True,
-        help="Path to the .tsp file containing the problem instance with OSM IDs and graphml file path.",
+        help="Path to a result JSON file or a directory containing result JSONs.",
     )
     arg_parser.add_argument(
-        "--results_json",
-        type=str,
-        required=True,
-        help="Path to the results json file containing the solution tour and metadata.",
+        "--workers",
+        type=int,
+        default=1,
+        help="Number of parallel worker processes (default: 1). Each worker caches the graph independently.",
     )
 
     args = arg_parser.parse_args()
-    tsp_file = Path(args.tsp_file)
-    results_json = Path(args.results_json)
+    setup_logging()
 
-    if not tsp_file.exists():
-        logger.error(f"TSP file {tsp_file} does not exist.")
+    path = Path(args.path)
+    if path.is_file():
+        json_files = [path]
+    elif path.is_dir():
+        json_files = sorted(path.rglob("*.json"))
+    else:
+        logger.error(f"Path {path} does not exist.")
         return
-    if not results_json.exists():
-        logger.error(f"Results json file {results_json} does not exist.")
-        return
 
-    with open(results_json, "r") as f:
-        result = json.load(f)
+    logger.info(f"Found {len(json_files)} JSON file(s) under {path}")
 
-    plot_solution_streetmap(result, str(tsp_file), results_json.parent)
+    if args.workers > 1:
+        with Pool(args.workers) as pool:
+            pool.map(_plot_one_streetmap, json_files)
+    else:
+        for json_file in json_files:
+            _plot_one_streetmap(json_file)
 
 
 if __name__ == "__main__":

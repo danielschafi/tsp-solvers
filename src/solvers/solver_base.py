@@ -87,6 +87,7 @@ class TSPSolver(ABC):
                 "problem_size": self._tsp_problem_dict["dimension"],
                 "type": self._tsp_problem_dict["type"],
                 "comment": self._tsp_problem_dict["comment"],
+                "tsp_file": str(self.tsp_file.resolve()),
             }
         )
 
@@ -130,8 +131,9 @@ class TSPSolver(ABC):
         logger.info("Saving results")
         self.save_results()
 
-        logger.info("Making plot of solution")
-        self.plot_solution()
+        if plot:
+            logger.info("Making plot of solution")
+            self.plot_solution()
 
         logger.info("Done!")
 
