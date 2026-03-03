@@ -1,4 +1,4 @@
-# TSP Gurobi
+# TSP Solvers
 
 Solving the Traveling Salesperson Problem exactly using different solvers
 
