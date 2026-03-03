@@ -1,5 +1,3 @@
-from typing import List
-
 from tsplib95 import fields
 from tsplib95.models import StandardProblem
 
@@ -10,11 +8,11 @@ class OSMIDField(fields.Field):
     def __init__(self, keyword: str = "OSM_IDS"):
         super().__init__(keyword)
 
-    def parse(self, text: str) -> List[int]:
+    def parse(self, text: str) -> list[int]:
         # Converts the data in the file (space separated list) to a list of ints
         return [int(x) for x in text.strip().split()]
 
-    def render(self, value: List[int]) -> str:
+    def render(self, value: list[int]) -> str:
         # Converts the list of ints into a space-separated string for the file
         return " ".join(map(str, value))
 
@@ -32,12 +30,12 @@ class NodeLocations(fields.Field):
     def __init__(self, keyword: str = "NODE_LOCATION"):
         super().__init__(keyword)
 
-    def parse(self, text: str) -> List[tuple]:
+    def parse(self, text: str) -> list[tuple]:
         # Splits the text into a flat list of floats, then groups them into pairs
         numbers = [float(x) for x in text.split()]
-        return list(zip(numbers[0::2], numbers[1::2]))
+        return list(zip(numbers[0::2], numbers[1::2], strict=False))
 
-    def render(self, value: List[tuple]) -> str:
+    def render(self, value: list[tuple]) -> str:
         # Converts each tuple into a space-separated string and joins with newlines
         return "\n".join(f"{lat} {lng}" for lat, lng in value)
 

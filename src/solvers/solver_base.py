@@ -4,7 +4,6 @@ import os
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
-from typing import List
 
 import numpy as np
 import tsplib95
@@ -30,8 +29,9 @@ class TSPSolver(ABC):
 
     all_results: dict = {}
 
-    def __init__(self, solver: str, results_dir=None):
+    def __init__(self, solver: str, results_dir=None, timeout: float = None):
         self.solver = solver
+        self.timeout = timeout
         self.result: dict = {
             "timestamp": None,
             "problem": "undefined",
@@ -43,12 +43,13 @@ class TSPSolver(ABC):
             "cost": 0,
             "tour": [],
             "solution_status": None,
+            "timed_out_without_tour": False,
             "additional_metadata": {},
         }
         self._start_time = None
         self._end_time = None
 
-        self.nodes: List = []
+        self.nodes: list = []
         self.edges: np.ndarray = None
 
         if results_dir is not None:
@@ -122,8 +123,11 @@ class TSPSolver(ABC):
         logger.info("Start solving TSP")
         self.solve_tsp()
 
-        logger.info("Printing tour")
-        self.print_tour(self.result["tour"])
+        if self.result["tour"]:
+            logger.info("Printing tour")
+            self.print_tour(self.result["tour"])
+        else:
+            logger.warning("No tour computed — skipping tour print")
 
         logger.info("Printing results")
         self.print_results()
@@ -131,7 +135,7 @@ class TSPSolver(ABC):
         logger.info("Saving results")
         self.save_results()
 
-        if plot:
+        if plot and self.result["tour"]:
             logger.info("Making plot of solution")
             self.plot_solution()
 
@@ -153,7 +157,7 @@ class TSPSolver(ABC):
 
         return float(total_cost)
 
-    def print_tour(self, tour: List[int]):
+    def print_tour(self, tour: list[int]):
         route_str = str(tour[0])
         for i, node in enumerate(tour[1:]):
             if (i + 1) % 10 == 0:

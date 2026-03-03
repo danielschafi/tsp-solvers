@@ -22,8 +22,8 @@ class CuOptSolver(TSPSolver):
     Solver for TSP using cuOpt
     """
 
-    def __init__(self, results_dir=None):
-        super().__init__(solver="cuOpt", results_dir=results_dir)
+    def __init__(self, results_dir=None, timeout: float = None):
+        super().__init__(solver="cuOpt", results_dir=results_dir, timeout=timeout)
         self._warmup()
 
     def _warmup(self):
@@ -73,14 +73,17 @@ class CuOptSolver(TSPSolver):
         ss = routing.SolverSettings()
 
         """
-        Accuracy may be impacted. Problem under 100 locations may be solved with reasonable accuracy under a second. 
-        Larger problems may need a few minutes. 
-        A generous upper bond is to set the number of seconds to num_locations. 
-        By default it is set to num_locations/5. 
+        Accuracy may be impacted. Problem under 100 locations may be solved with reasonable accuracy under a second.
+        Larger problems may need a few minutes.
+        A generous upper bond is to set the number of seconds to num_locations.
+        By default it is set to num_locations/5.
         If increased accuracy is desired, this needs to set to higher numbers.
 
         """
-        ss.set_time_limit(self.problem.dimension)  # seconds
+        time_limit = (
+            self.timeout if self.timeout is not None else self.problem.dimension
+        )
+        ss.set_time_limit(time_limit)  # seconds
 
         # Solve the routing problem
         self._start_time = time.perf_counter()
@@ -100,10 +103,13 @@ class CuOptSolver(TSPSolver):
 
         elif sol.get_status() == 1:
             self.result["solution_status"] = "fail"
+            self.result["timed_out_without_tour"] = False
         elif sol.get_status() == 2:
             self.result["solution_status"] = "timeout"
+            self.result["timed_out_without_tour"] = True
         elif sol.get_status() == 3:
             self.result["solution_status"] = "empty"
+            self.result["timed_out_without_tour"] = False
 
         if sol.get_status() in [1, 2, 3]:
             logger.warning(

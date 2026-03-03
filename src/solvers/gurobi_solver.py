@@ -41,8 +41,8 @@ class GurobiSolver(TSPSolver):
     Solver for TSP using gurobi.
     """
 
-    def __init__(self, results_dir=None):
-        super().__init__(solver="gurobi", results_dir=results_dir)
+    def __init__(self, results_dir=None, timeout: float = None):
+        super().__init__(solver="gurobi", results_dir=results_dir, timeout=timeout)
 
     def setup_problem(self, tsp_file: str):
         """
@@ -91,23 +91,14 @@ class GurobiSolver(TSPSolver):
 
             # Optimize model using lazy constraints to eliminate subtours
             m.Params.LazyConstraints = 1
+            if self.timeout is not None:
+                m.Params.TimeLimit = self.timeout
             cb = TSPCallback(self.node_idx_list, x)
             m.optimize(cb)
 
-            # Extract the solution as a tour
-            edges = [(i, j) for (i, j), v in x.items() if v.X > 0.5]
-            tour = GurobiSolver.shortest_subtour(edges)
-            assert set(tour) == set(self.node_idx_list)
-
-            # We assume that the return to the start node is included in the tour
-            if tour[0] != tour[-1]:
-                tour.append(tour[0])
-            self.result["tour"] = tour
-            self.result["cost"] = self.calculate_tour_cost(tour)
             self.result["time_to_solve"] = m.Runtime
 
             # Status codes: https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/statuscodes.html#secstatuscodes
-            # Check if any solution exists before accessing .X or .ObjVal
             has_solution = m.SolCount > 0
 
             # Determine the status message
@@ -132,8 +123,15 @@ class GurobiSolver(TSPSolver):
                 "work": m.Work,  # Work units (deterministic measure of effort)
             }
 
-            # Only add these if a solution or bound actually exists
             if has_solution:
+                # Extract the solution as a tour — only safe to access .X when a solution exists
+                edges = [(i, j) for (i, j), v in x.items() if v.X > 0.5]
+                tour = GurobiSolver.shortest_subtour(edges)
+                assert set(tour) == set(self.node_idx_list)
+                if tour[0] != tour[-1]:
+                    tour.append(tour[0])
+                self.result["tour"] = tour
+                self.result["cost"] = self.calculate_tour_cost(tour)
                 self.result["additional_metadata"].update(
                     {
                         "lower_bound": m.ObjBound,  # Best possible theoretical cost
@@ -141,6 +139,13 @@ class GurobiSolver(TSPSolver):
                         "obj_val": m.ObjVal,  # The cost of the best found tour
                     }
                 )
+            else:
+                tour = []
+                self.result["timed_out_without_tour"] = m.Status == GRB.TIME_LIMIT
+                if self.result["timed_out_without_tour"]:
+                    logger.warning(
+                        "SOLVER TIMED OUT — no feasible tour found within the time limit"
+                    )
 
             logger.info(
                 f"Solve complete. Status: {status_msg}, Gap: {self.result['additional_metadata'].get('gap', 'N/A')}"

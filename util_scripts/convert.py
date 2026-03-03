@@ -10,7 +10,7 @@ def convert_tsp_format(folder_path, output_folder=None):
         if filename.endswith(".tsp"):
             file_path = os.path.join(folder_path, filename)
 
-            with open(file_path, "r") as f:
+            with open(file_path) as f:
                 lines = f.readlines()
 
             new_lines = []

@@ -110,7 +110,7 @@ def plot_solution_streetmap(result: dict, tsp_problem_file: str, results_dir: Pa
 
     # TSP stop nodes
     stop_coords = [problem.node_locations[idx] for idx in result["tour"]]
-    y, x = zip(*stop_coords)
+    y, x = zip(*stop_coords, strict=False)
     ax.scatter(
         x,
         y,

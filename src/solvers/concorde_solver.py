@@ -25,8 +25,8 @@ class ConcordeSolver(TSPSolver):
     Solver for TSP using concorde
     """
 
-    def __init__(self, results_dir=None):
-        super().__init__(solver="concorde", results_dir=results_dir)
+    def __init__(self, results_dir=None, timeout: float = None):
+        super().__init__(solver="concorde", results_dir=results_dir, timeout=timeout)
         self.CONCORDE_BIN = os.getenv("CONCORDE_BIN", None)
         if not self.CONCORDE_BIN:
             raise ValueError(
@@ -96,16 +96,26 @@ class ConcordeSolver(TSPSolver):
 
         # Tempdir to capture output files
         with tempfile.TemporaryDirectory() as tempdir:
-            # Solve the routing problem
             self._start_time = time.perf_counter()
 
-            result = subprocess.run(
-                [self.CONCORDE_BIN, "-s", str(seed), str(self.tsp_file.resolve())],
-                capture_output=True,
-                text=True,
-                check=True,
-                cwd=tempdir,
-            )
+            try:
+                result = subprocess.run(
+                    [self.CONCORDE_BIN, "-s", str(seed), str(self.tsp_file.resolve())],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                    cwd=tempdir,
+                    timeout=self.timeout,
+                )
+            except subprocess.TimeoutExpired:
+                self._end_time = time.perf_counter()
+                self.result["time_to_solve"] = self._end_time - self._start_time
+                self.result["solution_status"] = "TIMEOUT"
+                self.result["timed_out_without_tour"] = True
+                logger.warning(
+                    f"SOLVER TIMED OUT — concorde exceeded {self.timeout}s without finding a tour"
+                )
+                return
 
             self._end_time = time.perf_counter()
             self.result["time_to_solve"] = self._end_time - self._start_time

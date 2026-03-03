@@ -8,7 +8,6 @@ import os
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import List
 
 from dotenv import load_dotenv
 
@@ -24,29 +23,35 @@ load_dotenv()
 BENCHMARK_DATA_DIR = os.getenv("BENCHMARK_DATA_DIR", "data/tsp_dataset")
 
 
-def get_new_solver(solver_name: str, results_dir: str = None) -> TSPSolver:
+def get_new_solver(
+    solver_name: str, results_dir: str = None, timeout: float = None
+) -> TSPSolver:
     if solver_name.lower() == "gurobi":
-        return GurobiSolver(results_dir=results_dir)
+        return GurobiSolver(results_dir=results_dir, timeout=timeout)
     elif solver_name.lower() == "concorde":
-        return ConcordeSolver(results_dir=results_dir)
+        return ConcordeSolver(results_dir=results_dir, timeout=timeout)
     elif solver_name.lower() == "cuopt":
         # Import only here to avoid having to run this as a gpu job every time.
         from src.solvers.cuopt_solver import CuOptSolver
 
-        return CuOptSolver(results_dir=results_dir)
+        return CuOptSolver(results_dir=results_dir, timeout=timeout)
     else:
         raise ValueError(f"Unknown solver: {solver_name}")
 
 
 def run_benchmark(
-    solvers: List[str],
-    data_dirs: List[Path],
+    solvers: list[str],
+    data_dirs: list[Path],
     results_dir: Path,
     benchmark_ts: str = None,
     plot: bool = False,
+    timeouts: dict = None,
 ) -> None:
     """
-    Runs the specified solvers on all the instances of the specified problem sizes and saves the results
+    Runs the specified solvers on all the instances of the specified problem sizes and saves the results.
+
+    Problem sizes are processed in ascending order. If a solver times out without producing a tour,
+    it is dropped from all subsequent (larger) problem sizes.
 
     Args:
         solvers (List[str]): List of solver names to run in the benchmark.
@@ -54,22 +59,58 @@ def run_benchmark(
         results_dir (Path): Base directory to save the results.
         benchmark_ts (str): Timestamp string for this run (used in results directory naming).
         plot (bool): Whether to generate plots during the run. Disabled by default; use the viz scripts afterwards.
+        timeouts (dict): Optional per-solver timeout in seconds, e.g. {"gurobi": 60, "concorde": 300}.
     """
 
     if benchmark_ts is None:
         benchmark_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
 
+    if timeouts is None:
+        timeouts = {}
+
+    # Sort by problem size (directory name is the size) so we process smallest first
+    data_dirs = sorted(data_dirs, key=lambda d: int(d.name))
+
+    active_solvers = list(solvers)
+
     for data_dir in data_dirs:
-        logger.info(f"Running benchmark on {data_dir}, at time {benchmark_ts}...")
-        files = list(data_dir.rglob("*.tsp"))
-        files = sorted(files)
+        if not active_solvers:
+            logger.info("No active solvers remaining — stopping benchmark early.")
+            break
+
+        logger.info(
+            f"Running benchmark on {data_dir} (size {data_dir.name}), at time {benchmark_ts}. "
+            f"Active solvers: {active_solvers}"
+        )
+        files = sorted(data_dir.rglob("*.tsp"))
+        results_dir_for_run = Path(results_dir) / benchmark_ts
+
+        solvers_to_drop = set()
+
         for i, tsp_file in enumerate(files):
             logger.info(f"Solving {tsp_file} ({i + 1}/{len(files)})")
-            for solver_name in solvers:
-                results_dir_for_run = Path(results_dir) / benchmark_ts
+            for solver_name in list(active_solvers):
+                if solver_name in solvers_to_drop:
+                    continue
 
-                solver_instance = get_new_solver(solver_name, str(results_dir_for_run))
+                timeout = timeouts.get(solver_name.lower())
+                solver_instance = get_new_solver(
+                    solver_name, str(results_dir_for_run), timeout=timeout
+                )
                 solver_instance.run(str(tsp_file), plot=plot)
+
+                if solver_instance.result.get("timed_out_without_tour"):
+                    logger.warning(
+                        f"Solver '{solver_name}' timed out on {tsp_file} without a tour. "
+                        f"Dropping it from all remaining problem sizes."
+                    )
+                    solvers_to_drop.add(solver_name)
+
+        for solver_name in solvers_to_drop:
+            active_solvers.remove(solver_name)
+            logger.info(
+                f"Dropped solver '{solver_name}'. Remaining active solvers: {active_solvers}"
+            )
 
 
 def create_aggregated_results(results_dir: Path) -> None:
@@ -129,6 +170,16 @@ def main():
         default=False,
         help="Generate plots inline during the benchmark run. Off by default — use viz_plain.py / viz_streetmap.py afterwards for faster batch plotting.",
     )
+    arg_parser.add_argument(
+        "--timeouts",
+        nargs="*",
+        default=[],
+        metavar="SOLVER=SECONDS",
+        help=(
+            "Per-solver timeout in seconds. If a solver times out without a tour, it is dropped "
+            "from all larger problem sizes. Example: --timeouts gurobi=60 concorde=300 cuopt=120"
+        ),
+    )
 
     args = arg_parser.parse_args()
 
@@ -142,7 +193,7 @@ def main():
     )
 
     sizes = args.sizes
-    data_dirs: List[Path] = []
+    data_dirs: list[Path] = []
     for size in sizes:
         data_dir = Path(BENCHMARK_DATA_DIR) / f"{size}"
         if not data_dir.exists():
@@ -162,7 +213,27 @@ def main():
             "Invalid solver name. Must be one of 'gurobi', 'concorde', 'cuopt'."
         )
 
-    run_benchmark(args.solvers, data_dirs, results_dir, benchmark_ts, plot=args.plot)
+    timeouts = {}
+    for entry in args.timeouts:
+        try:
+            solver_name, seconds = entry.split("=")
+            timeouts[solver_name.lower()] = float(seconds)
+        except ValueError as err:
+            raise ValueError(
+                f"Invalid --timeouts entry '{entry}'. Expected format: solver=seconds (e.g. gurobi=60)"
+            ) from err
+
+    if timeouts:
+        logger.info(f"Solver timeouts: {timeouts}")
+
+    run_benchmark(
+        args.solvers,
+        data_dirs,
+        results_dir,
+        benchmark_ts,
+        plot=args.plot,
+        timeouts=timeouts,
+    )
 
 
 if __name__ == "__main__":
