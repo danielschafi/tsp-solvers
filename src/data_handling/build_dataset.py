@@ -11,7 +11,6 @@ import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List, Tuple
 
 import networkx as nx
 import numpy as np
@@ -47,6 +46,10 @@ def _setup_logging() -> None:
 DIST = 20000  # m radius around center
 
 
+def DeezNuts():
+    print("Deez Nuts!")
+
+
 def build_city_graph(city_name: str = "Zurich, Switzerland") -> nx.MultiDiGraph:
     """
     Build a graph for the specified city using OSMnx.
@@ -71,7 +74,7 @@ def build_city_graph(city_name: str = "Zurich, Switzerland") -> nx.MultiDiGraph:
     return G
 
 
-def sample_nodes(graph: nx.MultiDiGraph, num_samples: int = 10) -> List[int]:
+def sample_nodes(graph: nx.MultiDiGraph, num_samples: int = 10) -> list[int]:
     """
     Samples a specified number of nodes from the graph.
 
@@ -87,7 +90,7 @@ def sample_nodes(graph: nx.MultiDiGraph, num_samples: int = 10) -> List[int]:
     return random_sample
 
 
-def create_travel_time_matrix(graph: nx.MultiDiGraph, nodes: List[int]) -> np.ndarray:
+def create_travel_time_matrix(graph: nx.MultiDiGraph, nodes: list[int]) -> np.ndarray:
     """
     Creates a travel time matrix for the specified nodes in the graph.
 
@@ -122,8 +125,8 @@ def create_travel_time_matrix(graph: nx.MultiDiGraph, nodes: List[int]) -> np.nd
 
 def save_problem_instance(
     travel_time_matrix: np.ndarray,
-    node_coords: List[Tuple[float, float]],
-    sampled_nodes: List[int],
+    node_coords: list[tuple[float, float]],
+    sampled_nodes: list[int],
     save_path: Path,
     seed: int,
     city: str,
@@ -207,7 +210,7 @@ def start_problem_generation(
     output_dir: Path,
     repetitions: int,
     seed: int,
-    sizes: List[int],
+    sizes: list[int],
 ) -> None:
     """
     Starts the process of building TSP problem instances for the specified city and sample sizes.

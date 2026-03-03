@@ -40,7 +40,6 @@ name = "nvidia"
 url = "https://pypi.nvidia.com"
 explicit = false  # Allows uv to search here and PyPI simultaneously
 
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
