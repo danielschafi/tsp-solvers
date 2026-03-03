@@ -5,21 +5,43 @@ The generated problem instances are saved in TSPLib format for use in TSP solver
 
 import argparse
 import hashlib
+import logging
 import random
 import shutil
+import sys
+from datetime import datetime
 from pathlib import Path
 from typing import List, Tuple
 
 import networkx as nx
 import numpy as np
-
-# Fix for NumPy 2.0 compatibility with older NetworkX/OSMnx GraphML writers
-if not hasattr(np, "float_"):
-    np.float_ = np.float64
 import osmnx as ox
 from joblib import Parallel, delayed
 from tqdm import tqdm
 from tsplib_extension import TSPProblemWithOSMIDs
+
+# Fix for NumPy 2.0 compatibility with older NetworkX/OSMnx GraphML writers
+if not hasattr(np, "float_"):
+    np.float_ = np.float64
+
+logger = logging.getLogger(__name__)
+
+
+def _setup_logging() -> None:
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_dir = Path("logs")
+    log_dir.mkdir(parents=True, exist_ok=True)
+    fmt = "%(asctime)s [%(levelname)-8s] %(filename)s:%(lineno)d (%(funcName)s) — %(message)s"
+    formatter = logging.Formatter(fmt, datefmt="%Y-%m-%d %H:%M:%S")
+    console = logging.StreamHandler(sys.stdout)
+    console.setFormatter(formatter)
+    file_handler = logging.FileHandler(log_dir / f"{ts}.log")
+    file_handler.setFormatter(formatter)
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+    root.addHandler(console)
+    root.addHandler(file_handler)
+
 
 # Zurich is not big enough to yield a graph with 10'000 Nodes, so we take a bigger area around the city center
 DIST = 20000  # m radius around center
@@ -36,7 +58,7 @@ def build_city_graph(city_name: str = "Zurich, Switzerland") -> nx.MultiDiGraph:
     nx.MultiDiGraph: A graph representing the city's road network.
     """
 
-    print(f"Downloading area around {city_name} (radius: {DIST}m)...")
+    logger.info(f"Downloading area around {city_name} (radius: {DIST}m)...")
     G = ox.graph_from_address(city_name, dist=DIST, network_type="drive")
 
     # Keeps the graphs largest strongly connected component.
@@ -124,7 +146,6 @@ def save_problem_instance(
     problem.type = "TSP"
 
     # Save original IDs in the comment field for reconstruction/viz
-    ids_str = " ".join(map(str, sampled_nodes))
     problem.comment = (
         f"TSP instance with {len(node_coords)} nodes. City: {city}, Seed: {seed}"
     )
@@ -204,13 +225,15 @@ def start_problem_generation(
     graphml_file = output_dir / f"graph_{city_basename}_dist_{DIST}.graphml"
 
     if graphml_file.exists():
-        print(f"Loading existing city graph from {graphml_file}...")
+        logger.info(f"Loading existing city graph from {graphml_file}...")
         # We ensure it's loaded as MultiDiGraph for NetworkX compatibility
         graph = ox.load_graphml(graphml_file)
     else:
-        print(f"Graph not found. Building city graph for {city}...")
+        logger.info(f"Graph not found. Building city graph for {city}...")
         graph = build_city_graph(city)
-        print(f"Saving graph with {graph.number_of_nodes()} nodes to {graphml_file}...")
+        logger.info(
+            f"Saving graph with {graph.number_of_nodes()} nodes to {graphml_file}..."
+        )
         ox.save_graphml(graph, filepath=graphml_file)
 
     for size in sizes:
@@ -273,17 +296,18 @@ def main() -> None:
     )
 
     args = arg_parser.parse_args()
+    _setup_logging()
 
-    print(
-        f"""Building TSP dataset for {args.city} with {args.repetitions} repetitions per sample size and sample sizes: {args.sizes}. 
-            Saving to {args.out_dir}.
-            Generating with random seed: {args.seed}"""
+    logger.info(
+        f"Building TSP dataset for {args.city} with {args.repetitions} repetitions per sample size "
+        f"and sample sizes: {args.sizes}. Saving to {args.out_dir}. "
+        f"Generating with random seed: {args.seed}"
     )
 
     output_dir = Path(args.out_dir)
 
     if args.clean_build and output_dir.exists():
-        print(
+        logger.info(
             f"Cleaning output directory: {output_dir}, keeping downloaded graphs for speed..."
         )
         for size_dir in [d for d in output_dir.iterdir() if d.is_dir()]:

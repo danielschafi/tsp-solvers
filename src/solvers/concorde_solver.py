@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import re
 import subprocess
@@ -9,7 +10,10 @@ from pathlib import Path
 import numpy as np
 from dotenv import load_dotenv
 
+from src.logger import setup_logging
 from src.solvers.solver_base import TSPSolver
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -125,12 +129,12 @@ class ConcordeSolver(TSPSolver):
                 status = "Success: Exact solution found. gap is zero"
             elif result.returncode != 0:
                 status = "Process call to concorde returned with an error code"
-                print("!!! WARNING !!!")
-                print("SOLVER NOT SUCCESSFUL")
+                logger.warning(
+                    "SOLVER NOT SUCCESSFUL — concorde returned a non-zero exit code"
+                )
             elif len(self.result["tour"]) == 0:
                 status = "Failed to find tour"
-                print("!!! WARNING !!!")
-                print("SOLVER NOT SUCCESSFUL")
+                logger.warning("SOLVER NOT SUCCESSFUL — failed to find tour")
 
             self.result["solution_status"] = status
 
@@ -147,6 +151,7 @@ def main():
     )
 
     args = arg_parser.parse_args()
+    setup_logging()
     path = Path(args.path)
 
     # check if it is a file or a folder    if path.is_file():
@@ -159,7 +164,7 @@ def main():
             files,
         )
         for i, tsp_file in enumerate(files):
-            print(f"Solving {tsp_file} ({i + 1}/{len(files)})")
+            logger.info(f"Solving {tsp_file} ({i + 1}/{len(files)})")
             solver = ConcordeSolver()
             solver.run(str(tsp_file))
 

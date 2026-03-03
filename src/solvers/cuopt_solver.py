@@ -1,4 +1,5 @@
 import argparse
+import logging
 import time
 from pathlib import Path
 
@@ -7,7 +8,10 @@ import numpy as np
 from cuopt import routing
 from dotenv import load_dotenv
 
+from src.logger import setup_logging
 from src.solvers.solver_base import TSPSolver
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 np.random.seed(42)
@@ -29,7 +33,7 @@ class CuOptSolver(TSPSolver):
         We do not want to include that time in the benchmark
         """
 
-        print("Warming up GPU...")
+        logger.info("Warming up GPU...")
         cost_matrix = cudf.DataFrame(
             [[0, 2, 2, 2], [2, 0, 2, 2], [2, 2, 0, 2], [2, 2, 2, 0]], dtype="float32"
         )
@@ -42,7 +46,7 @@ class CuOptSolver(TSPSolver):
 
         ss = routing.SolverSettings()
         routing.Solve(dm, ss)
-        print("Finshed warmup")
+        logger.info("Finished warmup")
 
     def setup_problem(self, tsp_file: str):
         """
@@ -89,7 +93,6 @@ class CuOptSolver(TSPSolver):
             result = sol.get_route().to_arrow().to_pylist()
 
             tour = [point["location"] for point in result]
-            arrival_times = [point["arrival_stamp"] for point in result]
 
             self.result["solution_status"] = "success"
             self.result["tour"] = tour
@@ -103,8 +106,9 @@ class CuOptSolver(TSPSolver):
             self.result["solution_status"] = "empty"
 
         if sol.get_status() in [1, 2, 3]:
-            print("!!! WARNING !!!")
-            print("SOLVER NOT SUCCESSFUL")
+            logger.warning(
+                f"SOLVER NOT SUCCESSFUL — status: {self.result['solution_status']}"
+            )
 
 
 def main():
@@ -119,6 +123,7 @@ def main():
     )
 
     args = arg_parser.parse_args()
+    setup_logging()
     path = Path(args.path)
 
     # check if it is a file or a folder    if path.is_file():
@@ -129,7 +134,7 @@ def main():
         files = list(path.rglob("*.tsp"))
         files = sorted(files)
         for i, tsp_file in enumerate(files):
-            print(f"Solving {tsp_file} ({i + 1}/{len(files)})")
+            logger.info(f"Solving {tsp_file} ({i + 1}/{len(files)})")
             solver = CuOptSolver()
             solver.run(str(tsp_file))
 

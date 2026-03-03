@@ -28,7 +28,10 @@ import gurobipy as gp
 import numpy as np
 from gurobipy import GRB
 
+from src.logger import setup_logging
 from src.solvers.solver_base import TSPSolver
+
+logger = logging.getLogger(__name__)
 
 np.random.seed(42)
 
@@ -139,7 +142,7 @@ class GurobiSolver(TSPSolver):
                     }
                 )
 
-            print(
+            logger.info(
                 f"Solve complete. Status: {status_msg}, Gap: {self.result['additional_metadata'].get('gap', 'N/A')}"
             )
             return tour, (m.ObjVal if has_solution else None)
@@ -192,7 +195,7 @@ class TSPCallback:
             try:
                 self.eliminate_subtours(model)
             except Exception:
-                logging.exception("Exception occurred in MIPSOL callback")
+                logger.exception("Exception occurred in MIPSOL callback")
                 model.terminate()
 
     def eliminate_subtours(self, model):
@@ -222,6 +225,7 @@ def main():
     )
 
     args = arg_parser.parse_args()
+    setup_logging()
     path = Path(args.path)
 
     # check if it is a file or a folder    if path.is_file():
@@ -234,7 +238,7 @@ def main():
             files,
         )
         for i, tsp_file in enumerate(files):
-            print(f"Solving {tsp_file} ({i + 1}/{len(files)})")
+            logger.info(f"Solving {tsp_file} ({i + 1}/{len(files)})")
             solver = GurobiSolver()
             solver.run(str(tsp_file))
 

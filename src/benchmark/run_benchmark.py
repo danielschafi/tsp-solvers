@@ -3,6 +3,7 @@ Runs a solver/list of solvers on a number of TSP Problems and computes metrics.
 """
 
 import argparse
+import logging
 import os
 import shutil
 from datetime import datetime
@@ -11,9 +12,12 @@ from typing import List
 
 from dotenv import load_dotenv
 
+from src.logger import setup_logging
 from src.solvers.concorde_solver import ConcordeSolver
 from src.solvers.gurobi_solver import GurobiSolver
 from src.solvers.solver_base import TSPSolver
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -26,6 +30,7 @@ def get_new_solver(solver_name: str, results_dir: str = None) -> TSPSolver:
     elif solver_name.lower() == "concorde":
         return ConcordeSolver(results_dir=results_dir)
     elif solver_name.lower() == "cuopt":
+        # Import only here to avoid having to run this as a gpu job every time.
         from src.solvers.cuopt_solver import CuOptSolver
 
         return CuOptSolver(results_dir=results_dir)
@@ -33,7 +38,12 @@ def get_new_solver(solver_name: str, results_dir: str = None) -> TSPSolver:
         raise ValueError(f"Unknown solver: {solver_name}")
 
 
-def run_benchmark(solvers: List[str], data_dirs: List[Path], results_dir: Path) -> None:
+def run_benchmark(
+    solvers: List[str],
+    data_dirs: List[Path],
+    results_dir: Path,
+    benchmark_ts: str = None,
+) -> None:
     """
     Runs the specified solvers on all the instances of the specified problem sizes and saves the results
 
@@ -41,16 +51,18 @@ def run_benchmark(solvers: List[str], data_dirs: List[Path], results_dir: Path) 
         solvers (List[str]): List of solver names to run in the benchmark.
         data_dirs (List[Path]): List of directories containing the .tsp files to run the benchmark on. Each directory should correspond to a problem size.
         results_dir (Path): Base directory to save the results.
+        benchmark_ts (str): Timestamp string for this run (used in results directory naming).
     """
 
-    benchmark_ts = str(datetime.now().strftime("%Y%m%d_%H%M%S"))
+    if benchmark_ts is None:
+        benchmark_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     for data_dir in data_dirs:
-        print(f"Running benchmark on {data_dir}, at time {benchmark_ts}...")
+        logger.info(f"Running benchmark on {data_dir}, at time {benchmark_ts}...")
         files = list(data_dir.rglob("*.tsp"))
         files = sorted(files)
         for i, tsp_file in enumerate(files):
-            print(f"Solving {tsp_file} ({i + 1}/{len(files)})")
+            logger.info(f"Solving {tsp_file} ({i + 1}/{len(files)})")
             for solver_name in solvers:
                 results_dir_for_run = Path(results_dir) / benchmark_ts
 
@@ -67,6 +79,9 @@ def create_aggregated_results(results_dir: Path) -> None:
 
 
 def main():
+    # E.g. uv run -m src.benchmark.run_benchmark -h --solvers gurobi concorde cuopt --sizes 10 --results_dir results
+    # srun --gpus=a100:1 --time=00:30:00 -p students --pty uv run -m src.benchmark.run_benchmark --solvers gurobi concorde cuopt --sizes 10 25 50 100 200 500 1000 2000 5000 10000 --results_dir results --clean_build
+
     arg_parser = argparse.ArgumentParser(
         description="Run a benchmark of TSP solvers on a set of .tsp files."
     )
@@ -109,9 +124,14 @@ def main():
 
     args = arg_parser.parse_args()
 
-    print(f"""Running benchmark on problem sizes: {args.sizes}. 
-        Saving results to {args.results_dir}.
-        Clean build: {args.clean_build}""")
+    benchmark_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    setup_logging(log_dir=Path("logs"), run_ts=benchmark_ts)
+
+    logger.info(
+        f"Running benchmark on problem sizes: {args.sizes}. "
+        f"Saving results to {args.results_dir}. "
+        f"Clean build: {args.clean_build}"
+    )
 
     sizes = args.sizes
     data_dirs: List[Path] = []
@@ -134,7 +154,7 @@ def main():
             "Invalid solver name. Must be one of 'gurobi', 'concorde', 'cuopt'."
         )
 
-    run_benchmark(args.solvers, data_dirs, results_dir)
+    run_benchmark(args.solvers, data_dirs, results_dir, benchmark_ts)
 
 
 if __name__ == "__main__":

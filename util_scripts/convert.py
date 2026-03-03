@@ -60,7 +60,5 @@ def convert_tsp_format(folder_path, output_folder=None):
 
 # Usage
 # Set output_folder to a new path if you want to keep backups!
-#
-#
-for n in [10, 100]:  # [10,100, 1000, 10000, 200, 2000, 25, 50, 500, 5000]:
+for n in [10, 100, 10, 100, 1000, 10000, 200, 2000, 25, 50, 500, 5000]:
     convert_tsp_format(f"/home/schafhdaniel@edu.local/tsp-solvers/data/tsp_dataset/{n}")

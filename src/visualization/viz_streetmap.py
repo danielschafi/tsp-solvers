@@ -1,6 +1,6 @@
 import argparse
 import json
-import os
+import logging
 from functools import lru_cache
 from pathlib import Path
 
@@ -22,8 +22,7 @@ load_dotenv()
 
 np.random.seed(42)
 
-
-RESULTS_DIR = Path(os.getenv("RESULTS_DIR", None))
+logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=8)
@@ -186,10 +185,10 @@ def main():
     results_json = Path(args.results_json)
 
     if not tsp_file.exists():
-        print(f"TSP file {tsp_file} does not exist.")
+        logger.error(f"TSP file {tsp_file} does not exist.")
         return
     if not results_json.exists():
-        print(f"Results json file {results_json} does not exist.")
+        logger.error(f"Results json file {results_json} does not exist.")
         return
 
     with open(results_json, "r") as f:

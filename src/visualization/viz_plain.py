@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -7,6 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+logger = logging.getLogger(__name__)
 
 RESULTS_DIR = Path(os.getenv("RESULTS_DIR", None))
 
@@ -20,7 +22,7 @@ def plot_solution_plain(result: dict, nodes: list, results_dir: Path):
     nodes (list): list of nodes in the graph that the solution was computed on.
     """
     if not result["tour"] or nodes is None:
-        print("No tour or nodes available to plot.")
+        logger.warning("No tour or nodes available to plot.")
         return
 
     # --- Match street map styling ---

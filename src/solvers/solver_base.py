@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -12,6 +13,8 @@ from dotenv import load_dotenv
 from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
 from src.visualization.viz_plain import plot_solution_plain
 from src.visualization.viz_streetmap import plot_solution_streetmap
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -105,33 +108,32 @@ class TSPSolver(ABC):
 
         self.load_tsp_file(tsp_file)
 
-        print("\n")
-        print("=" * 100)
-        print(f"Solver: {self.solver}")
-        print(f"Problem: {self.result['problem']}")
-        print(f"Comment: {self.result['comment']}")
-        print(f"Problem Size: {self.result['problem_size']}")
-        print("=" * 100)
+        logger.info("=" * 100)
+        logger.info(f"Solver: {self.solver}")
+        logger.info(f"Problem: {self.result['problem']}")
+        logger.info(f"Comment: {self.result['comment']}")
+        logger.info(f"Problem Size: {self.result['problem_size']}")
+        logger.info("=" * 100)
 
-        print("Setting up problem")
+        logger.info("Setting up problem")
         self.setup_problem(tsp_file)
 
-        print("Start solving TSP")
+        logger.info("Start solving TSP")
         self.solve_tsp()
 
-        print("Printing tour")
+        logger.info("Printing tour")
         self.print_tour(self.result["tour"])
 
-        print("Printing results")
+        logger.info("Printing results")
         self.print_results()
 
-        print("Saving results")
+        logger.info("Saving results")
         self.save_results()
 
-        print("Making plot of solution")
+        logger.info("Making plot of solution")
         self.plot_solution()
 
-        print("Done!")
+        logger.info("Done!")
 
     def calculate_tour_cost(self, tour):
         """
@@ -150,28 +152,31 @@ class TSPSolver(ABC):
         return float(total_cost)
 
     def print_tour(self, tour: List[int]):
-        print("Tour:")
         route_str = str(tour[0])
         for i, node in enumerate(tour[1:]):
             if (i + 1) % 10 == 0:
                 route_str += "\n "
             route_str += " -> " + str(node)
-        print(route_str)
+        logger.info("Tour:\n" + route_str)
 
     def print_results(self):
         """Prints the solution found by the sover on the terminal"""
-        print(json.dumps(self.result, indent=4))
+        logger.info("Results:\n" + json.dumps(self.result, indent=4))
 
     def save_results(self):
         """Saves the results json to a file"""
-        problem_dir = self.RESULTS_DIR / self.result["solver"] / f"n{self.result['problem_size']}"
+        problem_dir = (
+            self.RESULTS_DIR / self.result["solver"] / f"n{self.result['problem_size']}"
+        )
         problem_dir.mkdir(parents=True, exist_ok=True)
         with open(problem_dir / f"{self.result['problem']}.json", "w") as f:
             f.write(json.dumps(self.result, indent=4))
 
     def plot_solution(self):
         """Plots the solution plain and on streetmap"""
-        problem_dir = self.RESULTS_DIR / self.result["solver"] / f"n{self.result['problem_size']}"
+        problem_dir = (
+            self.RESULTS_DIR / self.result["solver"] / f"n{self.result['problem_size']}"
+        )
         problem_dir.mkdir(parents=True, exist_ok=True)
         plot_solution_plain(self.result, self.nodes, problem_dir)
         plot_solution_streetmap(self.result, self.tsp_file, problem_dir)
