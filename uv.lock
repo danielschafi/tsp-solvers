@@ -1292,7 +1292,7 @@ dev = [
     { name = "pre-commit", specifier = ">=3.0" },
     { name = "pyright", specifier = ">=1.1" },
     { name = "pytest", specifier = ">=8.0" },
-    { name = "ruff", specifier = ">=0.9" },
+    { name = "ruff", specifier = "==0.15.4" },
 ]
 
 [[package]]
