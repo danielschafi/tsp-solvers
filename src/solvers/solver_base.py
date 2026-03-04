@@ -29,7 +29,7 @@ class TSPSolver(ABC):
 
     all_results: dict = {}
 
-    def __init__(self, solver: str, results_dir=None, timeout: float = None):
+    def __init__(self, solver: str, results_dir=None, timeout: float | None = None):
         self.solver = solver
         self.timeout = timeout
         self.result: dict = {
@@ -49,8 +49,8 @@ class TSPSolver(ABC):
         self._start_time = None
         self._end_time = None
 
-        self.nodes: list = []
-        self.edges: np.ndarray = None
+        self.nodes: list | np.ndarray = []
+        self.edges: np.ndarray | None = None
 
         if results_dir is not None:
             self.RESULTS_DIR = Path(results_dir)
@@ -146,6 +146,7 @@ class TSPSolver(ABC):
         Calculate tour cost by summing up edge weights along the tour
         Assumes tour is a list of node indices: [0, 5, 2, 1]
         """
+        assert self.edges is not None
         total_cost = 0
         n = len(tour)
         for k in range(n):
@@ -185,4 +186,4 @@ class TSPSolver(ABC):
         )
         problem_dir.mkdir(parents=True, exist_ok=True)
         plot_solution_plain(self.result, self.nodes, problem_dir)
-        plot_solution_streetmap(self.result, self.tsp_file, problem_dir)
+        plot_solution_streetmap(self.result, str(self.tsp_file), problem_dir)

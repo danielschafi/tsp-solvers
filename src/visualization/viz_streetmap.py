@@ -17,7 +17,7 @@ from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
 from src.logger import setup_logging
 
 if not hasattr(np, "float_"):
-    np.float_ = np.float64
+    np.float_ = np.float64  # type: ignore[attr-defined]
 
 from dotenv import load_dotenv
 
@@ -156,7 +156,7 @@ def plot_solution_streetmap(result: dict, tsp_problem_file: str, results_dir: Pa
     fig.patch.set_facecolor(BACKGROUND)
 
     # osmnx sets axes to fill the full figure — shrink it down to leave title room
-    ax.set_position([0, 0, 1, 0.88])
+    ax.set_position((0, 0, 1, 0.88))
 
     plt.savefig(
         results_dir / f"{result['problem']}_streetmap.png",

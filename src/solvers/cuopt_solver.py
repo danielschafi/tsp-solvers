@@ -22,7 +22,7 @@ class CuOptSolver(TSPSolver):
     Solver for TSP using cuOpt
     """
 
-    def __init__(self, results_dir=None, timeout: float = None):
+    def __init__(self, results_dir=None, timeout: float | None = None):
         super().__init__(solver="cuOpt", results_dir=results_dir, timeout=timeout)
         self._warmup()
 

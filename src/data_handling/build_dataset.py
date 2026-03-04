@@ -21,7 +21,7 @@ from tsplib_extension import TSPProblemWithOSMIDs
 
 # Fix for NumPy 2.0 compatibility with older NetworkX/OSMnx GraphML writers
 if not hasattr(np, "float_"):
-    np.float_ = np.float64
+    np.float_ = np.float64  # type: ignore[attr-defined]
 
 logger = logging.getLogger(__name__)
 
@@ -141,20 +141,20 @@ def save_problem_instance(
     """
 
     problem = TSPProblemWithOSMIDs()
-    problem.name = save_path.stem
-    problem.type = "TSP"
+    problem.name = save_path.stem  # type: ignore[assignment]
+    problem.type = "TSP"  # type: ignore[assignment]
 
     # Save original IDs in the comment field for reconstruction/viz
-    problem.comment = (
+    problem.comment = (  # type: ignore[assignment]
         f"TSP instance with {len(node_coords)} nodes. City: {city}, Seed: {seed}"
     )
-    problem.osm_ids = sampled_nodes
-    problem.graphml_file = str(graphml_file)
-    problem.dimension = len(node_coords)
-    problem.edge_weight_type = "EXPLICIT"
-    problem.edge_weight_format = "FULL_MATRIX"
+    problem.osm_ids = sampled_nodes  # type: ignore[assignment]
+    problem.graphml_file = str(graphml_file)  # type: ignore[assignment]
+    problem.dimension = len(node_coords)  # type: ignore[assignment]
+    problem.edge_weight_type = "EXPLICIT"  # type: ignore[assignment]
+    problem.edge_weight_format = "FULL_MATRIX"  # type: ignore[assignment]
     problem.edge_weights = travel_time_matrix.tolist()
-    problem.node_locations = node_coords
+    problem.node_locations = node_coords  # type: ignore[assignment]
     problem.save(save_path)
 
 

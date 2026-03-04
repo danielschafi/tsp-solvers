@@ -18,7 +18,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-def plot_solution_plain(result: dict, nodes: list, results_dir: Path):
+def plot_solution_plain(result: dict, nodes: list | np.ndarray, results_dir: Path):
     """
     Plots the solution as a plain graph with straight edges found by the solver and saves it.
     Note: Length of an edge does not represent the cost from node to node (the travel time)

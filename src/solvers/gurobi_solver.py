@@ -41,7 +41,7 @@ class GurobiSolver(TSPSolver):
     Solver for TSP using gurobi.
     """
 
-    def __init__(self, results_dir=None, timeout: float = None):
+    def __init__(self, results_dir=None, timeout: float | None = None):
         super().__init__(solver="gurobi", results_dir=results_dir, timeout=timeout)
 
     def setup_problem(self, tsp_file: str):
@@ -53,7 +53,7 @@ class GurobiSolver(TSPSolver):
         self.edges = np.array(self.problem.edge_weights)
         points = np.array(self.problem.node_locations)
         # Gurobi
-        self.node_idx_list = list(range(self.problem.dimension))
+        self.node_idx_list = list(range(self.problem.dimension))  # type: ignore[arg-type]
 
         # Gurobi requires a dictionary instead
         # This is for the symmetric case

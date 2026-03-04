@@ -24,7 +24,7 @@ BENCHMARK_DATA_DIR = os.getenv("BENCHMARK_DATA_DIR", "data/tsp_dataset")
 
 
 def get_new_solver(
-    solver_name: str, results_dir: str = None, timeout: float = None
+    solver_name: str, results_dir: str | None = None, timeout: float | None = None
 ) -> TSPSolver:
     if solver_name.lower() == "gurobi":
         return GurobiSolver(results_dir=results_dir, timeout=timeout)
@@ -43,9 +43,9 @@ def run_benchmark(
     solvers: list[str],
     data_dirs: list[Path],
     results_dir: Path,
-    benchmark_ts: str = None,
+    benchmark_ts: str | None = None,
     plot: bool = False,
-    timeouts: dict = None,
+    timeouts: dict | None = None,
 ) -> None:
     """
     Runs the specified solvers on all the instances of the specified problem sizes and saves the results.

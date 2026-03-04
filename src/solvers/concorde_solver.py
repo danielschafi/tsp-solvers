@@ -25,13 +25,14 @@ class ConcordeSolver(TSPSolver):
     Solver for TSP using concorde
     """
 
-    def __init__(self, results_dir=None, timeout: float = None):
+    def __init__(self, results_dir=None, timeout: float | None = None):
         super().__init__(solver="concorde", results_dir=results_dir, timeout=timeout)
-        self.CONCORDE_BIN = os.getenv("CONCORDE_BIN", None)
-        if not self.CONCORDE_BIN:
+        concorde_bin = os.getenv("CONCORDE_BIN")
+        if not concorde_bin:
             raise ValueError(
                 "CONCORDE_BIN needs to be specified in the .env file to use the ConcordeSolver "
             )
+        self.CONCORDE_BIN: str = concorde_bin
 
     def setup_problem(self, tsp_file: str):
         """
@@ -42,7 +43,7 @@ class ConcordeSolver(TSPSolver):
         self.edges = np.array(self.problem.edge_weights)
         self.nodes = np.array(self.problem.node_locations)
 
-    def extract_tour_from_sol_file(self, tempdir: Path) -> None:
+    def extract_tour_from_sol_file(self, tempdir: str | Path) -> list[int]:
         # Get the info we need.
         tsp_solution = Path(tempdir) / f"{Path(self.tsp_file).stem}.sol"
         text_sol = tsp_solution.read_text()
@@ -59,7 +60,7 @@ class ConcordeSolver(TSPSolver):
 
         return split_text_cleaned
 
-    def parse_concorde_output(self, process_result: str):
+    def parse_concorde_output(self, process_result: subprocess.CompletedProcess[str]):
         """Extract the info we need from concordes output string"""
         stdout = process_result.stdout
 
