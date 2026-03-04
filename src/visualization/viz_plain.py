@@ -17,8 +17,6 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-RESULTS_DIR = Path(os.getenv("RESULTS_DIR", None))
-
 
 def plot_solution_plain(result: dict, nodes: list, results_dir: Path):
     """
@@ -138,8 +136,8 @@ def main():
     arg_parser.add_argument(
         "--workers",
         type=int,
-        default=1,
-        help="Number of parallel worker processes (default: 1).",
+        default=len(os.sched_getaffinity(0)),
+        help="Number of parallel worker processes (default: os.cpu_count()).",
     )
 
     args = arg_parser.parse_args()

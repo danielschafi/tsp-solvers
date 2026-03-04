@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os
 from functools import lru_cache
 from multiprocessing import Pool
 from pathlib import Path
@@ -186,6 +187,7 @@ def _plot_one_streetmap(json_path: Path) -> None:
 
 
 def main():
+    #  uv run -m src.visualization.viz_streetmap --path /home/schafhdaniel@edu.local/tsp-solvers/results/20260304_002601/concorde --workers 16
     arg_parser = argparse.ArgumentParser(
         description=(
             "Plot TSP streetmap solution(s) from result JSON file(s). "
@@ -203,8 +205,8 @@ def main():
     arg_parser.add_argument(
         "--workers",
         type=int,
-        default=1,
-        help="Number of parallel worker processes (default: 1). Each worker caches the graph independently.",
+        default=len(os.sched_getaffinity(0)),
+        help="Number of parallel worker processes (default: os.cpu_count()). Each worker caches the graph independently.",
     )
 
     args = arg_parser.parse_args()
