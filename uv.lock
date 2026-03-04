@@ -1241,7 +1241,7 @@ wheels = [
 [[package]]
 name = "tsp-solvers"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "argparse", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "cuopt-server-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
