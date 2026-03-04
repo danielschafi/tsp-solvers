@@ -18,6 +18,12 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
+      
+      - name: activate venv
+        run: source .venv/bin/activate
+      
+      - name: add venv to path
+        run: echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
         run: uv sync --dev
