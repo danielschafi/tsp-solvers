@@ -33,6 +33,7 @@ jobs:
 
       - name: Pytest — run tests
         run: uv run pytest
+        if: hashFiles('tests/**') != ''
 
   test:
     runs-on: ubuntu-latest
