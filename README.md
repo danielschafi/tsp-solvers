@@ -92,3 +92,6 @@ TODO: Provide some cmd line args: like gurobi_solver --tsp-file zurich_10.tsp --
 
 Visualizations can either be done on street maps or plain.
 
+```bash
+    uv run -m src.visualization.viz_streetmap --path results/20260304_002601/concorde
+```
