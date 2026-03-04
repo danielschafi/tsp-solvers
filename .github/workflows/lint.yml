@@ -31,8 +31,8 @@ jobs:
       # - name: Pyright — type check
       #   run: uv run pyright
 
-      - name: Pytest — run tests
-        run: uv run pytest
+      # - name: Pytest — run tests
+      #   run: uv run pytest
 
   test:
     runs-on: ubuntu-latest
