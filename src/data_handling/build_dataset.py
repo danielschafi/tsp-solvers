@@ -23,7 +23,7 @@ from tsplib_extension import TSPProblemWithOSMIDs
 if not hasattr(np, "float_"):
     np.float_ = np.float64  # type: ignore[attr-defined]
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("src.data_handling.build_dataset")
 
 
 def _setup_logging() -> None:

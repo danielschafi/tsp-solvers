@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from src.logger import setup_logging
 from src.solvers.solver_base import TSPSolver
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("src.solvers.cuopt_solver")
 
 load_dotenv()
 np.random.seed(42)

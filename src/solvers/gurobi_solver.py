@@ -31,7 +31,7 @@ from gurobipy import GRB
 from src.logger import setup_logging
 from src.solvers.solver_base import TSPSolver
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("src.solvers.gurobi_solver")
 
 np.random.seed(42)
 

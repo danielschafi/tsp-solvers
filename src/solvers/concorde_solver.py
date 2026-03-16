@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from src.logger import setup_logging
 from src.solvers.solver_base import TSPSolver
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("src.solvers.concorde_solver")
 
 load_dotenv()
 
@@ -27,12 +27,11 @@ class ConcordeSolver(TSPSolver):
 
     def __init__(self, results_dir=None, timeout: float | None = None):
         super().__init__(solver="concorde", results_dir=results_dir, timeout=timeout)
-        concorde_bin = os.getenv("CONCORDE_BIN")
-        if not concorde_bin:
+        self.CONCORDE_BIN = Path(os.getcwd()) / "bin/concorde/concorde"
+        if not self.CONCORDE_BIN.exists():
             raise ValueError(
-                "CONCORDE_BIN needs to be specified in the .env file to use the ConcordeSolver "
+                f"The Concorde binary is not found at {self.CONCORDE_BIN}, download it according to the instructions in the readme.md to use the concorde solver"
             )
-        self.CONCORDE_BIN: str = concorde_bin
 
     def setup_problem(self, tsp_file: str):
         """
@@ -124,6 +123,7 @@ class ConcordeSolver(TSPSolver):
             tour = self.extract_tour_from_sol_file(tempdir)
             self.result["tour"] = tour
 
+            logger.info(result)
             structured_output = self.parse_concorde_output(result)
 
             self.result["cost"] = self.calculate_tour_cost(tour)

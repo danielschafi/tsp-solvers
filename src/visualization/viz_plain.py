@@ -15,7 +15,7 @@ from src.logger import setup_logging
 
 load_dotenv()
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("src.visualization.viz_plain")
 
 
 def plot_solution_plain(result: dict, nodes: list | np.ndarray, results_dir: Path):

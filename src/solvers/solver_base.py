@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
@@ -8,7 +7,7 @@ from pathlib import Path
 import numpy as np
 from dotenv import load_dotenv
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("src.solvers.solver_base")
 
 load_dotenv()
 
@@ -51,7 +50,7 @@ class TSPSolver(ABC):
         if results_dir is not None:
             self.RESULTS_DIR = Path(results_dir)
         else:
-            self.RESULTS_DIR = Path(os.getenv("RESULTS_DIR", "results"))
+            self.RESULTS_DIR = Path("results")
 
         self.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 

@@ -16,11 +16,11 @@ from src.solvers.concorde_solver import ConcordeSolver
 from src.solvers.gurobi_solver import GurobiSolver
 from src.solvers.solver_base import TSPSolver
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("src.benchmark.run_benchmark")
 
 load_dotenv()
 
-BENCHMARK_DATA_DIR = os.getenv("BENCHMARK_DATA_DIR", "data/tsp_dataset")
+BENCHMARK_DATA_DIR = Path(os.getcwd()) / "data/tsp_dataset"
 
 
 def get_new_solver(

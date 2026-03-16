@@ -3,7 +3,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-_LOG_FORMAT = "%(asctime)s [%(levelname)-8s] %(filename)s:%(lineno)d (%(funcName)s) — %(message)s"
+_LOG_FORMAT = (
+    "%(asctime)s [%(levelname)-8s] %(filename)s:%(lineno)d (%(funcName)s) — %(message)s"
+)
 _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
@@ -30,13 +32,13 @@ def setup_logging(log_dir: Path = Path("logs"), run_ts: str | None = None) -> No
     console_handler.setFormatter(formatter)
 
     file_handler = logging.FileHandler(log_dir / f"{run_ts}.log")
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
 
     # Attach to the "src" package logger so all src.* loggers are captured
     # without picking up noise from third-party libraries.
     pkg_logger = logging.getLogger("src")
-    pkg_logger.setLevel(logging.DEBUG)
+    pkg_logger.setLevel(logging.INFO)
     pkg_logger.addHandler(console_handler)
     pkg_logger.addHandler(file_handler)
     pkg_logger.propagate = False

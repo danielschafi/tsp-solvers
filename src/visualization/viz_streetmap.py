@@ -25,7 +25,7 @@ load_dotenv()
 
 np.random.seed(42)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("src.visualization.viz_streetmap")
 
 
 @lru_cache(maxsize=8)
