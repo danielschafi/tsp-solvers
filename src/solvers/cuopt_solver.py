@@ -22,9 +22,13 @@ class CuOptSolver(TSPSolver):
     Solver for TSP using cuOpt
     """
 
+    _gpu_warmed_up: bool = False
+
     def __init__(self, results_dir=None, timeout: float | None = None):
         super().__init__(solver="cuOpt", results_dir=results_dir, timeout=timeout)
-        self._warmup()
+        if not CuOptSolver._gpu_warmed_up:
+            self._warmup()
+            CuOptSolver._gpu_warmed_up = True
 
     def _warmup(self):
         """
@@ -34,13 +38,17 @@ class CuOptSolver(TSPSolver):
         """
 
         logger.info("Warming up GPU...")
-        cost_matrix = cudf.DataFrame(
-            [[0, 2, 2, 2], [2, 0, 2, 2], [2, 2, 0, 2], [2, 2, 2, 0]], dtype="float32"
-        )
+        n = 20
+        rng = np.random.default_rng(42)
+        a = rng.integers(1, 10, size=(n, n)).astype(np.float32)
+        sym = a @ a.T
+        np.fill_diagonal(sym, 0)
+
+        cost_matrix = cudf.DataFrame(sym)
 
         # Create data model and settings
         n_vehicles = 1
-        dm = routing.DataModel(cost_matrix.shape[0], n_vehicles)
+        dm = routing.DataModel(n, n_vehicles)
         dm.add_cost_matrix(cost_matrix)
         dm.add_transit_time_matrix(cost_matrix.copy(deep=True))
 
@@ -84,11 +92,24 @@ class CuOptSolver(TSPSolver):
             self.timeout if self.timeout is not None else self.problem.dimension
         )
         ss.set_time_limit(time_limit)  # seconds
+        # ss.set_solution_scope(routing.SolutionScope.FEASIBLE)
 
         # Solve the routing problem
         self._start_time = time.perf_counter()
         sol = routing.Solve(self.data_model, ss)
         self._end_time = time.perf_counter()
+
+        if hasattr(sol, "get_status"):
+            logger.info(f"Status : {sol.get_status()}")
+        logger.info(f"Time   : {self._end_time - self._start_time}s")
+
+        if hasattr(sol, "get_route"):
+            logger.info(f"Tour length : {len(sol.get_route())}")
+        if hasattr(sol, "get_cost"):
+            logger.info(f"Tour cost : {sol.get_cost()}")
+        if hasattr(sol, "get_vehicle_count"):
+            logger.info(f"Vehicle count : {sol.get_vehicle_count()}")
+
         self.result["time_to_solve"] = self._end_time - self._start_time
 
         # Display results
@@ -137,11 +158,10 @@ def main():
         solver = CuOptSolver()
         solver.run(str(path))
     elif path.is_dir():
-        files = list(path.rglob("*.tsp"))
-        files = sorted(files)
+        files = sorted(path.rglob("*.tsp"))
+        solver = CuOptSolver()
         for i, tsp_file in enumerate(files):
             logger.info(f"Solving {tsp_file} ({i + 1}/{len(files)})")
-            solver = CuOptSolver()
             solver.run(str(tsp_file))
 
 

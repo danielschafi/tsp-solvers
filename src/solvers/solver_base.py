@@ -6,12 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-import tsplib95
 from dotenv import load_dotenv
-
-from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
-from src.visualization.viz_plain import plot_solution_plain
-from src.visualization.viz_streetmap import plot_solution_streetmap
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +71,10 @@ class TSPSolver(ABC):
         """Loads the tsp file and saves its metadata"""
         if not Path(tsp_file).exists():
             raise FileNotFoundError(f"tsp_file: {tsp_file} does not exist.")
+
+        import tsplib95
+
+        from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
 
         self.tsp_file = Path(tsp_file)
         self.problem = tsplib95.load(self.tsp_file, problem_class=TSPProblemWithOSMIDs)
@@ -185,5 +184,8 @@ class TSPSolver(ABC):
             self.RESULTS_DIR / self.result["solver"] / f"n{self.result['problem_size']}"
         )
         problem_dir.mkdir(parents=True, exist_ok=True)
+        from src.visualization.viz_plain import plot_solution_plain
+        from src.visualization.viz_streetmap import plot_solution_streetmap
+
         plot_solution_plain(self.result, self.nodes, problem_dir)
         plot_solution_streetmap(self.result, str(self.tsp_file), problem_dir)

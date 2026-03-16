@@ -124,7 +124,7 @@ def create_aggregated_results(results_dir: Path) -> None:
 def main():
     # E.g. uv run -m src.benchmark.run_benchmark -h --solvers gurobi concorde cuopt --sizes 10 --results_dir results
     # srun --gpus=a100:1 --time=00:30:00 -p students --pty uv run -m src.benchmark.run_benchmark --solvers gurobi concorde cuopt --sizes 10 25 50 100 200 500 1000 2000 5000 10000 --results_dir results --clean_build
-
+    # srun --gpus=a100:1 --time=06:00:00 -p students --pty uv run -m src.benchmark.run_benchmark --solvers  cuopt --sizes 10 25 50 100 200 500 1000 2000 5000 10000 --results_dir results
     arg_parser = argparse.ArgumentParser(
         description="Run a benchmark of TSP solvers on a set of .tsp files."
     )
