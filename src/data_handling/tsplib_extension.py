@@ -10,6 +10,7 @@ class OSMIDField(fields.Field):
 
     def parse(self, text: str) -> list[int]:
         # Converts the data in the file (space separated list) to a list of ints
+        text = text.strip().removesuffix("EOF")
         return [int(x) for x in text.strip().split()]
 
     def render(self, value: list[int]) -> str:
@@ -31,6 +32,8 @@ class NodeLocations(fields.Field):
         super().__init__(keyword)
 
     def parse(self, text: str) -> list[tuple]:
+        # If NODE_LOCATION is the last section then it tries to read the EOF token, which causes an exception. Why even put EOF there...
+        text = text.strip().removesuffix("EOF")
         # Splits the text into a flat list of floats, then groups them into pairs
         numbers = [float(x) for x in text.split()]
         return list(zip(numbers[0::2], numbers[1::2], strict=False))
@@ -49,10 +52,8 @@ class SanitizePathField(fields.StringField):
     def parse(self, text: str) -> str:
         # .strip() handles \n, \r, and spaces.
         # We also filter out literal 'EOF' if it's present in the text block.
-        cleaned = text.strip()
-        if cleaned.endswith("EOF"):
-            cleaned = cleaned[:-3].strip()
-        return cleaned
+        text = text.strip().removesuffix("EOF")
+        return text
 
 
 class TSPProblemWithOSMIDs(StandardProblem):

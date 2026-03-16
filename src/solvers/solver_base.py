@@ -40,6 +40,7 @@ class TSPSolver(ABC):
             "solution_status": None,
             "timed_out_without_tour": False,
             "additional_metadata": {},
+            "valid_solution": None,
         }
         self._start_time = None
         self._end_time = None
@@ -128,6 +129,9 @@ class TSPSolver(ABC):
         else:
             logger.warning("No tour computed — skipping tour print")
 
+        logger.info("Checking validity of tour")
+        self.check_solution_validity(self.result["tour"])
+
         logger.info("Printing results")
         self.print_results()
 
@@ -139,6 +143,39 @@ class TSPSolver(ABC):
             self.plot_solution()
 
         logger.info("Done!")
+
+    def check_solution_validity(self, tour: list[int] | None):
+        """Checks if the tour is valid.
+        - Each node is visited exactly once
+        - Tour starts and ends at the same node
+        - All nodes in the problem are visited
+
+        tour format is: [1,5,2,3,1]
+        """
+
+        if tour is None:
+            logger.warning("Tour is empty, is invalid.")
+            self.result["valid_solution"] = False
+            return
+
+        if len(set(tour)) != len(tour) - 1:
+            logger.warning("Some nodes visited more than once.")
+            self.result["valid_solution"] = False
+            return
+
+        # -1 because we include the return to the start in the tour
+        if self.result["problem_size"] != len(tour) - 1:
+            logger.warning("Not all nodes in problem were visited.")
+            self.result["valid_solution"] = False
+            return
+
+        if tour[0] != tour[-1]:
+            logger.warning("Tour is not finished, tour[0] must equal tour[-1]")
+            self.result["valid_solution"] = False
+            return
+
+        logger.info("Solution is valid")
+        self.result["valid_solution"] = True
 
     def calculate_tour_cost(self, tour):
         """
@@ -152,7 +189,7 @@ class TSPSolver(ABC):
             i = tour[k]
             j = tour[(k + 1) % n]  # Connects back to start
             # Look up symmetric distance
-            # TODO: This assumes symmetric TSP, need to change this for non symmetric case
+            # This assumes symmetric TSP, need to change this for non symmetric case
             total_cost += max(self.edges[i, j], self.edges[j, i])
 
         return float(total_cost)
