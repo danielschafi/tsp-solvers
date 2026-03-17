@@ -39,16 +39,26 @@ def get_new_solver(
         raise ValueError(f"Unknown solver: {solver_name}")
 
 
+def result_exists(results_dir: Path, solver_name: str, tsp_file: Path) -> bool:
+    """Returns True if a result JSON already exists for this solver/problem combination."""
+    size = tsp_file.parent.name
+    problem_name = tsp_file.stem
+    return (results_dir / solver_name / f"n{size}" / f"{problem_name}.json").exists()
+
+
 def run_benchmark(
     solvers: list[str],
     data_dirs: list[Path],
     results_dir: Path,
-    benchmark_ts: str | None = None,
     plot: bool = False,
     timeouts: dict | None = None,
+    force: bool = False,
 ) -> None:
     """
     Runs the specified solvers on all the instances of the specified problem sizes and saves the results.
+
+    Results are saved to results_dir/{solver}/n{size}/{problem}.json. Already-computed results are
+    skipped by default so an interrupted run can be resumed by re-running the same command.
 
     Problem sizes are processed in ascending order. If a solver times out without producing a tour,
     it is dropped from all subsequent (larger) problem sizes.
@@ -57,13 +67,10 @@ def run_benchmark(
         solvers (List[str]): List of solver names to run in the benchmark.
         data_dirs (List[Path]): List of directories containing the .tsp files to run the benchmark on. Each directory should correspond to a problem size.
         results_dir (Path): Base directory to save the results.
-        benchmark_ts (str): Timestamp string for this run (used in results directory naming).
         plot (bool): Whether to generate plots during the run. Disabled by default; use the viz scripts afterwards.
         timeouts (dict): Optional per-solver timeout in seconds, e.g. {"gurobi": 60, "concorde": 300}.
+        force (bool): If True, re-run and overwrite even if a result already exists.
     """
-
-    if benchmark_ts is None:
-        benchmark_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     if timeouts is None:
         timeouts = {}
@@ -79,11 +86,10 @@ def run_benchmark(
             break
 
         logger.info(
-            f"Running benchmark on {data_dir} (size {data_dir.name}), at time {benchmark_ts}. "
+            f"Running benchmark on {data_dir} (size {data_dir.name}). "
             f"Active solvers: {active_solvers}"
         )
         files = sorted(data_dir.rglob("*.tsp"))
-        results_dir_for_run = Path(results_dir) / benchmark_ts
 
         solvers_to_drop = set()
 
@@ -93,9 +99,15 @@ def run_benchmark(
                 if solver_name in solvers_to_drop:
                     continue
 
+                if not force and result_exists(results_dir, solver_name, tsp_file):
+                    logger.info(
+                        f"Skipping {tsp_file.name} for '{solver_name}' — result already exists."
+                    )
+                    continue
+
                 timeout = timeouts.get(solver_name.lower())
                 solver_instance = get_new_solver(
-                    solver_name, str(results_dir_for_run), timeout=timeout
+                    solver_name, str(results_dir), timeout=timeout
                 )
                 solver_instance.run(str(tsp_file), plot=plot)
 
@@ -162,7 +174,13 @@ def main():
     arg_parser.add_argument(
         "--clean_build",
         action="store_true",
-        help="Whether to clean the old results directory before running the benchmark.",
+        help="Delete the results directory before running (full clean restart).",
+    )
+    arg_parser.add_argument(
+        "--force",
+        action="store_true",
+        default=False,
+        help="Re-run and overwrite results even if they already exist. By default, existing results are skipped.",
     )
     arg_parser.add_argument(
         "--plot",
@@ -230,9 +248,9 @@ def main():
         args.solvers,
         data_dirs,
         results_dir,
-        benchmark_ts,
         plot=args.plot,
         timeouts=timeouts,
+        force=args.force,
     )
 
 

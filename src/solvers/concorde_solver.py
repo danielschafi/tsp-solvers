@@ -136,9 +136,7 @@ class ConcordeSolver(TSPSolver):
             self.result["additional_metadata"]["gap"] = structured_output["gap"]
             self.result["additional_metadata"]["seed"] = structured_output["seed"]
 
-            if structured_output["gap"] == 0:
-                status = "Success: Exact solution found. gap is zero"
-            elif result.returncode != 0:
+            if result.returncode != 0:
                 status = "Process call to concorde returned with an error code"
                 logger.warning(
                     "SOLVER NOT SUCCESSFUL — concorde returned a non-zero exit code"
@@ -146,6 +144,10 @@ class ConcordeSolver(TSPSolver):
             elif len(self.result["tour"]) == 0:
                 status = "Failed to find tour"
                 logger.warning("SOLVER NOT SUCCESSFUL — failed to find tour")
+            elif structured_output["gap"] == 0:
+                status = "Success: Exact solution found. gap is zero"
+            else:
+                status = "Success: Solution found with non-zero gap"
 
             self.result["solution_status"] = status
 

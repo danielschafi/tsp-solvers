@@ -52,7 +52,7 @@ class SanitizePathField(fields.StringField):
     def parse(self, text: str) -> str:
         # .strip() handles \n, \r, and spaces.
         # We also filter out literal 'EOF' if it's present in the text block.
-        text = text.strip().removesuffix("EOF")
+        text = text.strip().removesuffix("EOF").strip()
         return text
 
 

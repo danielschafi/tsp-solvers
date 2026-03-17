@@ -89,7 +89,9 @@ class CuOptSolver(TSPSolver):
 
         """
         time_limit = (
-            self.timeout if self.timeout is not None else self.problem.dimension
+            min(int(self.problem.dimension / 5), self.timeout)
+            if self.timeout is not None
+            else self.problem.dimension
         )
         ss.set_time_limit(time_limit)  # seconds
         # ss.set_solution_scope(routing.SolutionScope.FEASIBLE)

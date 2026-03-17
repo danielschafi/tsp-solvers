@@ -7,6 +7,9 @@ results/*
 .vscode/
 .idea/
 
+slurm*
+
+
 .claude/
 
 # ##############################

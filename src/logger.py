@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 _LOG_FORMAT = (
-    "%(asctime)s [%(levelname)-8s] %(filename)s:%(lineno)d (%(funcName)s) — %(message)s"
+    "%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d (%(funcName)s) — %(message)s"
 )
 _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
