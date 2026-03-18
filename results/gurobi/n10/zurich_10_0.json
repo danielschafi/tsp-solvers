@@ -1,0 +1,37 @@
+{
+    "timestamp": "20260317_162616",
+    "problem": "zurich_10_0",
+    "problem_size": 10,
+    "type": "TSP",
+    "comment": "TSP instance with 10 nodes. City: Zurich, Switzerland, Seed: 42",
+    "solver": "gurobi",
+    "time_to_solve": 0.017093896865844727,
+    "cost": 8338.0,
+    "tour": [
+        9,
+        7,
+        3,
+        0,
+        8,
+        6,
+        4,
+        5,
+        2,
+        1,
+        9
+    ],
+    "solution_status": "OPTIMAL",
+    "timed_out_without_tour": false,
+    "additional_metadata": {
+        "status_code": 2,
+        "node_count": 1.0,
+        "runtime": 0.017093896865844727,
+        "sol_count": 1,
+        "work": 0.0002580954636363642,
+        "lower_bound": 8338.0,
+        "gap": 0.0,
+        "obj_val": 8338.0
+    },
+    "valid_solution": true,
+    "tsp_file": "/home/schafhdaniel@edu.local/tsp-solvers/data/tsp_dataset/10/zurich_10_0.tsp"
+}

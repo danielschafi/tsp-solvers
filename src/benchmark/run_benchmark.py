@@ -114,7 +114,7 @@ def run_benchmark(
                 if solver_instance.result.get("timed_out_without_tour"):
                     logger.warning(
                         f"Solver '{solver_name}' timed out on {tsp_file} without a tour. "
-                        f"Dropping it from all remaining problem sizes."
+                        # f"Dropping it from all remaining problem sizes."
                     )
                     solvers_to_drop.add(solver_name)
 

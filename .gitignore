@@ -2,7 +2,7 @@
 *cache*
 *log*
 data/*
-results/*
+# results/*
 !logger.py
 .vscode/
 .idea/

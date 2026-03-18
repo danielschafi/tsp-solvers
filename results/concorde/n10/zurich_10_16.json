@@ -1,0 +1,33 @@
+{
+    "timestamp": "20260317_124557",
+    "problem": "zurich_10_16",
+    "problem_size": 10,
+    "type": "TSP",
+    "comment": "TSP instance with 10 nodes. City: Zurich, Switzerland, Seed: 58",
+    "solver": "concorde",
+    "time_to_solve": 0.0062778310384601355,
+    "cost": 10601.0,
+    "tour": [
+        0,
+        4,
+        9,
+        5,
+        1,
+        3,
+        7,
+        6,
+        2,
+        8,
+        0
+    ],
+    "solution_status": "Success: Exact solution found. gap is zero",
+    "timed_out_without_tour": false,
+    "additional_metadata": {
+        "lower_bound": 10601.0,
+        "upper_bound": 10601.0,
+        "gap": 0.0,
+        "seed": 42
+    },
+    "valid_solution": true,
+    "tsp_file": "/home/schafhdaniel@edu.local/tsp-solvers/data/tsp_dataset/10/zurich_10_16.tsp"
+}
