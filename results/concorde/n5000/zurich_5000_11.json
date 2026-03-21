@@ -1,0 +1,16 @@
+{
+    "timestamp": "20260318_120300",
+    "problem": "zurich_5000_11",
+    "problem_size": 5000,
+    "type": "TSP",
+    "comment": "TSP instance with 5000 nodes. City: Zurich, Switzerland, Seed: 53",
+    "solver": "concorde",
+    "time_to_solve": 1200.0540528530255,
+    "cost": 0,
+    "tour": [],
+    "solution_status": "TIMEOUT",
+    "timed_out_without_tour": true,
+    "additional_metadata": {},
+    "valid_solution": false,
+    "tsp_file": "/home/schafhdaniel@edu.local/tsp-solvers/data/tsp_dataset/5000/zurich_5000_11.tsp"
+}

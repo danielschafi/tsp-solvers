@@ -116,7 +116,7 @@ def run_benchmark(
                         f"Solver '{solver_name}' timed out on {tsp_file} without a tour. "
                         # f"Dropping it from all remaining problem sizes."
                     )
-                    solvers_to_drop.add(solver_name)
+                    # solvers_to_drop.add(solver_name)
 
         for solver_name in solvers_to_drop:
             active_solvers.remove(solver_name)
