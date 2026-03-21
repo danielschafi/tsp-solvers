@@ -6,6 +6,7 @@ The generated problem instances are saved in TSPLib format for use in TSP solver
 import argparse
 import hashlib
 import logging
+import multiprocessing
 import random
 import shutil
 import sys
@@ -15,15 +16,31 @@ from pathlib import Path
 import networkx as nx
 import numpy as np
 import osmnx as ox
-from joblib import Parallel, delayed
 from tqdm import tqdm
-from tsplib_extension import TSPProblemWithOSMIDs
+
+from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
 
 # Fix for NumPy 2.0 compatibility with older NetworkX/OSMnx GraphML writers
 if not hasattr(np, "float_"):
     np.float_ = np.float64  # type: ignore[attr-defined]
 
-logger = logging.getLogger("src.data_handling.build_dataset")
+logger = logging.getLogger(name="src.data_handling.build_dataset")
+
+_worker_graph: nx.MultiDiGraph | None = None
+
+
+def _init_worker(graphml_file: Path) -> None:
+    """
+    Only load the graph Once per worker task,
+    otherwise we have the overhead of loading a new graph every time we start a new task
+    """
+    global _worker_graph
+    _worker_graph = ox.load_graphml(graphml_file)
+
+
+def _worker_task(args: tuple) -> None:
+    size, n, save_dir, city, city_basename, graphml_file, seed = args
+    process_single_instance(size, n, save_dir, city, city_basename, graphml_file, seed)
 
 
 def _setup_logging() -> None:
@@ -159,7 +176,6 @@ def save_problem_instance(
 
 
 def process_single_instance(
-    G: nx.MultiDiGraph,
     size: int,
     n: int,
     save_dir: Path,
@@ -171,6 +187,8 @@ def process_single_instance(
     """
     Generates a single TSP problem instance for the specified graph, sample size, and repetition number, and saves it in TSPLib format.
     """
+    assert _worker_graph is not None, "Worker graph not initialized"
+    G = _worker_graph
     instance_seed = int(hashlib.md5(f"{seed}-{size}-{n}".encode()).hexdigest(), 16) % (
         2**31
     )
@@ -223,27 +241,34 @@ def start_problem_generation(
 
     graphml_file = output_dir / f"graph_{city_basename}_dist_{DIST}.graphml"
 
-    if graphml_file.exists():
-        logger.info(f"Loading existing city graph from {graphml_file}...")
-        # We ensure it's loaded as MultiDiGraph for NetworkX compatibility
-        graph = ox.load_graphml(graphml_file)
-    else:
+    if not graphml_file.exists():
         logger.info(f"Graph not found. Building city graph for {city}...")
         graph = build_city_graph(city)
         logger.info(
             f"Saving graph with {graph.number_of_nodes()} nodes to {graphml_file}..."
         )
         ox.save_graphml(graph, filepath=graphml_file)
+    else:
+        logger.info(f"Using existing city graph from {graphml_file}...")
 
+    all_tasks = []
     for size in sizes:
         save_dir = output_dir / str(size)
         save_dir.mkdir(parents=True, exist_ok=True)
-
-        Parallel(n_jobs=-1)(
-            delayed(process_single_instance)(
-                graph, size, n, save_dir, city, city_basename, graphml_file, seed
+        for n in range(repetitions):
+            all_tasks.append(
+                (size, n, save_dir, city, city_basename, graphml_file, seed)
             )
-            for n in tqdm(range(repetitions), desc=f"Size {size}")
+
+    with multiprocessing.Pool(
+        initializer=_init_worker, initargs=(graphml_file,)
+    ) as pool:
+        list(
+            tqdm(
+                pool.imap(_worker_task, all_tasks),
+                total=len(all_tasks),
+                desc="Generating instances",
+            )
         )
 
 

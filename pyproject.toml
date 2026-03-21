@@ -16,6 +16,7 @@ dependencies = [
     "cuopt-server-cu12==26.2.0",
     "cuopt-sh-client==26.2.0",
     "gurobipy>=13.0.1",
+    "h5py>=3.16.0",
     "joblib>=1.5.3",
     "lxml>=6.0.2",
     "matplotlib>=3.10.8",

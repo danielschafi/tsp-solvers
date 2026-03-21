@@ -5,10 +5,12 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
+import tsplib95
 from dotenv import load_dotenv
 
-logger = logging.getLogger("src.solvers.solver_base")
+from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
 
+logger = logging.getLogger("src.solvers.solver_base")
 load_dotenv()
 
 np.random.seed(42)
@@ -71,10 +73,6 @@ class TSPSolver(ABC):
         """Loads the tsp file and saves its metadata"""
         if not Path(tsp_file).exists():
             raise FileNotFoundError(f"tsp_file: {tsp_file} does not exist.")
-
-        import tsplib95
-
-        from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
 
         self.tsp_file = Path(tsp_file)
         self.problem = tsplib95.load(self.tsp_file, problem_class=TSPProblemWithOSMIDs)
