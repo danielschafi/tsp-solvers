@@ -117,7 +117,7 @@ def _prepare_model() -> tuple[GNN, Adam, StepLR]:
     return model, optimizer, scheduler
 
 
-def save_checkpoint(
+def _save_checkpoint(
     model: GNN,
     optimizer: Optimizer,
     scheduler: LRScheduler,
@@ -139,7 +139,7 @@ def save_checkpoint(
     logger.info(f"Checkpoint saved: {path}")
 
 
-def load_checkpoint(
+def _load_checkpoint(
     path: Path, model: GNN, optimizer: Optimizer, scheduler: LRScheduler
 ) -> tuple[int, float]:
     """Load a checkpoint and return (start_epoch, best_val_loss)."""
@@ -242,7 +242,7 @@ def main(resume_from: Path | None = None, use_wandb: bool = True):
     best_val_loss = float("inf")
 
     if resume_from is not None:
-        start_epoch, best_val_loss = load_checkpoint(
+        start_epoch, best_val_loss = _load_checkpoint(
             resume_from, model, optimizer, scheduler
         )
 
@@ -263,7 +263,7 @@ def main(resume_from: Path | None = None, use_wandb: bool = True):
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            save_checkpoint(
+            _save_checkpoint(
                 model,
                 optimizer,
                 scheduler,
@@ -276,7 +276,7 @@ def main(resume_from: Path | None = None, use_wandb: bool = True):
                 wandb.summary["best_epoch"] = epoch
 
         if epoch % CHECKPOINT_INTERVAL == 0:
-            save_checkpoint(
+            _save_checkpoint(
                 model,
                 optimizer,
                 scheduler,

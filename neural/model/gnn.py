@@ -1,3 +1,6 @@
-class GNN:
+import torch.nn as nn
+
+
+class GNN(nn.Module):
     def __init__(self) -> None:
-        pass
+        super().__init__()
