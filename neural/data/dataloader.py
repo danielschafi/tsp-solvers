@@ -15,6 +15,11 @@ class TSPDataset(Dataset):
             self.num_problems = int(f.attrs["num_problems"])
             self.dim = int(f.attrs["dim"])
 
+        # Indices used in every getitem call.
+        self._tri_idx = torch.triu_indices(self.dim, self.dim, offset=1)
+        # 1 for off diag elements, 0 for diag
+        self._diag_mask = ~torch.eye(self.dim, dtype=torch.bool)
+
     def __len__(self) -> int:
         return self.num_problems
 
@@ -22,6 +27,7 @@ class TSPDataset(Dataset):
         """Load the h5 file if not loaded and return it"""
         if self._file is None:
             self._file = h5py.File(self.file_path, "r", swmr=True)
+            # swmr: single writer multiple readers, allows save multiple concurrent reads
         return self._file
 
     def __getitem__(self, idx):
@@ -31,11 +37,16 @@ class TSPDataset(Dataset):
         # adj matrix is stored as upper tri, reconstruct full adj matrix
         upper_tri = torch.tensor(grp["adj_upper_tri"], dtype=torch.float32)
         adj = torch.zeros((self.dim, self.dim))
-        tri_idx = torch.triu_indices(self.dim, self.dim, offset=1)
-        adj[tri_idx[0], tri_idx[1]] = upper_tri
+        adj[self._tri_idx[0], self._tri_idx[1]] = upper_tri
         adj = adj + adj.T
 
+        # Normalize travel times so that the typical values are ~1
+        adj = adj / adj[self._diag_mask].mean()
+
+        # Center the coordinates around the origin,
         coords = torch.tensor(grp["coords"], dtype=torch.float32)
+        coords = coords - coords.mean(dim=0)  # mean x, mean y
+
         return {"adj": adj, "coords": coords}
 
     def __del__(self):
