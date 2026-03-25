@@ -26,6 +26,7 @@ dependencies = [
     "osmnx>=2.1.0",
     "pandas>=2.0,<2.4",
     "python-dotenv>=1.2.1",
+    "torch>=2.0.0",
     "tqdm>=4.67.3",
     "tsplib95>=0.7.1",
 ]
@@ -44,9 +45,17 @@ dev = [
 environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
 
 [[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true  # Only use this index for packages that explicitly request it
+
+[[tool.uv.index]]
 name = "nvidia"
 url = "https://pypi.nvidia.com"
 explicit = false  # Allows uv to search here and PyPI simultaneously
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu121" }
 
 # [tool.pytest.ini_options]
 # testpaths = ["tests"]
