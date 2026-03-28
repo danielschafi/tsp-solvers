@@ -3,6 +3,7 @@ import logging
 import torch
 import torch.nn as nn
 from torch import Tensor
+from torch.nn import functional as F
 
 logger = logging.getLogger(__name__)
 
@@ -57,13 +58,19 @@ class ScatteringAttentionGNN(nn.Module):
         self.embedding_module = EmbeddingModule(
             input_dim=self.input_dim, hidden_dim=self.hidden_dim
         )
-        self.diffusion_module = DiffusionModule()
-        self.output_module = OutputModule()
+        self.diffusion_module = DiffusionModule(
+            self.input_dim, self.hidden_dim, self.output_dim, self.n_layers
+        )
+        self.output_module = OutputModule(
+            self.input_dim, self.hidden_dim, self.output_dim, self.n_layers
+        )
 
     def forward(self, adj: Tensor) -> Tensor:
         node_feats = self.node_features(adj)  # [B,N,8]
         node_embeddings = self.embedding_module(node_feats)  # [B, N, hidden_dim]
-        X = self.diffusion_module(node_embeddings, adj)  # [B,N, hidden_dim*(1+K)]
+        X = self.diffusion_module(
+            node_embeddings, adj
+        )  # [B,N, hidden_dim*(1+n_layers)]
         T = self.output_module(X)  # [B,N,N]
         return T
 
@@ -94,7 +101,7 @@ class ScatteringAttentionGNN(nn.Module):
             torch.sort(dists, dim=-1)
             .values[:, :, : min(8, dists.size(-1))]
             .mean(-1, keepdim=True)
-        )  # average of the nearest 8 distances,
+        )  # average of the nearest 8 distances, to get immediate neighborhood info
 
         node_feats = torch.cat(
             [
@@ -128,19 +135,52 @@ class EmbeddingModule(nn.Module):
 
 
 class DiffusionModule(nn.Module):
-    def __init__(self, num_diffusion_layers: int = 3) -> None:
+    def __init__(
+        self, input_dim: int, hidden_dim: int, output_dim: int, n_layers: int = 3
+    ) -> None:
         super().__init__()
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
+        self.output_dim = output_dim
+        self.n_layers = n_layers
 
         self.diffusion_layers = nn.ModuleList()
-        for i in range(num_diffusion_layers):
+        for _ in range(self.n_layers):
             self.diffusion_layers.append(ScatteringConvolution())
+
+    def forward(self, node_embeddings, adj):
+        """
+        ([B,N, hidden_dim], [B,N,N]) -> [B,N, hidden_dim*(1+n_layers)]
+        Parameters
+        ---------
+            - node_embedings: [B,N, hidden_dim]
+            - adj: [B,N,N]
+        Returns
+        ---------
+            - [B,N, hidden_dim*(1+n_layers)] Enriched representation of adjacency matrix
+        """
 
 
 class OutputModule(nn.Module):
-    def __init__(self) -> None:
+    def __init__(
+        self, input_dim: int, hidden_dim: int, output_dim: int, n_layers: int
+    ) -> None:
         super().__init__()
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
+        self.output_dim = output_dim
+        self.n_layers = n_layers
 
-        raise NotImplementedError("TODO: implement output module (e.g., MLP, etc.)")
+        self.dense_1 = nn.Linear(hidden_dim * (n_layers + 1), hidden_dim)
+        self.dense_2 = nn.Linear(hidden_dim, output_dim)
+        self.softmax = nn.Softmax(dim=1)  # softmax over the rows of the matrix
+
+    def forward(self, readout_list: Tensor) -> Tensor:
+        X = self.dense_1(readout_list)
+        X = F.leaky_relu(X)
+        X = self.dense_2(X)
+        X = self.softmax(X)
+        return X
 
 
 class ScatteringConvolution(nn.Module):
