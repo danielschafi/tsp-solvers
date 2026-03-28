@@ -14,7 +14,7 @@ from torch.optim.lr_scheduler import LRScheduler, StepLR
 from torch.utils.data import DataLoader, random_split
 
 from neural.data.dataloader import TSPDataset
-from neural.model.gnn import GNN
+from neural.model.gnn import ScatteringAttentionGNN
 from neural.model.loss import unsupervised_loss
 
 try:
@@ -105,8 +105,8 @@ def _load_data() -> tuple[DataLoader, DataLoader, DataLoader]:
     return train_loader, val_loader, test_loader
 
 
-def _prepare_model() -> tuple[GNN, Adam, StepLR]:
-    model = GNN().to(DEVICE)
+def _prepare_model() -> tuple[ScatteringAttentionGNN, Adam, StepLR]:
+    model = ScatteringAttentionGNN().to(DEVICE)
     optimizer = Adam(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -118,7 +118,7 @@ def _prepare_model() -> tuple[GNN, Adam, StepLR]:
 
 
 def _save_checkpoint(
-    model: GNN,
+    model: ScatteringAttentionGNN,
     optimizer: Optimizer,
     scheduler: LRScheduler,
     epoch: int,
@@ -140,7 +140,10 @@ def _save_checkpoint(
 
 
 def _load_checkpoint(
-    path: Path, model: GNN, optimizer: Optimizer, scheduler: LRScheduler
+    path: Path,
+    model: ScatteringAttentionGNN,
+    optimizer: Optimizer,
+    scheduler: LRScheduler,
 ) -> tuple[int, float]:
     """Load a checkpoint and return (start_epoch, best_val_loss)."""
     checkpoint = torch.load(path, map_location=DEVICE)
@@ -156,7 +159,10 @@ def _load_checkpoint(
 
 
 def _train_epoch(
-    model: GNN, optimizer: Optimizer, scheduler: LRScheduler, train_loader: DataLoader
+    model: ScatteringAttentionGNN,
+    optimizer: Optimizer,
+    scheduler: LRScheduler,
+    train_loader: DataLoader,
 ) -> float:
     model.train()
     epoch_loss = 0.0
@@ -183,7 +189,7 @@ def _train_epoch(
     return epoch_loss
 
 
-def _val_epoch(model: GNN, val_loader: DataLoader) -> float:
+def _val_epoch(model: ScatteringAttentionGNN, val_loader: DataLoader) -> float:
     model.eval()
     epoch_loss = 0.0
 
