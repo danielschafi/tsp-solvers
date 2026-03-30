@@ -1,10 +1,8 @@
 import torch
 import torch.nn
 import torch.nn.functional as F
-from torch import tensor
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-import numpy as np
 import torch
 import torch.nn as nn
 
@@ -14,7 +12,7 @@ def GCN_diffusion(W, order, feature, device="cuda"):
     W: [batchsize,n,n]
     feature: [batchsize,n,n]
     """
-    identity_matrices = torch.eye(W.size(1)).repeat(W.size(0), 1, 1)
+    identity_matrices = torch.eye(n=W.size(1)).repeat(W.size(0), 1, 1)
     I_n = identity_matrices.to(device)
     A_gcn = W + I_n  # [b,n,n]
     ###

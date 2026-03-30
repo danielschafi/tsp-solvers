@@ -106,7 +106,9 @@ def _load_data() -> tuple[DataLoader, DataLoader, DataLoader]:
 
 
 def _prepare_model() -> tuple[ScatteringAttentionGNN, Adam, StepLR]:
-    model = ScatteringAttentionGNN().to(DEVICE)
+    model = ScatteringAttentionGNN(hidden_dim=32, output_dim=200, n_layers=3).to(
+        DEVICE
+    )  # output dim -> size of problem
     optimizer = Adam(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -172,9 +174,9 @@ def _train_epoch(
 
         adj = batch["adj"].to(DEVICE)
         adj = torch.exp(-1 * adj / TEMPERATURE)
-        adj.fill_diagonal_(0)
+        adj.diagonal(dim1=1, dim2=2).fill_(0)
 
-        output = model(coords, adj)
+        output = model(adj)
 
         loss = unsupervised_loss(
             soft_indicator_matrix=output, adj=adj, lambda_1=LAMBDA_1, lambda_2=LAMBDA_2
@@ -199,9 +201,9 @@ def _val_epoch(model: ScatteringAttentionGNN, val_loader: DataLoader) -> float:
 
             adj = batch["adj"].to(DEVICE)
             adj = torch.exp(-1 * adj / TEMPERATURE)
-            adj.fill_diagonal_(0)
+            adj.diagonal(dim1=1, dim2=2).fill_(0)
 
-            output = model(coords, adj)
+            output = model(adj)
             loss = unsupervised_loss(
                 soft_indicator_matrix=output,
                 adj=adj,
