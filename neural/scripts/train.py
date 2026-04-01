@@ -41,20 +41,20 @@ else:
 logger.info(f"Using device: {DEVICE}")
 
 
-DATA_PATH = Path("data") / "gnn_data" / "200_test" / "processed.h5"
-DATA_SPLIT = {"train": 0.7, "val": 0.15, "test": 0.15}
+DATA_PATH = Path("data") / "gnn_data" / "200" / "processed.h5"
+DATA_SPLIT = {"train": 0.7, "val": 0.20, "test": 0.10}
 BATCH_SIZE = 32
-NUM_WORKERS = 4
+NUM_WORKERS = 8
 
-LR = 3e-3
+LR = 5e-2
 WEIGHT_DECAY = 0.0
 STEP_SIZE = 20
 GAMMA = 0.8
 
-RESCALE_COORDS = 1
+RESCALE_COORDS = 2
 TEMPERATURE = 3.5
 
-LAMBDA_1 = 10.0  # penalty on row wise constraint term
+LAMBDA_1 = 20.0  # penalty on row wise constraint term
 LAMBDA_2 = 0.1  # penalty on self loop term
 
 EPOCHS = 300
@@ -62,6 +62,9 @@ CHECKPOINT_INTERVAL = 50  # save a checkpoint every N epochs
 
 CHECKPOINT_DIR = Path("checkpoints")
 MODEL_SAVE_PATH = Path("saved_models")
+
+HIDDEN_DIM = 256
+N_LAYERS = 4
 
 
 def _load_data() -> tuple[DataLoader, DataLoader, DataLoader]:
@@ -78,24 +81,24 @@ def _load_data() -> tuple[DataLoader, DataLoader, DataLoader]:
 
     pin = torch.cuda.is_available()
     train_loader = DataLoader(
-        train_ds,
-        BATCH_SIZE,
+        dataset=train_ds,
+        batch_size=BATCH_SIZE,
         shuffle=True,
         num_workers=NUM_WORKERS,
         pin_memory=pin,
         persistent_workers=NUM_WORKERS > 0,
     )
     val_loader = DataLoader(
-        val_ds,
-        BATCH_SIZE,
+        dataset=val_ds,
+        batch_size=BATCH_SIZE,
         shuffle=False,
         num_workers=NUM_WORKERS,
         pin_memory=pin,
         persistent_workers=NUM_WORKERS > 0,
     )
     test_loader = DataLoader(
-        test_ds,
-        BATCH_SIZE,
+        dataset=test_ds,
+        batch_size=BATCH_SIZE,
         shuffle=False,
         num_workers=NUM_WORKERS,
         pin_memory=pin,
@@ -106,9 +109,9 @@ def _load_data() -> tuple[DataLoader, DataLoader, DataLoader]:
 
 
 def _prepare_model() -> tuple[ScatteringAttentionGNN, Adam, StepLR]:
-    model = ScatteringAttentionGNN(hidden_dim=32, output_dim=200, n_layers=3).to(
-        DEVICE
-    )  # output dim -> size of problem
+    model = ScatteringAttentionGNN(
+        hidden_dim=HIDDEN_DIM, output_dim=200, n_layers=N_LAYERS
+    ).to(DEVICE)  # output dim -> size of problem
     optimizer = Adam(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -165,54 +168,65 @@ def _train_epoch(
     optimizer: Optimizer,
     scheduler: LRScheduler,
     train_loader: DataLoader,
-) -> float:
+) -> tuple[float, float, float, float]:
     model.train()
-    epoch_loss = 0.0
+    epoch_loss = epoch_row = epoch_self_loop = epoch_dist = 0.0
 
     for batch in train_loader:
-        coords = batch["coords"].to(DEVICE) * RESCALE_COORDS
+        distances = batch["adj"].to(DEVICE)
 
-        adj = batch["adj"].to(DEVICE)
-        adj = torch.exp(-1 * adj / TEMPERATURE)
+        adj = torch.exp(-1 * distances / TEMPERATURE)
         adj.diagonal(dim1=1, dim2=2).fill_(0)
 
         output = model(adj)
 
-        loss = unsupervised_loss(
-            soft_indicator_matrix=output, adj=adj, lambda_1=LAMBDA_1, lambda_2=LAMBDA_2
+        loss, row_term, self_loop_term, dist_term = unsupervised_loss(
+            soft_indicator_matrix=output,
+            adj=distances,
+            lambda_1=LAMBDA_1,
+            lambda_2=LAMBDA_2,
         )
         optimizer.zero_grad()
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
         optimizer.step()
         epoch_loss += loss.item()
+        epoch_row += row_term.item()
+        epoch_self_loop += self_loop_term.item()
+        epoch_dist += dist_term.item()
 
     scheduler.step()
-    return epoch_loss
+    n = len(train_loader)
+    return epoch_loss / n, epoch_row / n, epoch_self_loop / n, epoch_dist / n
 
 
-def _val_epoch(model: ScatteringAttentionGNN, val_loader: DataLoader) -> float:
+def _val_epoch(
+    model: ScatteringAttentionGNN, val_loader: DataLoader
+) -> tuple[float, float, float, float]:
     model.eval()
-    epoch_loss = 0.0
+    epoch_loss = epoch_row = epoch_self_loop = epoch_dist = 0.0
 
     with torch.no_grad():
         for batch in val_loader:
-            coords = batch["coords"].to(DEVICE) * RESCALE_COORDS
+            distances = batch["adj"].to(DEVICE)
 
-            adj = batch["adj"].to(DEVICE)
-            adj = torch.exp(-1 * adj / TEMPERATURE)
+            adj = torch.exp(-1 * distances / TEMPERATURE)
             adj.diagonal(dim1=1, dim2=2).fill_(0)
 
             output = model(adj)
-            loss = unsupervised_loss(
+            loss, row_term, self_loop_term, dist_term = unsupervised_loss(
                 soft_indicator_matrix=output,
-                adj=adj,
+                adj=distances,
                 lambda_1=LAMBDA_1,
                 lambda_2=LAMBDA_2,
             )
             epoch_loss += loss.item()
+            epoch_row += row_term.item()
+            epoch_self_loop += self_loop_term.item()
+            epoch_dist += dist_term.item()
 
-    return epoch_loss
+    n = len(val_loader)
+    return epoch_loss / n, epoch_row / n, epoch_self_loop / n, epoch_dist / n
 
 
 def main(resume_from: Path | None = None, use_wandb: bool = True):
@@ -255,8 +269,10 @@ def main(resume_from: Path | None = None, use_wandb: bool = True):
         )
 
     for epoch in range(start_epoch, EPOCHS + 1):
-        train_loss = _train_epoch(model, optimizer, scheduler, train_loader)
-        val_loss = _val_epoch(model, val_loader)
+        train_loss, train_row, train_self_loop, train_dist = _train_epoch(
+            model, optimizer, scheduler, train_loader
+        )
+        val_loss, val_row, val_self_loop, val_dist = _val_epoch(model, val_loader)
         current_lr = scheduler.get_last_lr()[0]
 
         logger.info(
@@ -265,7 +281,17 @@ def main(resume_from: Path | None = None, use_wandb: bool = True):
 
         if log_wandb:
             wandb.log(
-                {"train_loss": train_loss, "val_loss": val_loss, "lr": current_lr},
+                {
+                    "train/loss": train_loss,
+                    "train/row_constraint": train_row,
+                    "train/self_loop": train_self_loop,
+                    "train/min_distance": train_dist,
+                    "val/loss": val_loss,
+                    "val/row_constraint": val_row,
+                    "val/self_loop": val_self_loop,
+                    "val/min_distance": val_dist,
+                    "lr": current_lr,
+                },
                 step=epoch,
             )
 

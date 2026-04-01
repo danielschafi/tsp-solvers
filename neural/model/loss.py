@@ -7,7 +7,7 @@ def unsupervised_loss(
     adj: Tensor,
     lambda_1: float,
     lambda_2: float,
-) -> Tensor:
+) -> tuple[Tensor, Tensor, Tensor, Tensor]:
     """
     Unsupervised Loss from the paper
     Loss = lambda_1 *  sum_i ((sum_j T_i,j) -1)^2
@@ -21,7 +21,7 @@ def unsupervised_loss(
         lambda_2 (float): weight for the no self loop constraint
 
     Returns:
-        Tensor: The unsupervised loss
+        tuple: (total_loss, row_constraint_term, self_loop_term, min_distance_term)
     """
     # Heatmap for probability of an edge being in the optimal tour
     heatmap = _soft_indicator_matrix_to_heatmap(soft_indicator_matrix)
@@ -30,12 +30,11 @@ def unsupervised_loss(
     min_distance_constraint = _min_distance_constraint(adj, heatmap)
 
     batch_size = soft_indicator_matrix.shape[0]
-    loss = (
-        lambda_1 * row_wise_constraint.sum()
-        + lambda_2 * no_self_loops_constraint.sum()
-        + min_distance_constraint.sum()
-    )
-    return loss / batch_size
+    row_term = lambda_1 * row_wise_constraint.sum() / batch_size
+    self_loop_term = lambda_2 * no_self_loops_constraint.sum() / batch_size
+    dist_term = min_distance_constraint.sum() / batch_size
+    total = row_term + self_loop_term + dist_term
+    return total, row_term, self_loop_term, dist_term
 
 
 def _row_wise_constraint(soft_indicator_matrix: Tensor) -> Tensor:

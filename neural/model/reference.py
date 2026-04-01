@@ -179,3 +179,137 @@ class GNN(nn.Module):
         X = self.mlp2(X)
         X = self.m(X)
         return X
+
+
+"""Train"""
+
+import argparse
+from pathlib import Path
+
+import torch
+import torch.nn
+from torch.utils.data import DataLoader, random_split
+from utils import TSPLoss
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--seed", type=int, default=42, help="Random seed.")
+parser.add_argument("--num_of_nodes", type=int, default=200, help="Graph Size")
+parser.add_argument(
+    "--data_path", type=str, default="processed.h5", help="Path to H5 dataset"
+)
+parser.add_argument("--lr", type=float, default=3e-3, help="Learning Rate")
+parser.add_argument("--moment", type=int, default=1, help="scattering moment")
+parser.add_argument("--hidden", type=int, default=64, help="Number of hidden units.")
+parser.add_argument("--batch_size", type=int, default=32, help="batch_size")
+parser.add_argument("--nlayers", type=int, default=3, help="num of layers")
+parser.add_argument("--EPOCHS", type=int, default=20, help="epochs to train")
+parser.add_argument("--wdecay", type=float, default=0.0, help="weight decay")
+parser.add_argument(
+    "--temperature", type=float, default=3.5, help="temperature for adj matrix"
+)
+parser.add_argument("--rescale", type=float, default=2.0, help="rescale for xy plane")
+parser.add_argument("--C1_penalty", type=float, default=10.0, help="penalty row/column")
+parser.add_argument("--topk", type=int, default=10, help="topk")
+parser.add_argument("--stepsize", type=int, default=20, help="step size")
+parser.add_argument("--diag_loss", type=float, default=0.1, help="penalty on the diag")
+parser.add_argument(
+    "--num_workers", type=int, default=4, help="DataLoader worker processes"
+)
+args = parser.parse_args()
+
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.enabled = True
+torch.cuda.manual_seed(args.seed)
+torch.manual_seed(args.seed)
+
+from dataloader import TSPDataset
+from models import GNN
+
+dataset = TSPDataset(Path(args.data_path))
+n_val = max(1, len(dataset) // 5)
+n_train = len(dataset) - n_val
+train_dataset, val_dataset = random_split(
+    dataset, [n_train, n_val], generator=torch.Generator().manual_seed(args.seed)
+)
+train_loader = DataLoader(
+    train_dataset,
+    args.batch_size,
+    shuffle=True,
+    num_workers=args.num_workers,
+    pin_memory=True,
+    persistent_workers=args.num_workers > 0,
+)
+val_loader = DataLoader(
+    val_dataset,
+    args.batch_size,
+    shuffle=False,
+    num_workers=args.num_workers,
+    pin_memory=True,
+    persistent_workers=args.num_workers > 0,
+)
+
+model = GNN(
+    input_dim=2,
+    hidden_dim=args.hidden,
+    output_dim=args.num_of_nodes,
+    n_layers=args.nlayers,
+)
+
+
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+print("Total number of parameters:", count_parameters(model))
+
+from torch.optim.lr_scheduler import StepLR
+
+optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wdecay)
+scheduler = StepLR(optimizer, step_size=args.stepsize, gamma=0.8)
+model.cuda()
+mask = torch.ones(args.num_of_nodes, args.num_of_nodes).cuda()
+mask.fill_diagonal_(0)
+
+
+def train(epoch):
+    model.train()
+    total_loss = 0.0
+    for batch in train_loader:
+        # coords are centered in the dataloader; rescale here as a training hyperparameter
+        coords = batch["coords"].cuda() * args.rescale  # [B, N, 2]
+        distance_m = batch["adj"].cuda()  # [B, N, N] normalised travel times
+        adj = torch.exp(-1.0 * distance_m / args.temperature)
+        adj *= mask
+        output = model(coords, adj)
+        TSPLoss_constaint, Heat_mat = TSPLoss(
+            SctOutput=output, distance_matrix=distance_m, num_of_nodes=args.num_of_nodes
+        )
+        Heat_mat_diagonals = [torch.diagonal(mat) for mat in Heat_mat]
+        Heat_mat_diagonals = torch.stack(Heat_mat_diagonals, dim=0)
+        Nrmlzd_constraint = (1.0 - torch.sum(output, 2)) ** 2
+        Nrmlzd_constraint = torch.sum(Nrmlzd_constraint)
+        loss = (
+            args.C1_penalty * Nrmlzd_constraint
+            + 1.0 * torch.sum(TSPLoss_constaint)
+            + args.diag_loss * torch.sum(Heat_mat_diagonals)
+        )
+        batchloss = torch.sum(loss) / len(batch["coords"])
+
+        optimizer.zero_grad()
+        batchloss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
+        optimizer.step()
+        total_loss += batchloss.item()
+    scheduler.step()
+    print("Epoch %d | Loss: %.5f" % (epoch, total_loss / len(train_loader)))
+
+
+for i in range(1, args.EPOCHS + 1):
+    train(i)
+    if (i >= 200) and (i % 10 == 0):
+        torch.save(
+            model.state_dict(),
+            "Saved_Models/TSP_%d/scatgnn_layer_%d_hid_%d_model_%d_temp_%.3f.pth"
+            % (args.num_of_nodes, args.nlayers, args.hidden, i, args.temperature),
+        )

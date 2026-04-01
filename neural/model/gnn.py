@@ -49,7 +49,7 @@ class ScatteringAttentionGNN(nn.Module):
         ----------
             - input_dim:
             - hidden_dim:
-            - output_dim: dimension of the output features (e.g., node embeddings)
+            - output_dim: dimension of the output features (node embeddings)
             - n_layers: number of GNN layers to stack
         """
         super().__init__()
@@ -90,11 +90,13 @@ class ScatteringAttentionGNN(nn.Module):
         ---------
             - Node features [B,N,8]
         """
-        self_mask = ~torch.eye(W.size(1), dtype=torch.bool, device=W.device)
+        self_mask = ~torch.eye(W.size(1), dtype=torch.bool, device=W.device).unsqueeze(
+            0
+        ).repeat(W.size(0), 1, 1)
         dists = W[self_mask].view(W.size(0), W.size(1), -1)  # [B,N,N-1]
 
         # Compute quantiles of the distances of one node to the other nodes
-        q = torch.Tensor([0.25, 0.5, 0.75])
+        q = torch.tensor([0.25, 0.5, 0.75], device=W.device)
         quantiles = torch.quantile(dists, q, dim=-1).permute(
             1, 2, 0
         )  # [B,N,3] three node features. quantile returns [3, B, N]
