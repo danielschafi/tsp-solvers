@@ -41,7 +41,7 @@ def plot_cost_vs_size(df: pd.DataFrame, out_dir: Path) -> None:
         ax=ax,
     )
     ax.set_xscale("log")
-    ax.set_yscale("log")
+    # ax.set_yscale("log")
     ax.set_xlabel("Problem size (n nodes)")
     ax.set_ylabel("Tour cost")
     ax.set_title("Tour cost vs problem size")
@@ -71,7 +71,7 @@ def plot_time_vs_size(df: pd.DataFrame, out_dir: Path) -> None:
         ax=ax,
     )
     ax.set_xscale("log")
-    ax.set_yscale("log")
+    # ax.set_yscale("log")
     ax.set_xlabel("Problem size (n nodes)")
     ax.set_ylabel("Time to solve (s)")
     ax.set_title("Solve time vs problem size")
@@ -110,14 +110,18 @@ def plot_optimality_gap(
             break
 
     if ref_df is None:
-        logger.warning("No reference solver results found; skipping optimality gap plot.")
+        logger.warning(
+            "No reference solver results found; skipping optimality gap plot."
+        )
         return
 
     # Join and compute gap
     other = data[data["solver"] != used_ref].copy()
     merged = other.merge(ref_df, on="problem", how="inner")
     if merged.empty:
-        logger.warning("No overlapping problems between solvers and reference; skipping gap plot.")
+        logger.warning(
+            "No overlapping problems between solvers and reference; skipping gap plot."
+        )
         return
 
     merged["optimality_gap_pct"] = (
