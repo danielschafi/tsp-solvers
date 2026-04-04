@@ -24,17 +24,15 @@ else:
     DEVICE = torch.device("cpu")
 
 
-class UTSPNeuralSolver(TSPSolver):
+class UTSPSolver(TSPSolver):
     """
-    Solver for TSP using cuOpt
+    Solver for TSP using The ScatteringGraphNetwork and guided Monte Carlo Tree Search from the UTSP paper
     """
 
     _gpu_warmed_up: bool = False
 
     def __init__(self, results_dir=None, timeout: float | None = None):
-        super().__init__(
-            solver="UTSPNeuralSolver", results_dir=results_dir, timeout=timeout
-        )
+        super().__init__(solver="UTSPSolver", results_dir=results_dir, timeout=timeout)
 
         self.model: ScatteringAttentionGNN | None = None
 
@@ -80,7 +78,7 @@ class UTSPNeuralSolver(TSPSolver):
         self.adj = adj.unsqueeze(0)  # [1, n, n]
         self.coords = coords.unsqueeze(0)  # [1, n, 2]
 
-        # Only reload model if dimension changed
+        # reload model if dimension changed, otherwise reuse
         if dim != self.dim or self.model is None:
             self.dim = dim
             self.model_path = Path("saved_models") / str(self.dim) / "best.pt"
@@ -88,9 +86,9 @@ class UTSPNeuralSolver(TSPSolver):
             self.model = inference._load_model(str(self.model_path))
 
             # Warming up
-            if not UTSPNeuralSolver._gpu_warmed_up:
+            if not UTSPSolver._gpu_warmed_up:
                 self._warmup()
-                UTSPNeuralSolver._gpu_warmed_up = True
+                UTSPSolver._gpu_warmed_up = True
 
         self.load_tsp_file(tsp_file)
         self.edges = adj_raw
@@ -155,11 +153,11 @@ def main():
     path = Path(args.path)
 
     if path.is_file():
-        solver = UTSPNeuralSolver()
+        solver = UTSPSolver()
         solver.run(str(path))
     elif path.is_dir():
         files = sorted(path.rglob("*.tsp"))
-        solver = UTSPNeuralSolver()
+        solver = UTSPSolver()
         for i, tsp_file in enumerate(files):
             logger.info(f"Solving {tsp_file} ({i + 1}/{len(files)})")
             solver.run(str(tsp_file))
@@ -171,12 +169,12 @@ if __name__ == "__main__":
 
 """
 1. Run one file through this and successfully predict -> done
-2. run a folder through this -> For size 25 ca 17 seconds per problem. 
-3. fix warmup and model loading
+2. run a folder through this -> For size 25 ca 17 seconds per problem.
+3. fix warmup and model loading -> Done
 4. run through benchmark
 
 - Fix benchmark cuopt loading if necessary
-- fix saving / writing of results, add aggregation, auto plot on completion with updated runs. 
-    Maybe for this also do two separate jsons. 
+- fix saving / writing of results, add aggregation, auto plot on completion with updated runs.
+    Maybe for this also do two separate jsons.
 
 """

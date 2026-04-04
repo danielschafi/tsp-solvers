@@ -11,6 +11,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from src.data_handling.results_loader import CORE_COLUMNS, load_results
 from src.logger import setup_logging
 from src.solvers.concorde_solver import ConcordeSolver
 from src.solvers.gurobi_solver import GurobiSolver
@@ -36,9 +37,9 @@ def get_new_solver(
 
         return CuOptSolver(results_dir=results_dir, timeout=timeout)
     elif solver_name.lower() == "utsp":
-        from src.solvers.utsp_solver import UTSPNeuralSolver
+        from src.solvers.utsp_solver import UTSPSolver
 
-        return UTSPNeuralSolver(results_dir=results_dir, timeout=timeout)
+        return UTSPSolver(results_dir=results_dir, timeout=timeout)
     else:
         raise ValueError(f"Unknown solver: {solver_name}")
 
@@ -131,13 +132,24 @@ def run_benchmark(
                 f"Dropped solver '{solver_name}'. Remaining active solvers: {active_solvers}"
             )
 
+    create_aggregated_results(results_dir)
 
-def create_aggregated_results(results_dir: Path) -> None:
+
+def create_aggregated_results(results_dir: Path = Path("results")) -> None:
     """
-    Aggregate the results from the different solvers and problem sizes into a single file for easier analysis and plotting.
+    Loads all per-problem result JSON files under results_dir and writes a
+    summary CSV (core columns, no additional_metadata) to results_dir/summary.csv.
     """
-    # TODO: implement this function to read the individual result files and create an aggregated results file (e.g. a csv or json file) that contains the relevant metrics for each solver and problem size.
-    pass
+
+    df = load_results(results_dir)
+    if df.empty:
+        logger.warning("No results found — summary.csv not written.")
+        return
+
+    csv_path = results_dir / "summary.csv"
+    summary_columns = [c for c in CORE_COLUMNS if c != "additional_metadata"]
+    df[summary_columns].to_csv(csv_path, index=False)
+    logger.info(f"Saved aggregated summary to {csv_path} ({len(df)} rows)")
 
 
 def main():

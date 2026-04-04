@@ -6,7 +6,7 @@
 #SBATCH --mem=48G
 #SBATCH --partition=students
 #SBATCH --time=05:30:00
-#SBATCH --output=logs/sweep_%A_%a.out
+#SBATCH --output=logs/sweep_job/sweep_%A_%a.out
 
 # source .venv/bin/activate
 uv run wandb agent --count 1 schafhdaniel-/tsp-solvers-neural_scripts/iwgpawd8 # replace with result from uv run wandb sweep neural/config/sweep.yaml

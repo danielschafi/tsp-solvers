@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --output=logs/nn_inference_%A_%a.out
+#SBATCH --output=logs/test/nn_inference_%A_%a.out
 #SBATCH --time=3:00:00           ## Zeitlimite. Diese sollte gleich oder kleiner der Partitions Zeitlimite sein. In diesem Fall ist diese auf 1 Stunde und 30 Minuten gesetzt.
 #SBATCH --job-name="TSP-GNN-Solver"   ## Job Name.
 #SBATCH --partition=students	 ## Partitionsname. Die zur Verfügung stehenden Partitionen können mit dem Befehl sinfo angezeigt werden
