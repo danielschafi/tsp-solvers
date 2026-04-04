@@ -35,6 +35,10 @@ def get_new_solver(
         from src.solvers.cuopt_solver import CuOptSolver
 
         return CuOptSolver(results_dir=results_dir, timeout=timeout)
+    elif solver_name.lower() == "utsp":
+        from src.solvers.utsp_solver import UTSPNeuralSolver
+
+        return UTSPNeuralSolver(results_dir=results_dir, timeout=timeout)
     else:
         raise ValueError(f"Unknown solver: {solver_name}")
 
@@ -93,13 +97,18 @@ def run_benchmark(
 
         solvers_to_drop = set()
 
-        for i, tsp_file in enumerate(files):  # loop over tsp files in a directory
-            logger.info(f"Solving {tsp_file} ({i + 1}/{len(files)})")
-            for solver_name in list(
-                active_solvers
-            ):  # solve each file with each remaining solver
-                if solver_name in solvers_to_drop:
-                    continue
+        for solver_name in list(
+            active_solvers
+        ):  # one instance per solver per size to remove model loading overhead
+            timeout = timeouts.get(solver_name.lower())
+            solver_instance = get_new_solver(
+                solver_name, str(results_dir), timeout=timeout
+            )
+
+            for i, tsp_file in enumerate(files):
+                logger.info(
+                    f"[{solver_name}] Solving {tsp_file} ({i + 1}/{len(files)})"
+                )
 
                 if not force and result_exists(results_dir, solver_name, tsp_file):
                     logger.info(
@@ -107,10 +116,6 @@ def run_benchmark(
                     )
                     continue
 
-                timeout = timeouts.get(solver_name.lower())
-                solver_instance = get_new_solver(
-                    solver_name, str(results_dir), timeout=timeout
-                )
                 solver_instance.run(str(tsp_file), plot=plot)
 
                 if solver_instance.result.get("timed_out_without_tour"):
@@ -145,9 +150,9 @@ def main():
     arg_parser.add_argument(
         "--solvers",
         nargs="+",
-        help="List of solver names to run in the benchmark. one or more of 'gurobi', 'concorde', 'cuopt'",
+        help="List of solver names to run in the benchmark. one or more of 'gurobi', 'concorde', 'cuopt', 'utsp'",
         required=True,
-        choices=["gurobi", "concorde", "cuopt"],
+        choices=["gurobi", "concorde", "cuopt", "utsp"],
     )
     arg_parser.add_argument(
         "--sizes",
@@ -228,7 +233,9 @@ def main():
 
     results_dir.mkdir(parents=True, exist_ok=True)
 
-    if not all(solver in ["gurobi", "concorde", "cuopt"] for solver in args.solvers):
+    if not all(
+        solver in ["gurobi", "concorde", "cuopt", "utsp"] for solver in args.solvers
+    ):
         raise ValueError(
             "Invalid solver name. Must be one of 'gurobi', 'concorde', 'cuopt'."
         )

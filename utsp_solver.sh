@@ -9,4 +9,4 @@
 #SBATCH --gpus=a100:1		 ## Die Anzahl GPUs (in diesem Beispiel zwei GPUs, mit der Syntax :2)
 
 # uv run -m src.solvers.concorde_solver --path data/tsp_dataset/10/zurich_10_0.tsp
-uv run -m src.solvers.utsp_neural_solver --path data/tsp_dataset/25/zurich_25_0.tsp
+uv run -m src.solvers.utsp_solver --path data/tsp_dataset/25

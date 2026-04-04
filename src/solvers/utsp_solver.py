@@ -11,7 +11,7 @@ from neural.scripts import inference
 from src.logger import setup_logging
 from src.solvers.solver_base import TSPSolver
 
-logger = logging.getLogger("src.solvers.utsp_neural_solver")
+logger = logging.getLogger("src.solvers.utsp_solver")
 
 np.random.seed(42)
 
@@ -73,22 +73,24 @@ class UTSPNeuralSolver(TSPSolver):
         """
         # Load data, get dim to load correct model
         problem = inference._load_tsp_file(tsp_file)
-        adj_raw, coords_raw, self.dim = (
-            inference._extract_relevant_parts_from_tsp_problem(problem)
+        adj_raw, coords_raw, dim = inference._extract_relevant_parts_from_tsp_problem(
+            problem
         )
         adj, coords = inference._preprocess_data(adj_raw, coords_raw)
         self.adj = adj.unsqueeze(0)  # [1, n, n]
         self.coords = coords.unsqueeze(0)  # [1, n, 2]
 
-        # Path of the trained model for this problem dimension
-        self.model_path = Path("saved_models") / str(self.dim) / "best.pt"
-        # Init model
-        self.model = inference._load_model(str(self.model_path))
+        # Only reload model if dimension changed
+        if dim != self.dim or self.model is None:
+            self.dim = dim
+            self.model_path = Path("saved_models") / str(self.dim) / "best.pt"
+            logger.info(f"Loading model for dim={self.dim} from {self.model_path}")
+            self.model = inference._load_model(str(self.model_path))
 
-        # Warming up
-        if not UTSPNeuralSolver._gpu_warmed_up:
-            self._warmup()
-            UTSPNeuralSolver._gpu_warmed_up = True
+            # Warming up
+            if not UTSPNeuralSolver._gpu_warmed_up:
+                self._warmup()
+                UTSPNeuralSolver._gpu_warmed_up = True
 
         self.load_tsp_file(tsp_file)
         self.edges = adj_raw
@@ -168,8 +170,8 @@ if __name__ == "__main__":
 
 
 """
-1. Run one file through this and successfully predict
-2. run a folder through this
+1. Run one file through this and successfully predict -> done
+2. run a folder through this -> For size 25 ca 17 seconds per problem. 
 3. fix warmup and model loading
 4. run through benchmark
 

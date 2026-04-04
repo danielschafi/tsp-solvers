@@ -105,6 +105,21 @@ class TSPSolver(ABC):
         5. save_results
         """
 
+        self.result.update({
+            "timestamp": None,
+            "problem": "undefined",
+            "problem_size": 0,
+            "type": "undefined",
+            "comment": "",
+            "time_to_solve": 0,
+            "cost": 0,
+            "tour": [],
+            "solution_status": None,
+            "timed_out_without_tour": False,
+            "additional_metadata": {},
+            "valid_solution": None,
+        })
+
         self.load_tsp_file(tsp_file)
 
         logger.info("=" * 100)
