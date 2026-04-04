@@ -16,6 +16,7 @@ slurm*
 bin/*
 
 .claude/
+reference
 
 # ##############################
 #  Python gitignore template
