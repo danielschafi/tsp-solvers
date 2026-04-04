@@ -42,20 +42,36 @@ Remarks:
 """
 
 
+NODE_FEATURE_DIMS = {"node_stats": 8, "coords": 2}
+
+
 class ScatteringAttentionGNN(nn.Module):
-    def __init__(self, hidden_dim: int, output_dim: int, n_layers: int) -> None:
+    def __init__(
+        self,
+        hidden_dim: int,
+        output_dim: int,
+        n_layers: int,
+        node_features: str = "node_stats",
+    ) -> None:
         """
         Parameters
         ----------
-            - input_dim:
             - hidden_dim:
             - output_dim: dimension of the output features (node embeddings)
             - n_layers: number of GNN layers to stack
+            - node_features: which features to use as node input — "node_stats" (8 distance
+              statistics per node) or "coords" (raw x,y coordinates, 2 features per node)
         """
+        if node_features not in NODE_FEATURE_DIMS:
+            raise ValueError(
+                f"node_features must be one of {list(NODE_FEATURE_DIMS)}, got '{node_features}'"
+            )
+
         super().__init__()
 
-        self.input_dim = 8  # based on nr of node_features
-        self.hidden_dim = hidden_dim  # embedded size of the node_features
+        self.node_feature_type = node_features
+        self.input_dim = NODE_FEATURE_DIMS[node_features]
+        self.hidden_dim = hidden_dim
         self.output_dim = output_dim
         self.n_layers = n_layers
 
@@ -69,20 +85,22 @@ class ScatteringAttentionGNN(nn.Module):
             self.input_dim, self.hidden_dim, self.output_dim, self.n_layers
         )
 
-    def forward(self, W: Tensor) -> Tensor:
-        x = self.node_features(W)  # [B,N,8]
+    def forward(self, W: Tensor, coords: Tensor | None = None) -> Tensor:
+        if self.node_feature_type == "coords":
+            if coords is None:
+                raise ValueError("coords must be provided when node_features='coords'")
+            x = coords  # [B, N, 2]
+        else:
+            x = self._node_stats(W)  # [B, N, 8]
         H = self.embedding_module(x)  # [B, N, hidden_dim]
-        H = self.diffusion_module(H, W)  # [B,N, hidden_dim*(1+n_layers)]
-        T = self.output_module(H)  # [B,N,N]
+        H = self.diffusion_module(H, W)  # [B, N, hidden_dim*(1+n_layers)]
+        T = self.output_module(H)  # [B, N, N]
         return T
 
-    def node_features(self, W: Tensor) -> Tensor:
+    def _node_stats(self, W: Tensor) -> Tensor:
         """
-        Deviates from the papers implementation. They used (x,y) coordinates
-        Since we dont have an Euclidean TSP that does not make much sense.
-        Instead, we compute some statistics for each node that specify its position in the graph.
+        Compute 8 distance statistics per node from the adjacency matrix.
 
-        input_dim needs to be equal to the number of features computed here
         Parameters
         ----------
             - W: [B,N,N]

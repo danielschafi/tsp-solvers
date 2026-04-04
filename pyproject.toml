@@ -18,6 +18,7 @@ dependencies = [
     "gurobipy>=13.0.1",
     "h5py>=3.16.0",
     "joblib>=1.5.3",
+    "lkh>=1.1.1",
     "lxml>=6.0.2",
     "matplotlib>=3.10.8",
     "networkx>=2.8.8",

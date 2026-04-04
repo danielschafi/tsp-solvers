@@ -44,7 +44,7 @@ class GurobiSolver(TSPSolver):
     def __init__(self, results_dir=None, timeout: float | None = None):
         super().__init__(solver="gurobi", results_dir=results_dir, timeout=timeout)
 
-    def setup_problem(self, tsp_file: str):
+    def setup(self, tsp_file: str):
         """
         Prepares the data for the cuOpt solver.
         Builds the adjacendy matrix,

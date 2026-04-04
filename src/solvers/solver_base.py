@@ -57,7 +57,7 @@ class TSPSolver(ABC):
         self.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
     @abstractmethod
-    def setup_problem(self, tsp_file):
+    def setup(self, tsp_file):
         """
         Sets up the TSP Problem.
         Reads a .tsp file and prepares the data for the solver
@@ -115,7 +115,7 @@ class TSPSolver(ABC):
         logger.info("=" * 100)
 
         logger.info("Setting up problem")
-        self.setup_problem(tsp_file)
+        self.setup(tsp_file)
 
         logger.info("Start solving TSP")
         self.solve_tsp()

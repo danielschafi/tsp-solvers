@@ -581,6 +581,18 @@ wheels = [
 ]
 
 [[package]]
+name = "lkh"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tsplib95", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5c/b0/26a03141e24427cfc2b00488e4b5ba6ebde86755b9eac4dbebffed8a6687/lkh-1.1.1.tar.gz", hash = "sha256:334a2388663bf73bced585d3461ac89c465c56dd4455d203eb0f76747999d328", size = 5375, upload-time = "2022-09-12T22:15:27.512Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f6/e3/3e20686d28a62310a3ed16c61c6552aa857e05bd52d7ae22eb2d75e94e93/lkh-1.1.1-py3-none-any.whl", hash = "sha256:93b4376e840e1cf2511a45c79295d2b77c44995c97b36efd6e056a3f11835800", size = 5869, upload-time = "2022-09-12T22:15:25.636Z" },
+]
+
+[[package]]
 name = "llvmlite"
 version = "0.44.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1389,6 +1401,7 @@ dependencies = [
     { name = "gurobipy", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "h5py", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "joblib", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+    { name = "lkh", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "lxml", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "matplotlib", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
     { name = "networkx", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
@@ -1419,6 +1432,7 @@ requires-dist = [
     { name = "gurobipy", specifier = ">=13.0.1" },
     { name = "h5py", specifier = ">=3.16.0" },
     { name = "joblib", specifier = ">=1.5.3" },
+    { name = "lkh", specifier = ">=1.1.1" },
     { name = "lxml", specifier = ">=6.0.2" },
     { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "networkx", specifier = ">=2.8.8" },

@@ -93,9 +93,11 @@ def run_benchmark(
 
         solvers_to_drop = set()
 
-        for i, tsp_file in enumerate(files):
+        for i, tsp_file in enumerate(files):  # loop over tsp files in a directory
             logger.info(f"Solving {tsp_file} ({i + 1}/{len(files)})")
-            for solver_name in list(active_solvers):
+            for solver_name in list(
+                active_solvers
+            ):  # solve each file with each remaining solver
                 if solver_name in solvers_to_drop:
                     continue
 

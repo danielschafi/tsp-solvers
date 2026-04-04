@@ -56,7 +56,7 @@ class CuOptSolver(TSPSolver):
         routing.Solve(dm, ss)
         logger.info("Finished warmup")
 
-    def setup_problem(self, tsp_file: str):
+    def setup(self, tsp_file: str):
         """
         Prepares the data for the cuOpt solver.
         Builds the adjacendy matrix,

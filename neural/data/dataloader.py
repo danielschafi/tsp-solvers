@@ -18,7 +18,7 @@ class TSPDataset(Dataset):
         # Indices used in every getitem call.
         self._tri_idx = torch.triu_indices(self.dim, self.dim, offset=1)
         # 1 for off diag elements, 0 for diag
-        self._diag_mask = ~torch.eye(self.dim, dtype=torch.bool)
+        self._diag_mask = ~torch.eye(n=self.dim, dtype=torch.bool)
 
     def __len__(self) -> int:
         return self.num_problems

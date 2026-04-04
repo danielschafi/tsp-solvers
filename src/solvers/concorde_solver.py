@@ -33,7 +33,7 @@ class ConcordeSolver(TSPSolver):
                 f"The Concorde binary is not found at {self.CONCORDE_BIN}, download it according to the instructions in the readme.md to use the concorde solver"
             )
 
-    def setup_problem(self, tsp_file: str):
+    def setup(self, tsp_file: str):
         """
         Prepares the data for the solver.
         Builds the adjacendy matrix,

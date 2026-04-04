@@ -4,6 +4,8 @@ with the probabilities of an edge being part of the optimal tour.
 The trained model can then used in combination with local search to get good solutions
 """
 
+import argparse
+import json
 import logging
 from pathlib import Path
 
@@ -41,7 +43,7 @@ else:
 logger.info(f"Using device: {DEVICE}")
 
 
-DATA_PATH = Path("data") / "gnn_data" / "200" / "processed.h5"
+DATA_PATH = Path("data") / "gnn_data" / "25" / "processed.h5"
 DATA_SPLIT = {"train": 0.7, "val": 0.20, "test": 0.10}
 BATCH_SIZE = 32
 NUM_WORKERS = 8
@@ -67,8 +69,28 @@ HIDDEN_DIM = 256
 N_LAYERS = 4
 
 
-def _load_data() -> tuple[DataLoader, DataLoader, DataLoader]:
-    dataset = TSPDataset(problems_h5_container=DATA_PATH)
+def _default_config() -> dict:
+    return {
+        "lr": LR,
+        "weight_decay": WEIGHT_DECAY,
+        "step_size": STEP_SIZE,
+        "gamma": GAMMA,
+        "lambda_1": LAMBDA_1,
+        "lambda_2": LAMBDA_2,
+        "temperature": TEMPERATURE,
+        "rescale_coords": RESCALE_COORDS,
+        "batch_size": BATCH_SIZE,
+        "hidden_dim": HIDDEN_DIM,
+        "n_layers": N_LAYERS,
+        "node_features": "node_stats",
+        "epochs": EPOCHS,
+        "device": str(DEVICE),
+        "data_path": str(DATA_PATH),
+    }
+
+
+def _load_data(cfg: dict) -> tuple[DataLoader, DataLoader, DataLoader, int]:
+    dataset = TSPDataset(problems_h5_container=Path(cfg["data_path"]))
     n_samples = len(dataset)
     n_train = int(n_samples * DATA_SPLIT["train"])
     n_val = int(n_samples * DATA_SPLIT["val"])
@@ -79,10 +101,11 @@ def _load_data() -> tuple[DataLoader, DataLoader, DataLoader]:
     )
     logger.info(f"Data split — train: {n_train}, val: {n_val}, test: {n_test}")
 
+    batch_size = cfg["batch_size"]
     pin = torch.cuda.is_available()
     train_loader = DataLoader(
         dataset=train_ds,
-        batch_size=BATCH_SIZE,
+        batch_size=batch_size,
         shuffle=True,
         num_workers=NUM_WORKERS,
         pin_memory=pin,
@@ -90,7 +113,7 @@ def _load_data() -> tuple[DataLoader, DataLoader, DataLoader]:
     )
     val_loader = DataLoader(
         dataset=val_ds,
-        batch_size=BATCH_SIZE,
+        batch_size=batch_size,
         shuffle=False,
         num_workers=NUM_WORKERS,
         pin_memory=pin,
@@ -98,22 +121,25 @@ def _load_data() -> tuple[DataLoader, DataLoader, DataLoader]:
     )
     test_loader = DataLoader(
         dataset=test_ds,
-        batch_size=BATCH_SIZE,
+        batch_size=batch_size,
         shuffle=False,
         num_workers=NUM_WORKERS,
         pin_memory=pin,
         persistent_workers=NUM_WORKERS > 0,
     )
 
-    return train_loader, val_loader, test_loader
+    return train_loader, val_loader, test_loader, dataset.dim
 
 
-def _prepare_model() -> tuple[ScatteringAttentionGNN, Adam, StepLR]:
+def _prepare_model(cfg: dict) -> tuple[ScatteringAttentionGNN, Adam, StepLR]:
     model = ScatteringAttentionGNN(
-        hidden_dim=HIDDEN_DIM, output_dim=200, n_layers=N_LAYERS
-    ).to(DEVICE)  # output dim -> size of problem
-    optimizer = Adam(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
-    scheduler = StepLR(optimizer, step_size=STEP_SIZE, gamma=GAMMA)
+        hidden_dim=cfg["hidden_dim"],
+        output_dim=cfg["problem_size"],
+        n_layers=cfg["n_layers"],
+        node_features=cfg["node_features"],
+    ).to(DEVICE)
+    optimizer = Adam(model.parameters(), lr=cfg["lr"], weight_decay=cfg["weight_decay"])
+    scheduler = StepLR(optimizer, step_size=cfg["step_size"], gamma=cfg["gamma"])
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logger.info(f"Model parameters: {n_params:,}")
     logger.info(
@@ -168,23 +194,27 @@ def _train_epoch(
     optimizer: Optimizer,
     scheduler: LRScheduler,
     train_loader: DataLoader,
+    cfg: dict,
 ) -> tuple[float, float, float, float]:
     model.train()
     epoch_loss = epoch_row = epoch_self_loop = epoch_dist = 0.0
 
+    use_coords = cfg["node_features"] == "coords"
+
     for batch in train_loader:
         distances = batch["adj"].to(DEVICE)
 
-        adj = torch.exp(-1 * distances / TEMPERATURE)
+        adj = torch.exp(-1 * distances / cfg["temperature"])
         adj.diagonal(dim1=1, dim2=2).fill_(0)
 
-        output = model(adj)
+        coords = batch["coords"].to(DEVICE) if use_coords else None
+        output = model(adj, coords=coords)
 
         loss, row_term, self_loop_term, dist_term = unsupervised_loss(
             soft_indicator_matrix=output,
             adj=distances,
-            lambda_1=LAMBDA_1,
-            lambda_2=LAMBDA_2,
+            lambda_1=cfg["lambda_1"],
+            lambda_2=cfg["lambda_2"],
         )
         optimizer.zero_grad()
         loss.backward()
@@ -201,24 +231,27 @@ def _train_epoch(
 
 
 def _val_epoch(
-    model: ScatteringAttentionGNN, val_loader: DataLoader
+    model: ScatteringAttentionGNN, val_loader: DataLoader, cfg: dict
 ) -> tuple[float, float, float, float]:
     model.eval()
     epoch_loss = epoch_row = epoch_self_loop = epoch_dist = 0.0
+
+    use_coords = cfg["node_features"] == "coords"
 
     with torch.no_grad():
         for batch in val_loader:
             distances = batch["adj"].to(DEVICE)
 
-            adj = torch.exp(-1 * distances / TEMPERATURE)
+            adj = torch.exp(-1 * distances / cfg["temperature"])
             adj.diagonal(dim1=1, dim2=2).fill_(0)
 
-            output = model(adj)
+            coords = batch["coords"].to(DEVICE) if use_coords else None
+            output = model(adj, coords=coords)
             loss, row_term, self_loop_term, dist_term = unsupervised_loss(
                 soft_indicator_matrix=output,
                 adj=distances,
-                lambda_1=LAMBDA_1,
-                lambda_2=LAMBDA_2,
+                lambda_1=cfg["lambda_1"],
+                lambda_2=cfg["lambda_2"],
             )
             epoch_loss += loss.item()
             epoch_row += row_term.item()
@@ -229,7 +262,7 @@ def _val_epoch(
     return epoch_loss / n, epoch_row / n, epoch_self_loop / n, epoch_dist / n
 
 
-def main(resume_from: Path | None = None, use_wandb: bool = True):
+def main(resume_from: Path | None = None, use_wandb: bool = True, overrides: dict | None = None):
     CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
     MODEL_SAVE_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -239,26 +272,21 @@ def main(resume_from: Path | None = None, use_wandb: bool = True):
             "wandb not installed — training without it. Run `uv add wandb` to enable."
         )
 
-    config = {
-        "lr": LR,
-        "weight_decay": WEIGHT_DECAY,
-        "step_size": STEP_SIZE,
-        "gamma": GAMMA,
-        "lambda_1": LAMBDA_1,
-        "lambda_2": LAMBDA_2,
-        "temperature": TEMPERATURE,
-        "rescale_coords": RESCALE_COORDS,
-        "batch_size": BATCH_SIZE,
-        "epochs": EPOCHS,
-        "device": str(DEVICE),
-        "data_path": str(DATA_PATH),
-    }
+    cfg = _default_config()
+    if overrides:
+        cfg.update(overrides)
 
     if log_wandb:
-        wandb.init(project="tsp-gnn", config=config)
+        wandb.init(project="tsp-gnn", config=cfg)
+        # When running as a sweep agent, wandb overrides cfg with sweep values
+        cfg = dict(wandb.config)
 
-    train_loader, val_loader, test_loader = _load_data()
-    model, optimizer, scheduler = _prepare_model()
+    epochs = cfg["epochs"]
+    run_id = wandb.run.id if (log_wandb and wandb.run is not None) else "local"
+
+    train_loader, val_loader, test_loader, problem_size = _load_data(cfg)
+    cfg["problem_size"] = problem_size
+    model, optimizer, scheduler = _prepare_model(cfg)
 
     start_epoch = 1
     best_val_loss = float("inf")
@@ -268,15 +296,20 @@ def main(resume_from: Path | None = None, use_wandb: bool = True):
             resume_from, model, optimizer, scheduler
         )
 
-    for epoch in range(start_epoch, EPOCHS + 1):
+    print("=" * 20)
+    print("Starting training")
+    print("=" * 20)
+    print("config:", json.dumps(cfg, indent=2))
+
+    for epoch in range(start_epoch, epochs + 1):
         train_loss, train_row, train_self_loop, train_dist = _train_epoch(
-            model, optimizer, scheduler, train_loader
+            model, optimizer, scheduler, train_loader, cfg
         )
-        val_loss, val_row, val_self_loop, val_dist = _val_epoch(model, val_loader)
+        val_loss, val_row, val_self_loop, val_dist = _val_epoch(model, val_loader, cfg)
         current_lr = scheduler.get_last_lr()[0]
 
         logger.info(
-            f"Epoch {epoch:03d}/{EPOCHS} | train={train_loss:.5f} | val={val_loss:.5f} | lr={current_lr:.2e}"
+            f"Epoch {epoch:03d}/{epochs} | train={train_loss:.5f} | val={val_loss:.5f} | lr={current_lr:.2e}"
         )
 
         if log_wandb:
@@ -303,7 +336,7 @@ def main(resume_from: Path | None = None, use_wandb: bool = True):
                 scheduler,
                 epoch,
                 val_loss,
-                MODEL_SAVE_PATH / "best.pt",
+                MODEL_SAVE_PATH / f"best_{run_id}.pt",
             )
             if log_wandb:
                 wandb.summary["best_val_loss"] = best_val_loss
@@ -327,9 +360,27 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
     )
-    # To disable wandb:
-    # main(use_wandb=False)
 
-    # To resume:
-    # main(resume_from=Path("checkpoints/checkpoint_epoch_0050.pt"))
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--no-wandb", action="store_true", help="Disable wandb logging")
+    parser.add_argument("--resume", type=Path, default=None, metavar="CHECKPOINT")
+    # Hyperparameter overrides — all optional, defaults come from _default_config()
+    parser.add_argument("--lr", type=float, default=None)
+    parser.add_argument("--weight_decay", type=float, default=None)
+    parser.add_argument("--step_size", type=int, default=None)
+    parser.add_argument("--gamma", type=float, default=None)
+    parser.add_argument("--lambda_1", type=float, default=None)
+    parser.add_argument("--lambda_2", type=float, default=None)
+    parser.add_argument("--temperature", type=float, default=None)
+    parser.add_argument("--batch_size", type=int, default=None)
+    parser.add_argument("--hidden_dim", type=int, default=None)
+    parser.add_argument("--n_layers", type=int, default=None)
+    parser.add_argument("--node_features", type=str, default=None, choices=["node_stats", "coords"])
+    parser.add_argument("--epochs", type=int, default=None)
+    parser.add_argument("--data_path", type=str, default=None)
+    args, _ = parser.parse_known_args()  # _ absorbs any extra wandb agent flags
+
+    overrides = {k: v for k, v in vars(args).items()
+                 if v is not None and k not in ("no_wandb", "resume")}
+
+    main(resume_from=args.resume, use_wandb=not args.no_wandb, overrides=overrides)

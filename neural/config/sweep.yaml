@@ -1,0 +1,43 @@
+program: neural/scripts/train.py
+method: bayes
+metric:
+  name: val/loss
+  goal: minimize
+
+early_terminate:
+  type: hyperband
+  min_iter: 20
+
+parameters:
+  lr:
+    distribution: log_uniform_values
+    min: 1e-4
+    max: 1e-1
+  weight_decay:
+    values: [0.0, 1e-4, 1e-3]
+  batch_size:
+    values: [16, 32, 64]
+  hidden_dim:
+    values: [64, 128]
+  n_layers:
+    values: [2, 3, 4, 5, 6]
+  lambda_1:
+    distribution: uniform
+    min: 5.0
+    max: 50.0
+  lambda_2:
+    distribution: log_uniform_values
+    min: 1e-3
+    max: 1.0
+  temperature:
+    distribution: uniform
+    min: 1.0
+    max: 6.0
+  step_size:
+    values: [10, 20, 30]
+  gamma:
+    distribution: uniform
+    min: 0.5
+    max: 0.95
+  node_features:
+    values: ["node_stats", "coords"]
