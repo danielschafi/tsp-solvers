@@ -165,16 +165,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-"""
-1. Run one file through this and successfully predict -> done
-2. run a folder through this -> For size 25 ca 17 seconds per problem.
-3. fix warmup and model loading -> Done
-4. run through benchmark
-
-- Fix benchmark cuopt loading if necessary
-- fix saving / writing of results, add aggregation, auto plot on completion with updated runs.
-    Maybe for this also do two separate jsons.
-
-"""
