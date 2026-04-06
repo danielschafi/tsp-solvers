@@ -4,6 +4,8 @@ metric:
   name: val/loss
   goal: minimize
 
+run_cap: 50  # total trials across all agents
+
 early_terminate:
   type: hyperband
   min_iter: 20
@@ -12,19 +14,19 @@ parameters:
   lr:
     distribution: log_uniform_values
     min: 1e-4
-    max: 1e-1
+    max: 1e-2
   weight_decay:
     values: [0.0, 1e-4, 1e-3]
   batch_size:
     values: [16, 32, 64]
   hidden_dim:
-    values: [64, 128]
+    values: [32, 64, 128]
   n_layers:
-    values: [2, 3, 4, 5, 6]
+    values: [2, 3, 4]
   lambda_1:
     distribution: uniform
     min: 5.0
-    max: 50.0
+    max: 25.0
   lambda_2:
     distribution: log_uniform_values
     min: 1e-3

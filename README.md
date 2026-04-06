@@ -117,11 +117,49 @@ Visualizations can either be done on street maps or plain.
 uv run wandb sweep neural/config/sweep.yaml
 
 # If slurm managed
-sbatch sweep_job.sh
+sbatch slurm_neural_hyperparameter_tuning.sh
 
 # Else (might be possible to adjust count)
 uv run wandb agent --count 1 schafhdaniel-/tsp-solvers-neural_scripts/iwgpawd8 # replace with result from uv run wandb sweep neural/config/sweep.yaml
 ```
+
+## Storing Best Configs
+
+After a sweep, save the winning hyperparameters in `neural/config/best/<size>.yaml` (one file per problem size):
+
+```yaml
+# neural/config/best/25.yaml
+# Source: wandb sweep <sweep_id>, run <run_id>
+
+model:
+  hidden_dim: 64
+  n_layers: 3
+  node_features: "node_stats"
+
+training:
+  lr: 0.003
+  weight_decay: 0.0
+  step_size: 20
+  gamma: 0.8
+  lambda_1: 10.0
+  lambda_2: 0.1
+  temperature: 3.5
+  batch_size: 32
+  epochs: 300
+
+data:
+  path: "data/gnn_data/25/processed.h5"
+```
+
+The `model` section is needed for both training and inference (to reconstruct the architecture). The `training` and `data` sections are only used during training.
+
+To train with a stored config:
+```bash
+uv run -m neural.scripts.train --config 25              # uses best config for size 25
+uv run -m neural.scripts.train --config 25 --lr 0.001   # override specific params
+```
+
+During inference, the model architecture is automatically loaded from the config matching the problem size.
 
 ## Using the generated heatmap to produce optimal tours for problems of size n
 

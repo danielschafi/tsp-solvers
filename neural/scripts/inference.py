@@ -6,6 +6,7 @@ import torch
 import tsplib95
 from torch import Tensor
 
+from neural.config.loader import get_model_config
 from neural.local_search.mcts_wrapper import run_mcts
 from neural.model.gnn import ScatteringAttentionGNN
 from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
@@ -23,15 +24,25 @@ REC_NUM = 20
 
 def _load_model(
     model_path: str,
-    hidden_dim: int = 128,
-    problem_size: int = 25,
-    n_layers: int = 4,
-    node_features: str = "coords",
+    problem_size: int,
+    hidden_dim: int = 64,
+    n_layers: int = 3,
+    node_features: str = "node_stats",
 ) -> ScatteringAttentionGNN:
     if not Path(model_path).exists():
         raise FileNotFoundError(
             f"Model file not found: {model_path} - train a model first"
         )
+
+    # Use per-size best config if available, fall back to function defaults
+    try:
+        model_cfg = get_model_config(problem_size)
+        hidden_dim = model_cfg.get("hidden_dim", hidden_dim)
+        n_layers = model_cfg.get("n_layers", n_layers)
+        node_features = model_cfg.get("node_features", node_features)
+    except FileNotFoundError:
+        pass  # no best config for this size, use defaults
+
     model = ScatteringAttentionGNN(
         hidden_dim=hidden_dim,
         output_dim=problem_size,
@@ -77,11 +88,27 @@ def _preprocess_data(
 
 
 def _model_predict_problem(
-    model: ScatteringAttentionGNN, adj: Tensor, coords: Tensor
+    model: ScatteringAttentionGNN,
+    distances: Tensor,
+    coords: Tensor,
+    temperature: float = 3.5,
 ) -> Tensor:
+    """Run the GNN forward pass.
+
+    Args:
+        distances: [1, n, n] normalized distance matrix.
+        coords: [1, n, 2] centered coordinates.
+        temperature: temperature for exp adjacency conversion.
+    """
     model.eval()
+
+    adj = torch.exp(-1 * distances / temperature)
+    adj.diagonal(dim1=1, dim2=2).fill_(0)
+
     with torch.no_grad():
-        output = model(adj.to(DEVICE), coords.to(DEVICE))
+        output = model(
+            adj.to(DEVICE), distances=distances.to(DEVICE), coords=coords.to(DEVICE)
+        )
     return output  # [1, n, n]
 
 
@@ -164,17 +191,17 @@ def run_utsp_pipeline(tsp_file: str, model_weights: str) -> list[int]:
     print(f"TSP file: {tsp_file}")
     print(f"Model weights: {model_weights}")
 
-    model = _load_model(model_weights)
     problem = _load_tsp_file(tsp_file)
-
     adj_raw, coords_raw, dim = _extract_relevant_parts_from_tsp_problem(problem)
     print(f"Problem size: {dim} cities")
 
-    adj, coords = _preprocess_data(adj_raw, coords_raw)
-    adj = adj.unsqueeze(0)  # [1, n, n]
+    model = _load_model(model_weights, problem_size=dim)
+
+    distances, coords = _preprocess_data(adj_raw, coords_raw)
+    distances = distances.unsqueeze(0)  # [1, n, n]
     coords = coords.unsqueeze(0)  # [1, n, 2]
 
-    heatmap = _model_predict_problem(model, adj, coords)  # [1, n, n]
+    heatmap = _model_predict_problem(model, distances, coords)  # [1, n, n]
 
     tour = _run_guided_local_search(heatmap, adj_raw)
 

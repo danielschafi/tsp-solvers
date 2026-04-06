@@ -1,0 +1,51 @@
+program: neural/scripts/train.py
+method: bayes
+metric:
+  name: val/loss
+  goal: minimize
+
+run_cap: 50
+
+early_terminate:
+  type: hyperband
+  min_iter: 15
+
+parameters:
+  epochs:
+    value: 80
+  data_path:
+    value: "data/gnn_data/500/processed.h5"
+  # lr trends lower at larger sizes
+  lr:
+    distribution: log_uniform_values
+    min: 1e-4
+    max: 3e-3
+  weight_decay:
+    values: [0.0, 1e-4, 1e-3]
+  step_size:
+    values: [10, 20]
+  gamma:
+    distribution: uniform
+    min: 0.7
+    max: 0.9
+  # Size-sensitive — memory pressure at 500 nodes
+  batch_size:
+    values: [32, 64, 128]
+  hidden_dim:
+    values: [128, 256]
+  n_layers:
+    values: [2, 3, 4]
+  lambda_1:
+    distribution: uniform
+    min: 3.0
+    max: 10.0
+  lambda_2:
+    distribution: log_uniform_values
+    min: 1e-4
+    max: 0.01
+  temperature:
+    distribution: uniform
+    min: 3.0
+    max: 6.0
+  node_features:
+    values: ["node_stats", "coords"]

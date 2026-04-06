@@ -1,0 +1,22 @@
+# Best hyperparameters for problem size 100
+# Source: wandb sweep, size-100 sweep
+# Note: best_epoch was 80 (sweep limit) — train for full 300 epochs
+
+model:
+  hidden_dim: 128
+  n_layers: 2
+  node_features: "coords"
+
+training:
+  lr: 0.00112008475391608
+  weight_decay: 0.0
+  step_size: 10
+  gamma: 0.8622880221749978
+  lambda_1: 5.940825342382792
+  lambda_2: 0.001663151064616564
+  temperature: 4.157581985655084
+  batch_size: 64
+  epochs: 300
+
+data:
+  path: "data/gnn_data/100/processed.h5"

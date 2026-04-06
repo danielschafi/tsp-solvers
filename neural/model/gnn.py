@@ -85,29 +85,47 @@ class ScatteringAttentionGNN(nn.Module):
             self.input_dim, self.hidden_dim, self.output_dim, self.n_layers
         )
 
-    def forward(self, W: Tensor, coords: Tensor | None = None) -> Tensor:
+    def forward(
+        self, W: Tensor, distances: Tensor | None = None, coords: Tensor | None = None
+    ) -> Tensor:
+        """
+        Parameters
+        ----------
+            - W: [B, N, N] adjacency matrix (exp-transformed), used for graph diffusion/scattering
+            - distances: [B, N, N] raw (normalized) distance matrix, used for node_stats features.
+                         Required when node_features="node_stats".
+            - coords: [B, N, 2] node coordinates. Required when node_features="coords".
+        """
         if self.node_feature_type == "coords":
             if coords is None:
                 raise ValueError("coords must be provided when node_features='coords'")
             x = coords  # [B, N, 2]
         else:
-            x = self._node_stats(W)  # [B, N, 8]
+            if distances is None:
+                raise ValueError(
+                    "distances must be provided when node_features='node_stats'"
+                )
+            x = self._node_stats(distances)  # [B, N, 8]
         H = self.embedding_module(x)  # [B, N, hidden_dim]
         H = self.diffusion_module(H, W)  # [B, N, hidden_dim*(1+n_layers)]
         T = self.output_module(H)  # [B, N, N]
         return T
 
-    def _node_stats(self, W: Tensor) -> Tensor:
+    def _node_stats(self, distances: Tensor) -> Tensor:
         """
-        Compute 8 distance statistics per node from the adjacency matrix.
+        Compute 8 distance statistics per node from the raw distance matrix.
+
+        Uses the raw (normalized) distances rather than exp-transformed adjacency
+        so that the statistics capture actual distance structure.
 
         Parameters
         ----------
-            - W: [B,N,N]
+            - distances: [B,N,N] raw (normalized) distance matrix
         Returns
         ---------
             - Node features [B,N,8]
         """
+        W = distances
         self_mask = ~torch.eye(W.size(1), dtype=torch.bool, device=W.device).unsqueeze(
             0
         ).repeat(W.size(0), 1, 1)

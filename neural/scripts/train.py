@@ -15,6 +15,7 @@ from torch.optim import Adam, Optimizer
 from torch.optim.lr_scheduler import LRScheduler, StepLR
 from torch.utils.data import DataLoader, random_split
 
+from neural.config.loader import load_best_config
 from neural.data.dataloader import TSPDataset
 from neural.model.gnn import ScatteringAttentionGNN
 from neural.model.loss import unsupervised_loss
@@ -48,15 +49,14 @@ DATA_SPLIT = {"train": 0.7, "val": 0.20, "test": 0.10}
 BATCH_SIZE = 32
 NUM_WORKERS = 8
 
-LR = 5e-2
+LR = 3e-3
 WEIGHT_DECAY = 0.0
 STEP_SIZE = 20
 GAMMA = 0.8
 
-RESCALE_COORDS = 2
 TEMPERATURE = 3.5
 
-LAMBDA_1 = 20.0  # penalty on row wise constraint term
+LAMBDA_1 = 10.0  # penalty on row wise constraint term
 LAMBDA_2 = 0.1  # penalty on self loop term
 
 EPOCHS = 300
@@ -65,8 +65,8 @@ CHECKPOINT_INTERVAL = 50  # save a checkpoint every N epochs
 CHECKPOINT_DIR = Path("checkpoints")
 MODEL_SAVE_PATH = Path("saved_models")
 
-HIDDEN_DIM = 256
-N_LAYERS = 4
+HIDDEN_DIM = 64
+N_LAYERS = 3
 
 
 def _default_config() -> dict:
@@ -78,7 +78,6 @@ def _default_config() -> dict:
         "lambda_1": LAMBDA_1,
         "lambda_2": LAMBDA_2,
         "temperature": TEMPERATURE,
-        "rescale_coords": RESCALE_COORDS,
         "batch_size": BATCH_SIZE,
         "hidden_dim": HIDDEN_DIM,
         "n_layers": N_LAYERS,
@@ -208,7 +207,7 @@ def _train_epoch(
         adj.diagonal(dim1=1, dim2=2).fill_(0)
 
         coords = batch["coords"].to(DEVICE) if use_coords else None
-        output = model(adj, coords=coords)
+        output = model(adj, distances=distances, coords=coords)
 
         loss, row_term, self_loop_term, dist_term = unsupervised_loss(
             soft_indicator_matrix=output,
@@ -246,7 +245,7 @@ def _val_epoch(
             adj.diagonal(dim1=1, dim2=2).fill_(0)
 
             coords = batch["coords"].to(DEVICE) if use_coords else None
-            output = model(adj, coords=coords)
+            output = model(adj, distances=distances, coords=coords)
             loss, row_term, self_loop_term, dist_term = unsupervised_loss(
                 soft_indicator_matrix=output,
                 adj=distances,
@@ -364,6 +363,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-wandb", action="store_true", help="Disable wandb logging")
     parser.add_argument("--resume", type=Path, default=None, metavar="CHECKPOINT")
+    parser.add_argument(
+        "--config",
+        type=int,
+        default=None,
+        metavar="SIZE",
+        help="Load best config for problem size (e.g. --config 25)",
+    )
     # Hyperparameter overrides — all optional, defaults come from _default_config()
     parser.add_argument("--lr", type=float, default=None)
     parser.add_argument("--weight_decay", type=float, default=None)
@@ -380,7 +386,14 @@ if __name__ == "__main__":
     parser.add_argument("--data_path", type=str, default=None)
     args, _ = parser.parse_known_args()  # _ absorbs any extra wandb agent flags
 
-    overrides = {k: v for k, v in vars(args).items()
-                 if v is not None and k not in ("no_wandb", "resume")}
+    # Start from best config for a problem size, then apply CLI overrides on top
+    if args.config is not None:
+        base = load_best_config(args.config)
+    else:
+        base = {}
 
-    main(resume_from=args.resume, use_wandb=not args.no_wandb, overrides=overrides)
+    cli_overrides = {k: v for k, v in vars(args).items()
+                     if v is not None and k not in ("no_wandb", "resume", "config")}
+    base.update(cli_overrides)
+
+    main(resume_from=args.resume, use_wandb=not args.no_wandb, overrides=base)
