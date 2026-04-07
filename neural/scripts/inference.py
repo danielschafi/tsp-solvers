@@ -25,23 +25,16 @@ REC_NUM = 20
 def _load_model(
     model_path: str,
     problem_size: int,
-    hidden_dim: int = 64,
-    n_layers: int = 3,
-    node_features: str = "node_stats",
 ) -> ScatteringAttentionGNN:
     if not Path(model_path).exists():
         raise FileNotFoundError(
             f"Model file not found: {model_path} - train a model first"
         )
 
-    # Use per-size best config if available, fall back to function defaults
-    try:
-        model_cfg = get_model_config(problem_size)
-        hidden_dim = model_cfg.get("hidden_dim", hidden_dim)
-        n_layers = model_cfg.get("n_layers", n_layers)
-        node_features = model_cfg.get("node_features", node_features)
-    except FileNotFoundError:
-        pass  # no best config for this size, use defaults
+    model_cfg = get_model_config(problem_size)
+    hidden_dim = model_cfg.get("hidden_dim", 64)
+    n_layers = model_cfg.get("n_layers", 3)
+    node_features = model_cfg.get("node_features", "node_stats")
 
     model = ScatteringAttentionGNN(
         hidden_dim=hidden_dim,

@@ -35,6 +35,7 @@ class UTSPSolver(TSPSolver):
         super().__init__(solver="UTSPSolver", results_dir=results_dir, timeout=timeout)
 
         self.model: ScatteringAttentionGNN | None = None
+        self.dim: int = None
 
     def _warmup(self):
         """
@@ -79,13 +80,13 @@ class UTSPSolver(TSPSolver):
         self.coords = coords.unsqueeze(0)  # [1, n, 2]
 
         # reload model if dimension changed, otherwise reuse
-        if dim != self.dim or self.model is None:
+        if self.dim is None or dim != self.dim or self.model is None:
             self.dim = dim
             self.model_path = Path("saved_models") / str(self.dim) / "best.pt"
             logger.info(f"Loading model for dim={self.dim} from {self.model_path}")
-            self.model = inference._load_model(str(self.model_path))
+            self.model = inference._load_model(str(self.model_path), dim)
 
-            # Warming up
+            # Warming up only needs to be done one time, not for each loaded model
             if not UTSPSolver._gpu_warmed_up:
                 self._warmup()
                 UTSPSolver._gpu_warmed_up = True
