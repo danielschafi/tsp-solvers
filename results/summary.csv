@@ -1,0 +1,727 @@
+solver,problem,problem_size,cost,time_to_solve,solution_status,valid_solution,timed_out_without_tour,timestamp
+UTSPSolver,zurich_25_0,25,12831.0,17.048119464016054,success,True,False,20260404_151431
+UTSPSolver,zurich_25_1,25,14823.0,17.137710291019175,success,True,False,20260404_151501
+UTSPSolver,zurich_25_10,25,15533.0,16.733748077997006,success,True,False,20260404_151524
+UTSPSolver,zurich_25_11,25,14312.0,17.162429257994518,success,True,False,20260404_151547
+UTSPSolver,zurich_25_12,25,15656.0,16.92166337603703,success,True,False,20260404_151610
+UTSPSolver,zurich_25_13,25,13365.0,17.146697176038288,success,True,False,20260404_151633
+UTSPSolver,zurich_25_14,25,15735.0,17.423496225033887,success,True,False,20260404_151655
+UTSPSolver,zurich_25_15,25,14470.0,17.651511930976994,success,True,False,20260404_151719
+UTSPSolver,zurich_25_16,25,13169.0,17.1783092149999,success,True,False,20260404_151743
+UTSPSolver,zurich_25_17,25,13499.0,17.24492821499007,success,True,False,20260404_151806
+UTSPSolver,zurich_25_18,25,13720.0,16.893525721970946,success,True,False,20260404_151829
+UTSPSolver,zurich_25_19,25,15703.0,17.091764507989865,success,True,False,20260404_151852
+UTSPSolver,zurich_25_2,25,12195.0,17.078454508038703,success,True,False,20260404_151915
+UTSPSolver,zurich_25_20,25,16196.0,17.44032832700759,success,True,False,20260404_151938
+UTSPSolver,zurich_25_21,25,12448.0,16.880133184953593,success,True,False,20260404_152002
+UTSPSolver,zurich_25_22,25,16103.0,17.12984819803387,success,True,False,20260404_152024
+UTSPSolver,zurich_25_23,25,14702.0,16.748992951004766,success,True,False,20260404_152047
+UTSPSolver,zurich_25_24,25,15357.0,17.282214611012023,success,True,False,20260404_152110
+UTSPSolver,zurich_25_25,25,13583.0,17.300553816952743,success,True,False,20260404_152133
+UTSPSolver,zurich_25_26,25,15892.0,18.089904343010858,success,True,False,20260404_152156
+UTSPSolver,zurich_25_27,25,15766.0,16.80691940698307,success,True,False,20260404_152220
+UTSPSolver,zurich_25_28,25,15267.0,17.261725546966773,success,True,False,20260404_152243
+UTSPSolver,zurich_25_29,25,16808.0,17.170008814020548,success,True,False,20260404_152307
+UTSPSolver,zurich_25_3,25,15619.0,17.875772854022216,success,True,False,20260404_152329
+UTSPSolver,zurich_25_4,25,13829.0,16.707357465988025,success,True,False,20260404_152353
+UTSPSolver,zurich_25_5,25,15108.0,17.62517985398881,success,True,False,20260404_152416
+UTSPSolver,zurich_25_6,25,15427.0,17.062634323956445,success,True,False,20260404_152439
+UTSPSolver,zurich_25_7,25,14489.0,17.060900791024324,success,True,False,20260404_152502
+UTSPSolver,zurich_25_8,25,16200.0,17.213508345012087,success,True,False,20260404_152525
+UTSPSolver,zurich_25_9,25,13932.0,17.122109965013806,success,True,False,20260404_152549
+concorde,zurich_10_0,10,8338.0,0.013316302094608545,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_1,10,8079.0,0.012015013955533504,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_10,10,10613.0,0.006585071096196771,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_11,10,9279.0,0.008353738812729716,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_12,10,6821.0,0.007091789972037077,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_13,10,9043.0,0.005013778107240796,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_14,10,8308.0,0.011741209076717496,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_15,10,8000.0,0.007032716879621148,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_16,10,10601.0,0.0062778310384601355,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_17,10,8587.0,0.01136192912235856,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_18,10,8686.0,0.009492124198004603,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_19,10,9218.0,0.0076519339345395565,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_2,10,7986.0,0.004763153148815036,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_20,10,9355.0,0.010980877093970776,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_21,10,11457.0,0.009536928962916136,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_22,10,8763.0,0.010136132128536701,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_23,10,9434.0,0.011936337919905782,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_24,10,9311.0,0.010502354009076953,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_25,10,7720.0,0.006085315952077508,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_26,10,9742.0,0.006962355924770236,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_27,10,8545.0,0.005740199005231261,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_28,10,10153.0,0.006434672046452761,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_29,10,9583.0,0.012386771850287914,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_3,10,8888.0,0.012916876003146172,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_4,10,9048.0,0.009792997036129236,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_5,10,10603.0,0.0041794851422309875,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_6,10,9627.0,0.008092829026281834,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_7,10,7824.0,0.01155411102809012,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_8,10,8282.0,0.005893796915188432,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_10_9,10,7373.0,0.011361234122887254,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_25_0,25,12831.0,0.016842205077409744,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_25_1,25,14823.0,0.030610437970608473,Success: Exact solution found. gap is zero,True,False,20260317_124557
+concorde,zurich_25_10,25,15533.0,0.030095266876742244,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_11,25,14312.0,0.018087113043293357,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_12,25,15656.0,0.03499005292542279,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_13,25,13365.0,0.029993555042892694,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_14,25,15735.0,0.023606417002156377,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_15,25,14470.0,0.031169186113402247,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_16,25,13169.0,0.014354607090353966,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_17,25,13499.0,0.015326943015679717,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_18,25,13720.0,0.019706607097759843,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_19,25,15703.0,0.021051259012892842,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_2,25,12195.0,0.01701590302400291,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_20,25,16196.0,0.014929769095033407,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_21,25,12448.0,0.015631380956619978,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_22,25,16103.0,0.018129016971215606,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_23,25,14702.0,0.017495459876954556,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_24,25,15357.0,0.025321498978883028,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_25,25,13583.0,0.012971080839633942,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_26,25,15892.0,0.01448470400646329,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_27,25,15766.0,0.01997266011312604,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_28,25,15267.0,0.02010985091328621,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_29,25,16808.0,0.013032543938606977,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_3,25,15619.0,0.021253115963190794,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_4,25,13829.0,0.03413680708035827,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_5,25,15108.0,0.03192118415609002,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_6,25,15427.0,0.01706945593468845,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_7,25,14489.0,0.015663346042856574,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_8,25,16200.0,0.026368780061602592,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_25_9,25,13932.0,0.02112658997066319,Success: Exact solution found. gap is zero,True,False,20260317_124558
+concorde,zurich_50_0,50,22511.0,0.07636172184720635,Success: Exact solution found. gap is zero,True,False,20260317_124702
+concorde,zurich_50_1,50,23246.0,0.09326808410696685,Success: Exact solution found. gap is zero,True,False,20260317_124702
+concorde,zurich_50_10,50,21336.0,0.07576961698941886,Success: Exact solution found. gap is zero,True,False,20260317_124702
+concorde,zurich_50_11,50,21700.0,0.040911005111411214,Success: Exact solution found. gap is zero,True,False,20260317_124702
+concorde,zurich_50_12,50,19193.0,0.087660406017676,Success: Exact solution found. gap is zero,True,False,20260317_124702
+concorde,zurich_50_13,50,18981.0,0.04743814002722502,Success: Exact solution found. gap is zero,True,False,20260317_124702
+concorde,zurich_50_14,50,22869.0,0.05581662408076227,Success: Exact solution found. gap is zero,True,False,20260317_124702
+concorde,zurich_50_15,50,23528.0,0.07043621898628771,Success: Exact solution found. gap is zero,True,False,20260317_124702
+concorde,zurich_50_16,50,19233.0,0.03281339001841843,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_17,50,21068.0,0.06750918901525438,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_18,50,19828.0,0.059570674085989594,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_19,50,20464.0,0.0668922879267484,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_2,50,21659.0,0.06592404912225902,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_20,50,20211.0,0.025207776110619307,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_21,50,22708.0,0.04709283891133964,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_22,50,20515.0,0.05821547796949744,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_23,50,21753.0,0.05822129198350012,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_24,50,20850.0,0.055735554080456495,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_25,50,19633.0,0.046572945080697536,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_26,50,22023.0,0.0753681140486151,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_27,50,20354.0,0.036389128072187304,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_28,50,21669.0,0.04127989988774061,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_29,50,20760.0,0.03103765193372965,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_3,50,21818.0,0.058216570876538754,Success: Exact solution found. gap is zero,True,False,20260317_124703
+concorde,zurich_50_4,50,20086.0,0.056687173899263144,Success: Exact solution found. gap is zero,True,False,20260317_124704
+concorde,zurich_50_5,50,18406.0,0.0796109619550407,Success: Exact solution found. gap is zero,True,False,20260317_124704
+concorde,zurich_50_6,50,23413.0,0.09391320403665304,Success: Exact solution found. gap is zero,True,False,20260317_124704
+concorde,zurich_50_7,50,21065.0,0.1567471199668944,Success: Exact solution found. gap is zero,True,False,20260317_124704
+concorde,zurich_50_8,50,21188.0,0.052180189872160554,Success: Exact solution found. gap is zero,True,False,20260317_124704
+concorde,zurich_50_9,50,20355.0,0.0647049848921597,Success: Exact solution found. gap is zero,True,False,20260317_124704
+concorde,zurich_100_0,100,30225.0,0.38193384604528546,Success: Exact solution found. gap is zero,True,False,20260317_124704
+concorde,zurich_100_1,100,30382.0,0.1849068240262568,Success: Exact solution found. gap is zero,True,False,20260317_124704
+concorde,zurich_100_10,100,29754.0,0.15230935718864202,Success: Exact solution found. gap is zero,True,False,20260317_124705
+concorde,zurich_100_11,100,30920.0,0.15048403199762106,Success: Exact solution found. gap is zero,True,False,20260317_124705
+concorde,zurich_100_12,100,27916.0,0.19757079193368554,Success: Exact solution found. gap is zero,True,False,20260317_124705
+concorde,zurich_100_13,100,31550.0,0.2223404198884964,Success: Exact solution found. gap is zero,True,False,20260317_124705
+concorde,zurich_100_14,100,32423.0,0.18470245506614447,Success: Exact solution found. gap is zero,True,False,20260317_124705
+concorde,zurich_100_15,100,28143.0,0.12796501303091645,Success: Exact solution found. gap is zero,True,False,20260317_124706
+concorde,zurich_100_16,100,30955.0,0.20737883215770125,Success: Exact solution found. gap is zero,True,False,20260317_124706
+concorde,zurich_100_17,100,32441.0,0.1923512991052121,Success: Exact solution found. gap is zero,True,False,20260317_124706
+concorde,zurich_100_18,100,27969.0,0.14804866397753358,Success: Exact solution found. gap is zero,True,False,20260317_124706
+concorde,zurich_100_19,100,30148.0,0.131377523066476,Success: Exact solution found. gap is zero,True,False,20260317_124706
+concorde,zurich_100_2,100,30984.0,0.1287092361599207,Success: Exact solution found. gap is zero,True,False,20260317_124707
+concorde,zurich_100_20,100,28463.0,0.13583843200467527,Success: Exact solution found. gap is zero,True,False,20260317_124707
+concorde,zurich_100_21,100,32236.0,0.26836166181601584,Success: Exact solution found. gap is zero,True,False,20260317_124707
+concorde,zurich_100_22,100,28951.0,0.13414020999334753,Success: Exact solution found. gap is zero,True,False,20260317_124707
+concorde,zurich_100_23,100,29992.0,0.11752870702184737,Success: Exact solution found. gap is zero,True,False,20260317_124707
+concorde,zurich_100_24,100,30893.0,0.27476760605350137,Success: Exact solution found. gap is zero,True,False,20260317_124707
+concorde,zurich_100_25,100,28750.0,0.1249185239430517,Success: Exact solution found. gap is zero,True,False,20260317_124708
+concorde,zurich_100_26,100,29637.0,0.1930702170357108,Success: Exact solution found. gap is zero,True,False,20260317_124708
+concorde,zurich_100_27,100,28945.0,0.22297354717738926,Success: Exact solution found. gap is zero,True,False,20260317_124708
+concorde,zurich_100_28,100,28343.0,0.11952796112746,Success: Exact solution found. gap is zero,True,False,20260317_124708
+concorde,zurich_100_29,100,29701.0,0.5010191439650953,Success: Exact solution found. gap is zero,True,False,20260317_124708
+concorde,zurich_100_3,100,27839.0,0.0666696010157466,Success: Exact solution found. gap is zero,True,False,20260317_124709
+concorde,zurich_100_4,100,30546.0,0.19628216489218175,Success: Exact solution found. gap is zero,True,False,20260317_124709
+concorde,zurich_100_5,100,28381.0,1.376413204940036,Success: Exact solution found. gap is zero,True,False,20260317_124709
+concorde,zurich_100_6,100,28168.0,0.2794334110803902,Success: Exact solution found. gap is zero,True,False,20260317_124711
+concorde,zurich_100_7,100,29704.0,0.15271188807673752,Success: Exact solution found. gap is zero,True,False,20260317_124711
+concorde,zurich_100_8,100,31225.0,1.3840483110398054,Success: Exact solution found. gap is zero,True,False,20260317_124711
+concorde,zurich_100_9,100,30336.0,0.25881977402605116,Success: Exact solution found. gap is zero,True,False,20260317_124713
+concorde,zurich_200_0,200,43866.0,0.6334611510392278,Success: Exact solution found. gap is zero,True,False,20260317_124713
+concorde,zurich_200_1,200,41334.0,0.8211126958485693,Success: Exact solution found. gap is zero,True,False,20260317_124713
+concorde,zurich_200_10,200,44178.0,0.3646542599890381,Success: Exact solution found. gap is zero,True,False,20260317_124714
+concorde,zurich_200_11,200,42437.0,1.4054077069740742,Success: Exact solution found. gap is zero,True,False,20260317_124715
+concorde,zurich_200_12,200,41342.0,0.5721706468611956,Success: Exact solution found. gap is zero,True,False,20260317_124716
+concorde,zurich_200_13,200,40085.0,1.2205832961481065,Success: Exact solution found. gap is zero,True,False,20260317_124717
+concorde,zurich_200_14,200,43995.0,0.665883625857532,Success: Exact solution found. gap is zero,True,False,20260317_124718
+concorde,zurich_200_15,200,42317.0,1.5625196129549295,Success: Exact solution found. gap is zero,True,False,20260317_124719
+concorde,zurich_200_16,200,43465.0,0.5462781318929046,Success: Exact solution found. gap is zero,True,False,20260317_124720
+concorde,zurich_200_17,200,41585.0,0.47646738309413195,Success: Exact solution found. gap is zero,True,False,20260317_124721
+concorde,zurich_200_18,200,40830.0,3.400317796971649,Success: Exact solution found. gap is zero,True,False,20260317_124721
+concorde,zurich_200_19,200,42643.0,0.770329874008894,Success: Exact solution found. gap is zero,True,False,20260317_124725
+concorde,zurich_200_2,200,42850.0,0.5684487649705261,Success: Exact solution found. gap is zero,True,False,20260317_124726
+concorde,zurich_200_20,200,41361.0,0.4679305830504745,Success: Exact solution found. gap is zero,True,False,20260317_124726
+concorde,zurich_200_21,200,42550.0,2.110768398968503,Success: Exact solution found. gap is zero,True,False,20260317_124727
+concorde,zurich_200_22,200,42072.0,0.31577008101157844,Success: Exact solution found. gap is zero,True,False,20260317_124729
+concorde,zurich_200_23,200,41398.0,1.4011684719007462,Success: Exact solution found. gap is zero,True,False,20260317_124729
+concorde,zurich_200_24,200,42799.0,0.4012703720945865,Success: Exact solution found. gap is zero,True,False,20260317_124731
+concorde,zurich_200_25,200,43944.0,0.9272969709709287,Success: Exact solution found. gap is zero,True,False,20260317_124731
+concorde,zurich_200_26,200,41535.0,0.3403561320155859,Success: Exact solution found. gap is zero,True,False,20260317_124732
+concorde,zurich_200_27,200,40127.0,1.5428007419686764,Success: Exact solution found. gap is zero,True,False,20260317_124733
+concorde,zurich_200_28,200,44120.0,0.5408687579911202,Success: Exact solution found. gap is zero,True,False,20260317_124734
+concorde,zurich_200_29,200,41526.0,0.4876498740632087,Success: Exact solution found. gap is zero,True,False,20260317_124735
+concorde,zurich_200_3,200,44368.0,0.462457476882264,Success: Exact solution found. gap is zero,True,False,20260317_124735
+concorde,zurich_200_4,200,41891.0,0.31235558982007205,Success: Exact solution found. gap is zero,True,False,20260317_124736
+concorde,zurich_200_5,200,42916.0,0.27145114191807806,Success: Exact solution found. gap is zero,True,False,20260317_124736
+concorde,zurich_200_6,200,44826.0,0.3809848160017282,Success: Exact solution found. gap is zero,True,False,20260317_124736
+concorde,zurich_200_7,200,42367.0,3.7860606238245964,Success: Exact solution found. gap is zero,True,False,20260317_124737
+concorde,zurich_200_8,200,42328.0,1.074636538978666,Success: Exact solution found. gap is zero,True,False,20260317_124741
+concorde,zurich_200_9,200,43256.0,0.4498102408833802,Success: Exact solution found. gap is zero,True,False,20260317_124742
+concorde,zurich_500_0,500,70602.0,5.175318950088695,Success: Exact solution found. gap is zero,True,False,20260317_124742
+concorde,zurich_500_1,500,72347.0,3.818527597002685,Success: Exact solution found. gap is zero,True,False,20260317_124748
+concorde,zurich_500_10,500,68871.0,9.722576663130894,Success: Exact solution found. gap is zero,True,False,20260317_124752
+concorde,zurich_500_11,500,70767.0,3.5374675078783184,Success: Exact solution found. gap is zero,True,False,20260317_124802
+concorde,zurich_500_12,500,68607.0,15.841293439967558,Success: Exact solution found. gap is zero,True,False,20260317_124805
+concorde,zurich_500_13,500,71137.0,95.23459602682851,Success: Exact solution found. gap is zero,True,False,20260317_125128
+concorde,zurich_500_14,500,69640.0,20.290147395106032,Success: Exact solution found. gap is zero,True,False,20260317_125304
+concorde,zurich_500_15,500,68529.0,6.933687197975814,Success: Exact solution found. gap is zero,True,False,20260317_125324
+concorde,zurich_500_16,500,68442.0,11.711728007998317,Success: Exact solution found. gap is zero,True,False,20260317_125331
+concorde,zurich_500_17,500,72541.0,12.357109955977648,Success: Exact solution found. gap is zero,True,False,20260317_125343
+concorde,zurich_500_18,500,71721.0,7.481601238949224,Success: Exact solution found. gap is zero,True,False,20260317_125356
+concorde,zurich_500_19,500,70073.0,31.816076618852094,Success: Exact solution found. gap is zero,True,False,20260317_125403
+concorde,zurich_500_2,500,69537.0,4.507317133946344,Success: Exact solution found. gap is zero,True,False,20260317_125435
+concorde,zurich_500_20,500,66990.0,16.430372601142153,Success: Exact solution found. gap is zero,True,False,20260317_125440
+concorde,zurich_500_21,500,66718.0,16.0416733850725,Success: Exact solution found. gap is zero,True,False,20260317_125457
+concorde,zurich_500_22,500,68650.0,1.8791871620342135,Success: Exact solution found. gap is zero,True,False,20260317_125513
+concorde,zurich_500_23,500,69040.0,10.471193992998451,Success: Exact solution found. gap is zero,True,False,20260317_125515
+concorde,zurich_500_24,500,68139.0,6.786508019082248,Success: Exact solution found. gap is zero,True,False,20260317_125526
+concorde,zurich_500_25,500,71207.0,6.30263258703053,Success: Exact solution found. gap is zero,True,False,20260317_125532
+concorde,zurich_500_26,500,67616.0,11.42004927713424,Success: Exact solution found. gap is zero,True,False,20260317_125539
+concorde,zurich_500_27,500,68775.0,2.734519538935274,Success: Exact solution found. gap is zero,True,False,20260317_125551
+concorde,zurich_500_28,500,68801.0,5.463456477969885,Success: Exact solution found. gap is zero,True,False,20260317_125553
+concorde,zurich_500_29,500,72256.0,3.9757982781156898,Success: Exact solution found. gap is zero,True,False,20260317_125559
+concorde,zurich_500_3,500,71901.0,8.834766027983278,Success: Exact solution found. gap is zero,True,False,20260317_125603
+concorde,zurich_500_4,500,71208.0,45.79859888320789,Success: Exact solution found. gap is zero,True,False,20260317_125612
+concorde,zurich_500_5,500,67232.0,11.439151450060308,Success: Exact solution found. gap is zero,True,False,20260317_125658
+concorde,zurich_500_6,500,67505.0,12.076363757951185,Success: Exact solution found. gap is zero,True,False,20260317_125710
+concorde,zurich_500_7,500,65817.0,22.40236141299829,Success: Exact solution found. gap is zero,True,False,20260317_125722
+concorde,zurich_500_8,500,68964.0,2.0022981360089034,Success: Exact solution found. gap is zero,True,False,20260317_125745
+concorde,zurich_500_9,500,68404.0,16.328790342900902,Success: Exact solution found. gap is zero,True,False,20260317_125747
+concorde,zurich_1000_0,1000,101741.0,84.80520686600357,Success: Exact solution found. gap is zero,True,False,20260317_125804
+concorde,zurich_1000_1,1000,97291.0,13.580022281967103,Success: Exact solution found. gap is zero,True,False,20260317_125929
+concorde,zurich_1000_10,1000,101576.0,23.87312811310403,Success: Exact solution found. gap is zero,True,False,20260317_125944
+concorde,zurich_1000_11,1000,101733.0,39.21489244699478,Success: Exact solution found. gap is zero,True,False,20260317_130008
+concorde,zurich_1000_12,1000,102450.0,94.7395904851146,Success: Exact solution found. gap is zero,True,False,20260317_130048
+concorde,zurich_1000_13,1000,100292.0,100.5406920351088,Success: Exact solution found. gap is zero,True,False,20260317_130224
+concorde,zurich_1000_14,1000,100240.0,50.86169753107242,Success: Exact solution found. gap is zero,True,False,20260317_130405
+concorde,zurich_1000_15,1000,99745.0,79.05734696984291,Success: Exact solution found. gap is zero,True,False,20260317_130457
+concorde,zurich_1000_16,1000,101317.0,26.469238572055474,Success: Exact solution found. gap is zero,True,False,20260317_130616
+concorde,zurich_1000_17,1000,99355.0,47.528892423026264,Success: Exact solution found. gap is zero,True,False,20260317_130644
+concorde,zurich_1000_18,1000,102214.0,14.839999279938638,Success: Exact solution found. gap is zero,True,False,20260317_130732
+concorde,zurich_1000_19,1000,98202.0,30.987601110013202,Success: Exact solution found. gap is zero,True,False,20260317_130748
+concorde,zurich_1000_2,1000,97736.0,12.148919267114252,Success: Exact solution found. gap is zero,True,False,20260317_130819
+concorde,zurich_1000_20,1000,98479.0,51.97538065491244,Success: Exact solution found. gap is zero,True,False,20260317_130832
+concorde,zurich_1000_21,1000,101514.0,97.74599260394461,Success: Exact solution found. gap is zero,True,False,20260317_130925
+concorde,zurich_1000_22,1000,100964.0,43.303128813859075,Success: Exact solution found. gap is zero,True,False,20260317_131103
+concorde,zurich_1000_23,1000,101185.0,187.61687040887773,Success: Exact solution found. gap is zero,True,False,20260317_131147
+concorde,zurich_1000_24,1000,100940.0,131.97831872105598,Success: Exact solution found. gap is zero,True,False,20260317_131456
+concorde,zurich_1000_25,1000,100681.0,25.411717153154314,Success: Exact solution found. gap is zero,True,False,20260317_131708
+concorde,zurich_1000_26,1000,101892.0,127.29586551198736,Success: Exact solution found. gap is zero,True,False,20260317_131734
+concorde,zurich_1000_27,1000,96217.0,28.617120841983706,Success: Exact solution found. gap is zero,True,False,20260317_131942
+concorde,zurich_1000_28,1000,103166.0,289.0599469509907,Success: Exact solution found. gap is zero,True,False,20260317_132012
+concorde,zurich_1000_29,1000,97155.0,12.747762094950303,Success: Exact solution found. gap is zero,True,False,20260317_132502
+concorde,zurich_1000_3,1000,97708.0,45.59915719204582,Success: Exact solution found. gap is zero,True,False,20260317_132515
+concorde,zurich_1000_4,1000,103400.0,52.745583408046514,Success: Exact solution found. gap is zero,True,False,20260317_132601
+concorde,zurich_1000_5,1000,101268.0,41.48357677110471,Success: Exact solution found. gap is zero,True,False,20260317_132655
+concorde,zurich_1000_6,1000,100700.0,15.956739771878347,Success: Exact solution found. gap is zero,True,False,20260317_132737
+concorde,zurich_1000_7,1000,99234.0,226.26897911401466,Success: Exact solution found. gap is zero,True,False,20260317_132754
+concorde,zurich_1000_8,1000,100198.0,20.954545778920874,Success: Exact solution found. gap is zero,True,False,20260317_133141
+concorde,zurich_1000_9,1000,97672.0,26.80755576491356,Success: Exact solution found. gap is zero,True,False,20260317_133203
+concorde,zurich_2000_0,2000,147138.0,232.04484148998745,Success: Exact solution found. gap is zero,True,False,20260317_133232
+concorde,zurich_2000_1,2000,142898.0,166.9483041439671,Success: Exact solution found. gap is zero,True,False,20260317_133627
+concorde,zurich_2000_10,2000,140446.0,614.951075397199,Success: Exact solution found. gap is zero,True,False,20260317_133917
+concorde,zurich_2000_11,2000,145236.0,303.7996516539715,Success: Solution found with non-zero gap,True,False,20260317_161852
+concorde,zurich_2000_12,2000,146592.0,519.705092398217,Success: Exact solution found. gap is zero,True,False,20260317_162425
+concorde,zurich_2000_13,2000,143704.0,185.06544509902596,Success: Exact solution found. gap is zero,True,False,20260317_163307
+concorde,zurich_2000_14,2000,0.0,1200.005392424995,TIMEOUT,False,True,20260317_163616
+concorde,zurich_2000_15,2000,0.0,1200.0064000918064,TIMEOUT,False,True,20260317_213512
+concorde,zurich_2000_16,2000,0.0,1200.0479457080364,TIMEOUT,False,True,20260317_231021
+concorde,zurich_2000_17,2000,0.0,1200.008239692077,TIMEOUT,False,True,20260318_065945
+concorde,zurich_2000_18,2000,139956.0,185.41439609602094,Success: Exact solution found. gap is zero,True,False,20260318_071948
+concorde,zurich_2000_19,2000,147944.0,485.71570533001795,Success: Exact solution found. gap is zero,True,False,20260318_072256
+concorde,zurich_2000_2,2000,144539.0,128.10610380209982,Success: Exact solution found. gap is zero,True,False,20260318_073105
+concorde,zurich_2000_20,2000,148314.0,278.08430015994236,Success: Exact solution found. gap is zero,True,False,20260318_073315
+concorde,zurich_2000_21,2000,0.0,1200.0143396968488,TIMEOUT,False,True,20260318_073756
+concorde,zurich_2000_22,2000,143601.0,312.84053347609006,Success: Exact solution found. gap is zero,True,False,20260318_075759
+concorde,zurich_2000_23,2000,144108.0,158.28084482299164,Success: Exact solution found. gap is zero,True,False,20260318_080315
+concorde,zurich_2000_24,2000,141959.0,746.7637895869557,Success: Exact solution found. gap is zero,True,False,20260318_080556
+concorde,zurich_2000_25,2000,145450.0,908.1954002128914,Success: Solution found with non-zero gap,True,False,20260318_081825
+concorde,zurich_2000_26,2000,0.0,1200.0190725862049,TIMEOUT,False,True,20260318_083336
+concorde,zurich_2000_27,2000,145326.0,78.98170162993483,Success: Exact solution found. gap is zero,True,False,20260318_085339
+concorde,zurich_2000_28,2000,143908.0,1109.4174775010906,Success: Exact solution found. gap is zero,True,False,20260318_085501
+concorde,zurich_2000_29,2000,146138.0,91.87942328094505,Success: Exact solution found. gap is zero,True,False,20260318_091333
+concorde,zurich_2000_3,2000,0.0,1200.009084417019,TIMEOUT,False,True,20260318_091508
+concorde,zurich_2000_4,2000,0.0,1200.019254222978,TIMEOUT,False,True,20260318_093511
+concorde,zurich_2000_5,2000,144350.0,585.5515361048747,Success: Exact solution found. gap is zero,True,False,20260318_095514
+concorde,zurich_2000_6,2000,0.0,1200.0061882149894,TIMEOUT,False,True,20260318_100503
+concorde,zurich_2000_7,2000,145139.0,143.97589729703031,Success: Exact solution found. gap is zero,True,False,20260318_102506
+concorde,zurich_2000_8,2000,141207.0,853.7819265259895,Success: Solution found with non-zero gap,True,False,20260318_102732
+concorde,zurich_2000_9,2000,0.0,1200.0362793949898,TIMEOUT,False,True,20260318_104149
+concorde,zurich_5000_0,5000,0.0,1200.0187422810122,TIMEOUT,False,True,20260318_110206
+concorde,zurich_5000_1,5000,0.0,1200.0478283900302,TIMEOUT,False,True,20260318_112224
+concorde,zurich_5000_10,5000,0.0,1200.0449313600548,TIMEOUT,False,True,20260318_114242
+concorde,zurich_5000_11,5000,0.0,1200.0540528530255,TIMEOUT,False,True,20260318_120300
+concorde,zurich_5000_12,5000,0.0,1200.078954281984,TIMEOUT,False,True,20260318_122318
+cuOpt,zurich_10_0,10,8338.0,0.08329924498684704,success,True,False,20260317_213237
+cuOpt,zurich_10_1,10,8079.0,2.015366954030469,success,True,False,20260317_213237
+cuOpt,zurich_10_10,10,10613.0,0.08311902987770736,success,True,False,20260317_213239
+cuOpt,zurich_10_11,10,9279.0,2.0159020088613033,success,True,False,20260317_213239
+cuOpt,zurich_10_12,10,6821.0,2.0151898039039224,success,True,False,20260317_213241
+cuOpt,zurich_10_13,10,9043.0,0.08577044494450092,success,True,False,20260317_213243
+cuOpt,zurich_10_14,10,8308.0,2.014914355939254,success,True,False,20260317_213244
+cuOpt,zurich_10_15,10,8000.0,2.0141399311833084,success,True,False,20260317_213246
+cuOpt,zurich_10_16,10,10601.0,2.0172361119184643,success,True,False,20260317_213248
+cuOpt,zurich_10_17,10,8587.0,2.0225972500629723,success,True,False,20260317_213250
+cuOpt,zurich_10_18,10,8686.0,0.09281146200373769,success,True,False,20260317_213252
+cuOpt,zurich_10_19,10,9218.0,2.0158944849390537,success,True,False,20260317_213252
+cuOpt,zurich_10_2,10,7986.0,0.08725993288680911,success,True,False,20260317_213254
+cuOpt,zurich_10_20,10,9355.0,2.0166845228523016,success,True,False,20260317_213254
+cuOpt,zurich_10_21,10,11457.0,0.0901010821107775,success,True,False,20260317_213256
+cuOpt,zurich_10_22,10,8763.0,0.08304242114536464,success,True,False,20260317_213256
+cuOpt,zurich_10_23,10,9434.0,0.0846259871032089,success,True,False,20260317_213256
+cuOpt,zurich_10_24,10,9311.0,0.08348141121678054,success,True,False,20260317_213257
+cuOpt,zurich_10_25,10,7720.0,2.015416773967445,success,True,False,20260317_213257
+cuOpt,zurich_10_26,10,9742.0,0.08420303813181818,success,True,False,20260317_213259
+cuOpt,zurich_10_27,10,8545.0,0.08885352313518524,success,True,False,20260317_213259
+cuOpt,zurich_10_28,10,10153.0,2.0140611638780683,success,True,False,20260317_213259
+cuOpt,zurich_10_29,10,9583.0,0.08707431587390602,success,True,False,20260317_213301
+cuOpt,zurich_10_3,10,8888.0,2.014639819972217,success,True,False,20260317_213301
+cuOpt,zurich_10_4,10,9048.0,2.016901809955016,success,True,False,20260317_213303
+cuOpt,zurich_10_5,10,10603.0,2.012181972153485,success,True,False,20260317_213305
+cuOpt,zurich_10_6,10,9627.0,0.08150003594346344,success,True,False,20260317_213307
+cuOpt,zurich_10_7,10,7824.0,0.0768675240688026,success,True,False,20260317_213307
+cuOpt,zurich_10_8,10,8282.0,0.08443978801369667,success,True,False,20260317_213307
+cuOpt,zurich_10_9,10,7373.0,0.08742778492160141,success,True,False,20260317_213308
+cuOpt,zurich_25_0,25,12831.0,0.13133271201513708,success,True,False,20260317_213308
+cuOpt,zurich_25_1,25,14823.0,5.018770992057398,success,True,False,20260317_213308
+cuOpt,zurich_25_10,25,15533.0,5.019149551866576,success,True,False,20260317_213313
+cuOpt,zurich_25_11,25,14312.0,5.016055668937042,success,True,False,20260317_213318
+cuOpt,zurich_25_12,25,15656.0,5.017288058064878,success,True,False,20260317_213323
+cuOpt,zurich_25_13,25,13365.0,5.017465353012085,success,True,False,20260317_213328
+cuOpt,zurich_25_14,25,15735.0,5.016775042982772,success,True,False,20260317_213333
+cuOpt,zurich_25_15,25,14470.0,5.019528780132532,success,True,False,20260317_213338
+cuOpt,zurich_25_16,25,13169.0,5.017949783010408,success,True,False,20260317_213343
+cuOpt,zurich_25_17,25,13499.0,5.018465366913006,success,True,False,20260317_213349
+cuOpt,zurich_25_18,25,13720.0,5.0204942668788135,success,True,False,20260317_213354
+cuOpt,zurich_25_19,25,15703.0,5.017340402118862,success,True,False,20260317_213359
+cuOpt,zurich_25_2,25,12195.0,5.019304814981297,success,True,False,20260317_213404
+cuOpt,zurich_25_20,25,16196.0,5.016497018979862,success,True,False,20260317_213409
+cuOpt,zurich_25_21,25,12448.0,5.016419142019004,success,True,False,20260317_213414
+cuOpt,zurich_25_22,25,16103.0,5.0201127640903,success,True,False,20260317_213419
+cuOpt,zurich_25_23,25,14702.0,5.017428484046832,success,True,False,20260317_213424
+cuOpt,zurich_25_24,25,15357.0,5.0167509850580245,success,True,False,20260317_213429
+cuOpt,zurich_25_25,25,13583.0,5.015780569054186,success,True,False,20260317_213434
+cuOpt,zurich_25_26,25,15892.0,5.01110573601909,success,True,False,20260317_213439
+cuOpt,zurich_25_27,25,15766.0,5.022103104973212,success,True,False,20260317_213444
+cuOpt,zurich_25_28,25,15267.0,5.017329002963379,success,True,False,20260317_213449
+cuOpt,zurich_25_29,25,16808.0,5.018397225998342,success,True,False,20260317_213455
+cuOpt,zurich_25_3,25,15619.0,5.017292040167376,success,True,False,20260317_213500
+cuOpt,zurich_25_4,25,13829.0,5.021827157121152,success,True,False,20260317_213505
+cuOpt,zurich_25_5,25,15108.0,5.022370077902451,success,True,False,20260317_213510
+cuOpt,zurich_25_6,25,15427.0,5.016272965120152,success,True,False,20260317_213515
+cuOpt,zurich_25_7,25,14489.0,0.13672412489540875,success,True,False,20260317_213520
+cuOpt,zurich_25_8,25,16200.0,5.01591317798011,success,True,False,20260317_213520
+cuOpt,zurich_25_9,25,13932.0,5.0159559259191155,success,True,False,20260317_213525
+cuOpt,zurich_50_0,50,22511.0,10.019971317844465,success,True,False,20260317_213530
+cuOpt,zurich_50_1,50,23246.0,10.01647248188965,success,True,False,20260317_213540
+cuOpt,zurich_50_10,50,21336.0,10.016527879051864,success,True,False,20260317_213550
+cuOpt,zurich_50_11,50,21700.0,10.018211290007457,success,True,False,20260317_213601
+cuOpt,zurich_50_12,50,19193.0,10.021810739999637,success,True,False,20260317_213611
+cuOpt,zurich_50_13,50,18981.0,10.017659730976447,success,True,False,20260317_213621
+cuOpt,zurich_50_14,50,22869.0,10.021891659824178,success,True,False,20260317_213631
+cuOpt,zurich_50_15,50,23528.0,10.018430704949424,success,True,False,20260317_213641
+cuOpt,zurich_50_16,50,19233.0,10.016332976985723,success,True,False,20260317_213651
+cuOpt,zurich_50_17,50,21068.0,10.018026962177828,success,True,False,20260317_213701
+cuOpt,zurich_50_18,50,19828.0,10.021497461944818,success,True,False,20260317_213711
+cuOpt,zurich_50_19,50,20464.0,10.017861030064523,success,True,False,20260317_213721
+cuOpt,zurich_50_2,50,21659.0,10.020514546195045,success,True,False,20260317_213732
+cuOpt,zurich_50_20,50,20211.0,10.013955118134618,success,True,False,20260317_213742
+cuOpt,zurich_50_21,50,22708.0,10.022138393949717,success,True,False,20260317_213752
+cuOpt,zurich_50_22,50,20515.0,10.020289150997996,success,True,False,20260317_213802
+cuOpt,zurich_50_23,50,21753.0,10.023463719990104,success,True,False,20260317_213812
+cuOpt,zurich_50_24,50,20850.0,10.018977802945301,success,True,False,20260317_213822
+cuOpt,zurich_50_25,50,19633.0,10.019482907140628,success,True,False,20260317_213832
+cuOpt,zurich_50_26,50,22023.0,10.019540989072993,success,True,False,20260317_213842
+cuOpt,zurich_50_27,50,20354.0,10.018211094895378,success,True,False,20260317_213852
+cuOpt,zurich_50_28,50,21669.0,10.024921004893258,success,True,False,20260317_213903
+cuOpt,zurich_50_29,50,20760.0,10.020506042055786,success,True,False,20260317_213913
+cuOpt,zurich_50_3,50,21818.0,10.015107512939721,success,True,False,20260317_213923
+cuOpt,zurich_50_4,50,20086.0,10.016982832923532,success,True,False,20260317_213933
+cuOpt,zurich_50_5,50,18406.0,10.018740310100839,success,True,False,20260317_213943
+cuOpt,zurich_50_6,50,23413.0,10.017677058000118,success,True,False,20260317_213953
+cuOpt,zurich_50_7,50,21065.0,10.020094841951504,success,True,False,20260317_214003
+cuOpt,zurich_50_8,50,21188.0,10.017667043022811,success,True,False,20260317_214013
+cuOpt,zurich_50_9,50,20355.0,10.01575776305981,success,True,False,20260317_214023
+cuOpt,zurich_100_0,100,30225.0,20.016142210923135,success,True,False,20260317_214034
+cuOpt,zurich_100_1,100,30382.0,20.02690372709185,success,True,False,20260317_214054
+cuOpt,zurich_100_10,100,29754.0,20.026893062982708,success,True,False,20260317_214114
+cuOpt,zurich_100_11,100,30920.0,20.021426944062114,success,True,False,20260317_214134
+cuOpt,zurich_100_12,100,27916.0,20.023761255899444,success,True,False,20260317_214154
+cuOpt,zurich_100_13,100,31640.0,20.03240419900976,success,True,False,20260317_214214
+cuOpt,zurich_100_14,100,32423.0,20.02374005294405,success,True,False,20260317_214235
+cuOpt,zurich_100_15,100,28143.0,20.02315368782729,success,True,False,20260317_214255
+cuOpt,zurich_100_16,100,31009.0,20.0216653929092,success,True,False,20260317_214315
+cuOpt,zurich_100_17,100,32455.0,20.0163271848578,success,True,False,20260317_214335
+cuOpt,zurich_100_18,100,28065.0,20.020612738793716,success,True,False,20260317_214356
+cuOpt,zurich_100_19,100,30148.0,20.02418373990804,success,True,False,20260317_214416
+cuOpt,zurich_100_2,100,30984.0,20.020580746000633,success,True,False,20260317_214436
+cuOpt,zurich_100_20,100,28463.0,20.021891521988437,success,True,False,20260317_214456
+cuOpt,zurich_100_21,100,32236.0,20.02379348105751,success,True,False,20260317_214516
+cuOpt,zurich_100_22,100,29091.0,20.01936828205362,success,True,False,20260317_214537
+cuOpt,zurich_100_23,100,29992.0,20.021059656050056,success,True,False,20260317_214557
+cuOpt,zurich_100_24,100,30893.0,20.02084674919024,success,True,False,20260317_214617
+cuOpt,zurich_100_25,100,28927.0,20.019054568139836,success,True,False,20260317_214637
+cuOpt,zurich_100_26,100,29637.0,20.023980176076293,success,True,False,20260317_214657
+cuOpt,zurich_100_27,100,28945.0,20.02304444811307,success,True,False,20260317_214718
+cuOpt,zurich_100_28,100,28343.0,20.022987008094788,success,True,False,20260317_214738
+cuOpt,zurich_100_29,100,29809.0,20.025426073931158,success,True,False,20260317_214758
+cuOpt,zurich_100_3,100,27839.0,20.015350774861872,success,True,False,20260317_214818
+cuOpt,zurich_100_4,100,30546.0,20.02222533011809,success,True,False,20260317_214838
+cuOpt,zurich_100_5,100,28382.0,20.02340863412246,success,True,False,20260317_214859
+cuOpt,zurich_100_6,100,28168.0,20.02210868895054,success,True,False,20260317_214919
+cuOpt,zurich_100_7,100,29742.0,20.025690557900816,success,True,False,20260317_214939
+cuOpt,zurich_100_8,100,31225.0,20.017028575064614,success,True,False,20260317_214959
+cuOpt,zurich_100_9,100,30355.0,20.01664018095471,success,True,False,20260317_215019
+cuOpt,zurich_200_0,200,43943.0,40.026927103986964,success,True,False,20260317_215040
+cuOpt,zurich_200_1,200,41414.0,40.03096151491627,success,True,False,20260317_215120
+cuOpt,zurich_200_10,200,44211.0,40.05536732194014,success,True,False,20260317_215200
+cuOpt,zurich_200_11,200,42643.0,40.04142602393404,success,True,False,20260317_215241
+cuOpt,zurich_200_12,200,41562.0,40.0344764359761,success,True,False,20260317_215321
+cuOpt,zurich_200_13,200,40153.0,40.04440526198596,success,True,False,20260317_215402
+cuOpt,zurich_200_14,200,44324.0,40.02980188187212,success,True,False,20260317_215442
+cuOpt,zurich_200_15,200,42942.0,40.05394220002927,success,True,False,20260317_215522
+cuOpt,zurich_200_16,200,43774.0,40.03203627699986,success,True,False,20260317_215603
+cuOpt,zurich_200_17,200,41711.0,40.0260977500584,success,True,False,20260317_215643
+cuOpt,zurich_200_18,200,41077.0,40.06559720495716,success,True,False,20260317_215724
+cuOpt,zurich_200_19,200,42950.0,40.02685795491561,success,True,False,20260317_215804
+cuOpt,zurich_200_2,200,43125.0,40.046897531021386,success,True,False,20260317_215845
+cuOpt,zurich_200_20,200,41659.0,40.11078138113953,success,True,False,20260317_215925
+cuOpt,zurich_200_21,200,42834.0,40.05462398403324,success,True,False,20260317_220006
+cuOpt,zurich_200_22,200,42586.0,40.02919194987044,success,True,False,20260317_220046
+cuOpt,zurich_200_23,200,41721.0,40.01957582891919,success,True,False,20260317_220126
+cuOpt,zurich_200_24,200,42873.0,40.04256525589153,success,True,False,20260317_220207
+cuOpt,zurich_200_25,200,44089.0,40.06901320698671,success,True,False,20260317_220247
+cuOpt,zurich_200_26,200,41752.0,40.024871421046555,success,True,False,20260317_220327
+cuOpt,zurich_200_27,200,40156.0,40.023806443903595,success,True,False,20260317_220408
+cuOpt,zurich_200_28,200,44120.0,40.07007937505841,success,True,False,20260317_220448
+cuOpt,zurich_200_29,200,41780.0,40.061984685016796,success,True,False,20260317_220528
+cuOpt,zurich_200_3,200,44435.0,40.02794467401691,success,True,False,20260317_220609
+cuOpt,zurich_200_4,200,42237.0,40.07094668201171,success,True,False,20260317_220649
+cuOpt,zurich_200_5,200,42916.0,40.03939953702502,success,True,False,20260317_220730
+cuOpt,zurich_200_6,200,45187.0,40.04499026713893,success,True,False,20260317_220810
+cuOpt,zurich_200_7,200,42526.0,40.0755889180582,success,True,False,20260317_220851
+cuOpt,zurich_200_8,200,42500.0,40.07439831807278,success,True,False,20260317_220931
+cuOpt,zurich_200_9,200,43422.0,40.070074955932796,success,True,False,20260317_221011
+cuOpt,zurich_500_0,500,71456.0,100.03127032704651,success,True,False,20260317_221052
+cuOpt,zurich_500_1,500,73914.0,100.1755346681457,success,True,False,20260317_221233
+cuOpt,zurich_500_10,500,69839.0,100.05501945898868,success,True,False,20260317_221414
+cuOpt,zurich_500_11,500,72130.0,100.10700282105245,success,True,False,20260317_221555
+cuOpt,zurich_500_12,500,69355.0,100.1586900879629,success,True,False,20260317_221736
+cuOpt,zurich_500_13,500,71871.0,100.25659253401682,success,True,False,20260317_221918
+cuOpt,zurich_500_14,500,70418.0,100.09483414515853,success,True,False,20260317_222059
+cuOpt,zurich_500_15,500,69573.0,100.11681259796023,success,True,False,20260317_222240
+cuOpt,zurich_500_16,500,69123.0,100.06803113617934,success,True,False,20260317_222421
+cuOpt,zurich_500_17,500,73833.0,100.100936985109,success,True,False,20260317_222602
+cuOpt,zurich_500_18,500,73035.0,100.03972494299524,success,True,False,20260317_222743
+cuOpt,zurich_500_19,500,70924.0,100.20073863584548,success,True,False,20260317_222924
+cuOpt,zurich_500_2,500,70840.0,100.11903384607285,success,True,False,20260317_223105
+cuOpt,zurich_500_20,500,68233.0,100.18153889407404,success,True,False,20260317_223246
+cuOpt,zurich_500_21,500,68047.0,100.0353748910129,success,True,False,20260317_223427
+cuOpt,zurich_500_22,500,69440.0,100.12596038496122,success,True,False,20260317_223608
+cuOpt,zurich_500_23,500,69813.0,100.04290224378929,success,True,False,20260317_223749
+cuOpt,zurich_500_24,500,69061.0,100.21336547587998,success,True,False,20260317_223930
+cuOpt,zurich_500_25,500,72388.0,100.19974830909632,success,True,False,20260317_224111
+cuOpt,zurich_500_26,500,68517.0,100.08763478510082,success,True,False,20260317_224252
+cuOpt,zurich_500_27,500,69966.0,100.12155582406558,success,True,False,20260317_224433
+cuOpt,zurich_500_28,500,69684.0,100.04885350400582,success,True,False,20260317_224614
+cuOpt,zurich_500_29,500,73201.0,100.03286402486265,success,True,False,20260317_224755
+cuOpt,zurich_500_3,500,72762.0,100.12269974080846,success,True,False,20260317_224936
+cuOpt,zurich_500_4,500,72005.0,100.07768510305323,success,True,False,20260317_225117
+cuOpt,zurich_500_5,500,68342.0,100.1450074929744,success,True,False,20260317_225258
+cuOpt,zurich_500_6,500,68568.0,100.2381616588682,success,True,False,20260317_225439
+cuOpt,zurich_500_7,500,66300.0,100.05020921002142,success,True,False,20260317_225620
+cuOpt,zurich_500_8,500,69638.0,100.04857201199047,success,True,False,20260317_225801
+cuOpt,zurich_500_9,500,69249.0,100.09285837598145,success,True,False,20260317_225942
+cuOpt,zurich_1000_0,1000,104388.0,200.40255046403036,success,True,False,20260317_230123
+cuOpt,zurich_1000_1,1000,100388.0,200.78161290311255,success,True,False,20260317_230446
+cuOpt,zurich_1000_10,1000,105044.0,200.48453392693773,success,True,False,20260317_230809
+cuOpt,zurich_1000_11,1000,104468.0,200.4589081001468,success,True,False,20260317_231131
+cuOpt,zurich_1000_12,1000,104772.0,200.5139059331268,success,True,False,20260317_231454
+cuOpt,zurich_1000_13,1000,102953.0,200.37719460506923,success,True,False,20260317_231817
+cuOpt,zurich_1000_14,1000,102839.0,200.395577208139,success,True,False,20260317_232139
+cuOpt,zurich_1000_15,1000,102282.0,200.51140655903146,success,True,False,20260317_232502
+cuOpt,zurich_1000_16,1000,104105.0,200.43424778198823,success,True,False,20260317_232824
+cuOpt,zurich_1000_17,1000,101494.0,200.15811885311268,success,True,False,20260317_233147
+cuOpt,zurich_1000_18,1000,104997.0,200.10616286611184,success,True,False,20260317_233509
+cuOpt,zurich_1000_19,1000,101722.0,200.21497995289974,success,True,False,20260317_233831
+cuOpt,zurich_1000_2,1000,101289.0,200.41820957907476,success,True,False,20260317_234154
+cuOpt,zurich_1000_20,1000,100969.0,200.10561577393673,success,True,False,20260317_234516
+cuOpt,zurich_1000_21,1000,104851.0,200.37298784893937,success,True,False,20260317_234839
+cuOpt,zurich_1000_22,1000,105025.0,200.76144519192167,success,True,False,20260317_235201
+cuOpt,zurich_1000_23,1000,104206.0,200.52780242497101,success,True,False,20260317_235524
+cuOpt,zurich_1000_24,1000,103881.0,200.38462923304178,success,True,False,20260317_235847
+cuOpt,zurich_1000_25,1000,103563.0,200.4870084139984,success,True,False,20260318_000209
+cuOpt,zurich_1000_26,1000,105077.0,200.56134881894104,success,True,False,20260318_000532
+cuOpt,zurich_1000_27,1000,99560.0,200.43963052984327,success,True,False,20260318_000854
+cuOpt,zurich_1000_28,1000,105827.0,200.48933991091326,success,True,False,20260318_001217
+cuOpt,zurich_1000_29,1000,100447.0,200.53052154299803,success,True,False,20260318_001539
+cuOpt,zurich_1000_3,1000,101188.0,200.49184820312075,success,True,False,20260318_001902
+cuOpt,zurich_1000_4,1000,107043.0,200.31372146005742,success,True,False,20260318_002225
+cuOpt,zurich_1000_5,1000,105435.0,200.5742346108891,success,True,False,20260318_002547
+cuOpt,zurich_1000_6,1000,103997.0,200.49538941681385,success,True,False,20260318_002910
+cuOpt,zurich_1000_7,1000,102696.0,200.33188334782608,success,True,False,20260318_003232
+cuOpt,zurich_1000_8,1000,102802.0,200.10661495896056,success,True,False,20260318_003555
+cuOpt,zurich_1000_9,1000,100878.0,200.66432914999314,success,True,False,20260318_003917
+cuOpt,zurich_2000_0,2000,154312.0,400.5497619539965,success,True,False,20260318_004242
+cuOpt,zurich_2000_1,2000,149150.0,400.3447548309341,success,True,False,20260318_004928
+cuOpt,zurich_2000_10,2000,147463.0,400.13870242610574,success,True,False,20260318_005614
+cuOpt,zurich_2000_11,2000,151744.0,401.0307740098797,success,True,False,20260318_010300
+cuOpt,zurich_2000_12,2000,153863.0,400.51296369102784,success,True,False,20260318_010947
+cuOpt,zurich_2000_13,2000,151227.0,400.6145452300552,success,True,False,20260318_011634
+cuOpt,zurich_2000_14,2000,150527.0,400.92852316005155,success,True,False,20260318_012320
+cuOpt,zurich_2000_15,2000,151337.0,400.2220934680663,success,True,False,20260318_013007
+cuOpt,zurich_2000_16,2000,152107.0,400.9956827501301,success,True,False,20260318_013653
+cuOpt,zurich_2000_17,2000,149525.0,400.3418258558959,success,True,False,20260318_014340
+cuOpt,zurich_2000_18,2000,146307.0,400.139212470036,success,True,False,20260318_015026
+cuOpt,zurich_2000_19,2000,154500.0,400.5778378939722,success,True,False,20260318_015712
+cuOpt,zurich_2000_2,2000,151376.0,400.2188883800991,success,True,False,20260318_020358
+cuOpt,zurich_2000_20,2000,154835.0,401.0491133041214,success,True,False,20260318_021044
+cuOpt,zurich_2000_21,2000,150237.0,400.11170182400383,success,True,False,20260318_021731
+cuOpt,zurich_2000_22,2000,150414.0,400.62707789684646,success,True,False,20260318_022417
+cuOpt,zurich_2000_23,2000,151084.0,400.1565737859346,success,True,False,20260318_023104
+cuOpt,zurich_2000_24,2000,147778.0,400.5247050509788,success,True,False,20260318_023750
+cuOpt,zurich_2000_25,2000,151326.0,400.96046584891155,success,True,False,20260318_024436
+cuOpt,zurich_2000_26,2000,149780.0,400.75381364813074,success,True,False,20260318_025123
+cuOpt,zurich_2000_27,2000,152037.0,400.8726155629847,success,True,False,20260318_025809
+cuOpt,zurich_2000_28,2000,150660.0,400.84166426816955,success,True,False,20260318_030456
+cuOpt,zurich_2000_29,2000,153107.0,400.6370273909997,success,True,False,20260318_031143
+cuOpt,zurich_2000_3,2000,151317.0,400.65454042097554,success,True,False,20260318_031829
+cuOpt,zurich_2000_4,2000,151370.0,400.8875609319657,success,True,False,20260318_032516
+cuOpt,zurich_2000_5,2000,150528.0,400.25430876994506,success,True,False,20260318_010304
+cuOpt,zurich_2000_6,2000,151219.0,400.361813148018,success,True,False,20260318_010950
+cuOpt,zurich_2000_7,2000,152367.0,400.2968316900078,success,True,False,20260318_011636
+cuOpt,zurich_2000_8,2000,147414.0,400.3773168420885,success,True,False,20260318_012322
+cuOpt,zurich_2000_9,2000,149708.0,400.54449591599405,success,True,False,20260318_013008
+cuOpt,zurich_5000_0,5000,0.0,7.566492530051619,,False,False,20260318_013709
+gurobi,zurich_10_0,10,8338.0,0.017093896865844727,OPTIMAL,True,False,20260317_162616
+gurobi,zurich_10_1,10,8079.0,0.005032062530517578,OPTIMAL,True,False,20260317_162616
+gurobi,zurich_10_10,10,10613.0,0.002810955047607422,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_11,10,9279.0,0.002711057662963867,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_12,10,6821.0,0.0023369789123535156,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_13,10,9043.0,0.00507807731628418,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_14,10,8308.0,0.005295991897583008,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_15,10,8000.0,0.00421595573425293,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_16,10,10601.0,0.0034439563751220703,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_17,10,8587.0,0.005340099334716797,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_18,10,8686.0,0.007191896438598633,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_19,10,9218.0,0.005550861358642578,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_2,10,7986.0,0.0052149295806884766,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_20,10,9355.0,0.005282163619995117,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_21,10,11457.0,0.0042438507080078125,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_22,10,8763.0,0.0039038658142089844,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_23,10,9434.0,0.004114866256713867,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_24,10,9311.0,0.0037229061126708984,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_25,10,7720.0,0.0041239261627197266,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_26,10,9742.0,0.003668069839477539,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_27,10,8545.0,0.0043811798095703125,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_28,10,10153.0,0.004407167434692383,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_29,10,9583.0,0.0037949085235595703,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_3,10,8888.0,0.005132198333740234,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_4,10,9048.0,0.0042879581451416016,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_5,10,10603.0,0.0049591064453125,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_6,10,9627.0,0.004178047180175781,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_7,10,7824.0,0.003921031951904297,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_8,10,8282.0,0.004488945007324219,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_10_9,10,7373.0,0.003406047821044922,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_0,25,12831.0,0.008527994155883789,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_1,25,14823.0,0.032324790954589844,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_10,25,15533.0,0.013098955154418945,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_11,25,14312.0,0.012338876724243164,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_12,25,15656.0,0.009529829025268555,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_13,25,13365.0,0.008869171142578125,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_14,25,15735.0,0.028779029846191406,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_15,25,14470.0,0.04357314109802246,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_16,25,13169.0,0.013704061508178711,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_17,25,13499.0,0.010396003723144531,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_18,25,13720.0,0.013131141662597656,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_19,25,15703.0,0.017750978469848633,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_2,25,12195.0,0.015147209167480469,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_20,25,16196.0,0.008797168731689453,OPTIMAL,True,False,20260317_162617
+gurobi,zurich_25_21,25,12448.0,0.00504302978515625,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_22,25,16103.0,0.012822866439819336,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_23,25,14702.0,0.006943941116333008,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_24,25,15357.0,0.02956700325012207,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_25,25,13583.0,0.008890867233276367,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_26,25,15892.0,0.008369207382202148,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_27,25,15766.0,0.01645183563232422,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_28,25,15267.0,0.012166976928710938,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_29,25,16808.0,0.010032892227172852,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_3,25,15619.0,0.009170055389404297,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_4,25,13829.0,0.04554009437561035,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_5,25,15108.0,0.007707118988037109,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_6,25,15427.0,0.013911008834838867,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_7,25,14489.0,0.012185096740722656,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_8,25,16200.0,0.020567893981933594,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_25_9,25,13932.0,0.011938810348510742,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_50_0,50,22511.0,0.12458300590515137,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_50_1,50,23246.0,0.12015795707702637,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_50_10,50,21336.0,0.26064586639404297,OPTIMAL,True,False,20260317_162618
+gurobi,zurich_50_11,50,21700.0,0.07313799858093262,OPTIMAL,True,False,20260317_162619
+gurobi,zurich_50_12,50,19193.0,0.18388009071350098,OPTIMAL,True,False,20260317_162619
+gurobi,zurich_50_13,50,18981.0,0.036315202713012695,OPTIMAL,True,False,20260317_162619
+gurobi,zurich_50_14,50,22869.0,0.04826712608337402,OPTIMAL,True,False,20260317_162619
+gurobi,zurich_50_15,50,23528.0,0.11313295364379883,OPTIMAL,True,False,20260317_162619
+gurobi,zurich_50_16,50,19233.0,0.05112886428833008,OPTIMAL,True,False,20260317_162619
+gurobi,zurich_50_17,50,21068.0,0.1055290699005127,OPTIMAL,True,False,20260317_162619
+gurobi,zurich_50_18,50,19828.0,0.13054394721984863,OPTIMAL,True,False,20260317_162619
+gurobi,zurich_50_19,50,20464.0,0.06252288818359375,OPTIMAL,True,False,20260317_162620
+gurobi,zurich_50_2,50,21659.0,0.17485499382019043,OPTIMAL,True,False,20260317_162620
+gurobi,zurich_50_20,50,20211.0,0.07558584213256836,OPTIMAL,True,False,20260317_162620
+gurobi,zurich_50_21,50,22708.0,0.11386799812316895,OPTIMAL,True,False,20260317_162620
+gurobi,zurich_50_22,50,20515.0,0.25884509086608887,OPTIMAL,True,False,20260317_162620
+gurobi,zurich_50_23,50,21753.0,0.15303921699523926,OPTIMAL,True,False,20260317_162620
+gurobi,zurich_50_24,50,20850.0,0.15003299713134766,OPTIMAL,True,False,20260317_162621
+gurobi,zurich_50_25,50,19633.0,0.08217096328735352,OPTIMAL,True,False,20260317_162621
+gurobi,zurich_50_26,50,22023.0,0.17606401443481445,OPTIMAL,True,False,20260317_162621
+gurobi,zurich_50_27,50,20354.0,0.08113789558410645,OPTIMAL,True,False,20260317_162621
+gurobi,zurich_50_28,50,21669.0,0.12271595001220703,OPTIMAL,True,False,20260317_162621
+gurobi,zurich_50_29,50,20760.0,0.04374289512634277,OPTIMAL,True,False,20260317_162621
+gurobi,zurich_50_3,50,21818.0,0.10538887977600098,OPTIMAL,True,False,20260317_162621
+gurobi,zurich_50_4,50,20086.0,0.06541609764099121,OPTIMAL,True,False,20260317_162621
+gurobi,zurich_50_5,50,18406.0,0.1547689437866211,OPTIMAL,True,False,20260317_162622
+gurobi,zurich_50_6,50,23413.0,0.08832788467407227,OPTIMAL,True,False,20260317_162622
+gurobi,zurich_50_7,50,21065.0,0.18367385864257812,OPTIMAL,True,False,20260317_162622
+gurobi,zurich_50_8,50,21188.0,0.06467700004577637,OPTIMAL,True,False,20260317_162622
+gurobi,zurich_50_9,50,20355.0,0.1198880672454834,OPTIMAL,True,False,20260317_162622
+gurobi,zurich_100_0,100,30225.0,1.1425340175628662,OPTIMAL,True,False,20260317_162622
+gurobi,zurich_100_1,100,30382.0,1.456096887588501,OPTIMAL,True,False,20260317_162623
+gurobi,zurich_100_10,100,29754.0,0.6589040756225586,OPTIMAL,True,False,20260317_162625
+gurobi,zurich_100_11,100,30920.0,0.5960688591003418,OPTIMAL,True,False,20260317_162626
+gurobi,zurich_100_12,100,27916.0,1.045198917388916,OPTIMAL,True,False,20260317_162626
+gurobi,zurich_100_13,100,31550.0,0.8883650302886963,OPTIMAL,True,False,20260317_162627
+gurobi,zurich_100_14,100,32423.0,1.025317907333374,OPTIMAL,True,False,20260317_162628
+gurobi,zurich_100_15,100,28143.0,0.9264299869537354,OPTIMAL,True,False,20260317_162629
+gurobi,zurich_100_16,100,30955.0,0.9498491287231445,OPTIMAL,True,False,20260317_162630
+gurobi,zurich_100_17,100,32441.0,1.5249910354614258,OPTIMAL,True,False,20260317_162631
+gurobi,zurich_100_18,100,27969.0,1.2011418342590332,OPTIMAL,True,False,20260317_162633
+gurobi,zurich_100_19,100,30148.0,0.5530529022216797,OPTIMAL,True,False,20260317_162634
+gurobi,zurich_100_2,100,30984.0,1.023827075958252,OPTIMAL,True,False,20260317_162635
+gurobi,zurich_100_20,100,28463.0,1.0811970233917236,OPTIMAL,True,False,20260317_162636
+gurobi,zurich_100_21,100,32236.0,1.1405668258666992,OPTIMAL,True,False,20260317_162637
+gurobi,zurich_100_22,100,28951.0,0.5929911136627197,OPTIMAL,True,False,20260317_162638
+gurobi,zurich_100_23,100,29992.0,0.5954840183258057,OPTIMAL,True,False,20260317_162639
+gurobi,zurich_100_24,100,30893.0,0.59421706199646,OPTIMAL,True,False,20260317_162640
+gurobi,zurich_100_25,100,28750.0,0.8611130714416504,OPTIMAL,True,False,20260317_162640
+gurobi,zurich_100_26,100,29637.0,1.0098321437835693,OPTIMAL,True,False,20260317_162641
+gurobi,zurich_100_27,100,28945.0,0.7840559482574463,OPTIMAL,True,False,20260317_162642
+gurobi,zurich_100_28,100,28343.0,0.670835018157959,OPTIMAL,True,False,20260317_162643
+gurobi,zurich_100_29,100,29701.0,0.9478302001953125,OPTIMAL,True,False,20260317_162644
+gurobi,zurich_100_3,100,27839.0,0.14769697189331055,OPTIMAL,True,False,20260317_162645
+gurobi,zurich_100_4,100,30546.0,0.9720940589904785,OPTIMAL,True,False,20260317_162645
+gurobi,zurich_100_5,100,28381.0,1.6099059581756592,OPTIMAL,True,False,20260317_162646
+gurobi,zurich_100_6,100,28168.0,1.7447121143341064,OPTIMAL,True,False,20260317_162648
+gurobi,zurich_100_7,100,29704.0,1.3806719779968262,OPTIMAL,True,False,20260317_162650
+gurobi,zurich_100_8,100,31225.0,1.445723056793213,OPTIMAL,True,False,20260317_162651
+gurobi,zurich_100_9,100,30336.0,1.2900521755218506,OPTIMAL,True,False,20260317_162652
+gurobi,zurich_200_0,200,43866.0,10.628092050552368,OPTIMAL,True,False,20260317_162654
+gurobi,zurich_200_1,200,41334.0,7.809867858886719,OPTIMAL,True,False,20260317_162705
+gurobi,zurich_200_10,200,44178.0,8.008589029312134,OPTIMAL,True,False,20260317_162713
+gurobi,zurich_200_11,200,42437.0,8.514449119567871,OPTIMAL,True,False,20260317_162721
+gurobi,zurich_200_12,200,41342.0,9.205347061157227,OPTIMAL,True,False,20260317_162730
+gurobi,zurich_200_13,200,40085.0,9.980875015258789,OPTIMAL,True,False,20260317_162739
+gurobi,zurich_200_14,200,43995.0,9.08435606956482,OPTIMAL,True,False,20260317_162749
+gurobi,zurich_200_15,200,42317.0,6.954330921173096,OPTIMAL,True,False,20260317_162758
+gurobi,zurich_200_16,200,43466.0,6.2189390659332275,OPTIMAL,True,False,20260317_162805
+gurobi,zurich_200_17,200,41585.0,9.357270002365112,OPTIMAL,True,False,20260317_162812
+gurobi,zurich_200_18,200,40830.0,13.666146039962769,OPTIMAL,True,False,20260317_162821
+gurobi,zurich_200_19,200,42643.0,6.773381948471069,OPTIMAL,True,False,20260317_162835
+gurobi,zurich_200_2,200,42850.0,10.21274209022522,OPTIMAL,True,False,20260317_162842
+gurobi,zurich_200_20,200,41361.0,13.620805978775024,OPTIMAL,True,False,20260317_162853
+gurobi,zurich_200_21,200,42550.0,5.643798828125,OPTIMAL,True,False,20260317_162906
+gurobi,zurich_200_22,200,42072.0,6.175585985183716,OPTIMAL,True,False,20260317_162912
+gurobi,zurich_200_23,200,41398.0,13.239007949829102,OPTIMAL,True,False,20260317_162919
+gurobi,zurich_200_24,200,42799.0,6.501359939575195,OPTIMAL,True,False,20260317_162932
+gurobi,zurich_200_25,200,43944.0,7.261906862258911,OPTIMAL,True,False,20260317_162939
+gurobi,zurich_200_26,200,41535.0,6.334266901016235,OPTIMAL,True,False,20260317_162946
+gurobi,zurich_200_27,200,40127.0,8.747956037521362,OPTIMAL,True,False,20260317_162953
+gurobi,zurich_200_28,200,44120.0,5.59970498085022,OPTIMAL,True,False,20260317_163001
+gurobi,zurich_200_29,200,41526.0,7.133324861526489,OPTIMAL,True,False,20260317_163007
+gurobi,zurich_200_3,200,44368.0,7.989360094070435,OPTIMAL,True,False,20260317_163015
+gurobi,zurich_200_4,200,41891.0,5.371696949005127,OPTIMAL,True,False,20260317_163023
+gurobi,zurich_200_5,200,42916.0,6.214461088180542,OPTIMAL,True,False,20260317_163028
+gurobi,zurich_200_6,200,44826.0,7.369055986404419,OPTIMAL,True,False,20260317_163035
+gurobi,zurich_200_7,200,42367.0,10.414879083633423,OPTIMAL,True,False,20260317_163042
+gurobi,zurich_200_8,200,42328.0,9.174412965774536,OPTIMAL,True,False,20260317_163053
+gurobi,zurich_200_9,200,43256.0,7.030422925949097,OPTIMAL,True,False,20260317_163102
+gurobi,zurich_500_0,500,70602.0,152.27670288085938,OPTIMAL,True,False,20260406_230220
+gurobi,zurich_500_1,500,72354.0,333.5326039791107,OPTIMAL,True,False,20260406_230454
+gurobi,zurich_500_10,500,68871.0,387.23378682136536,OPTIMAL,True,False,20260406_231029
+gurobi,zurich_500_11,500,70767.0,153.096862077713,OPTIMAL,True,False,20260406_231658
+gurobi,zurich_500_12,500,68665.0,1200.1224598884583,TIME_LIMIT,True,False,20260406_231932
+gurobi,zurich_500_13,500,71231.0,1200.0706791877747,TIME_LIMIT,True,False,20260406_233934
+gurobi,zurich_500_14,500,69640.0,217.69224405288696,OPTIMAL,True,False,20260406_235937
+gurobi,zurich_500_15,500,68529.0,439.43299317359924,OPTIMAL,True,False,20260407_000316
+gurobi,zurich_500_16,500,68442.0,317.75420093536377,OPTIMAL,True,False,20260407_001037
+gurobi,zurich_500_17,500,72541.0,424.0703020095825,OPTIMAL,True,False,20260407_001556
+gurobi,zurich_500_18,500,71721.0,171.52157402038574,OPTIMAL,True,False,20260407_002302
+gurobi,zurich_500_19,500,70073.0,246.1927330493927,OPTIMAL,True,False,20260407_002555
+gurobi,zurich_500_2,500,69541.0,160.30970406532288,OPTIMAL,True,False,20260407_003003
+gurobi,zurich_500_20,500,67027.0,1200.0996961593628,TIME_LIMIT,True,False,20260407_003244
+gurobi,zurich_500_21,500,66718.0,237.3900499343872,OPTIMAL,True,False,20260407_005247
+gurobi,zurich_500_22,500,68650.0,205.59671878814697,OPTIMAL,True,False,20260407_005645
+gurobi,zurich_500_23,500,69040.0,642.8183739185333,OPTIMAL,True,False,20260407_010013
+gurobi,zurich_500_24,500,68139.0,225.87693190574646,OPTIMAL,True,False,20260407_011057
+gurobi,zurich_500_25,500,71207.0,264.95434498786926,OPTIMAL,True,False,20260407_011444
+gurobi,zurich_500_26,500,67616.0,173.49407410621643,OPTIMAL,True,False,20260407_011911
+gurobi,zurich_500_27,500,68775.0,586.9330580234528,OPTIMAL,True,False,20260407_012206
+gurobi,zurich_500_28,500,68801.0,956.7338490486145,OPTIMAL,True,False,20260407_013155
+gurobi,zurich_500_29,500,72256.0,223.4838511943817,OPTIMAL,True,False,20260407_014754
+gurobi,zurich_500_3,500,71901.0,321.36924290657043,OPTIMAL,True,False,20260407_015139
+gurobi,zurich_500_4,500,71416.0,1200.076488018036,TIME_LIMIT,True,False,20260407_015702
+gurobi,zurich_500_5,500,67232.0,283.93047285079956,OPTIMAL,True,False,20260407_021705
+gurobi,zurich_500_6,500,67505.0,281.27312684059143,OPTIMAL,True,False,20260407_022150
+gurobi,zurich_500_7,500,65817.0,249.62781286239624,OPTIMAL,True,False,20260407_022633
+gurobi,zurich_500_8,500,68964.0,639.2343509197235,OPTIMAL,True,False,20260407_023044
+gurobi,zurich_500_9,500,68404.0,233.41498517990112,OPTIMAL,True,False,20260407_024125
+gurobi,zurich_1000_0,1000,120748.0,1200.655044078827,TIME_LIMIT,True,False,20260407_024520
+gurobi,zurich_1000_1,1000,122766.0,1201.4067261219025,TIME_LIMIT,True,False,20260407_030527
+gurobi,zurich_1000_10,1000,124785.0,1203.6783199310303,TIME_LIMIT,True,False,20260407_032534
+gurobi,zurich_1000_11,1000,126488.0,1203.1075508594513,TIME_LIMIT,True,False,20260407_034543
+gurobi,zurich_1000_12,1000,123741.0,1200.1658680438995,TIME_LIMIT,True,False,20260407_040551
+gurobi,zurich_1000_13,1000,123314.0,1205.9253871440887,TIME_LIMIT,True,False,20260407_042557
+gurobi,zurich_1000_14,1000,125749.0,1200.9151911735535,TIME_LIMIT,True,False,20260407_044608
+gurobi,zurich_1000_15,1000,117373.0,1200.1521401405334,TIME_LIMIT,True,False,20260407_050614
+gurobi,zurich_1000_16,1000,127539.0,1203.7029039859772,TIME_LIMIT,True,False,20260407_052620
+gurobi,zurich_1000_17,1000,116939.0,1201.7785861492157,TIME_LIMIT,True,False,20260407_054630
+gurobi,zurich_1000_18,1000,124849.0,1200.2749218940735,TIME_LIMIT,True,False,20260407_060637
+gurobi,zurich_1000_19,1000,122136.0,1208.0748739242554,TIME_LIMIT,True,False,20260407_062643
+gurobi,zurich_1000_2,1000,121620.0,1200.550057888031,TIME_LIMIT,True,False,20260407_071151
+gurobi,zurich_1000_20,1000,121404.0,1200.305116891861,TIME_LIMIT,True,False,20260407_073158
+gurobi,zurich_1000_21,1000,126109.0,1206.6864559650421,TIME_LIMIT,True,False,20260407_075204
+gurobi,zurich_1000_22,1000,123926.0,1200.1646919250488,TIME_LIMIT,True,False,20260407_081216
+gurobi,zurich_1000_23,1000,125330.0,1206.7170629501343,TIME_LIMIT,True,False,20260407_083222
+gurobi,zurich_1000_24,1000,125176.0,1200.6499378681183,TIME_LIMIT,True,False,20260407_085234
+gurobi,zurich_1000_25,1000,121543.0,1200.1789309978485,TIME_LIMIT,True,False,20260407_091240
+gurobi,zurich_1000_26,1000,124356.0,1200.1420810222626,TIME_LIMIT,True,False,20260407_093245
+gurobi,zurich_1000_27,1000,117995.0,1204.862065076828,TIME_LIMIT,True,False,20260407_095251
+gurobi,zurich_1000_28,1000,128398.0,1211.65327501297,TIME_LIMIT,True,False,20260407_101302
+gurobi,zurich_1000_29,1000,121797.0,1200.7145249843597,TIME_LIMIT,True,False,20260407_103319
+gurobi,zurich_1000_3,1000,123986.0,1201.91047000885,TIME_LIMIT,True,False,20260407_105325
+gurobi,zurich_1000_4,1000,129874.0,1202.109750032425,TIME_LIMIT,True,False,20260407_111333
+gurobi,zurich_1000_5,1000,128737.0,1204.6366710662842,TIME_LIMIT,True,False,20260407_113340
+gurobi,zurich_1000_6,1000,124483.0,1203.3713009357452,TIME_LIMIT,True,False,20260407_115350
+gurobi,zurich_1000_7,1000,123743.0,1200.7608180046082,TIME_LIMIT,True,False,20260407_121359
+gurobi,zurich_1000_8,1000,124275.0,1203.3687150478363,TIME_LIMIT,True,False,20260407_123406
+gurobi,zurich_1000_9,1000,121641.0,1202.0730891227722,TIME_LIMIT,True,False,20260407_125415

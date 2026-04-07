@@ -89,6 +89,16 @@ class GurobiSolver(TSPSolver):
                     gp.quicksum(x[i, j] for j in self.node_idx_list if i != j) == 2
                 )
 
+            # Provide a nearest-neighbor MIP start so Gurobi always has a
+            # feasible incumbent, even if the time limit is hit early.
+            nn_tour = self._nearest_neighbor_tour()
+            for i, j in combinations(self.node_idx_list, 2):
+                x[i, j].Start = 0.0
+            for k in range(len(nn_tour) - 1):
+                u, v = nn_tour[k], nn_tour[k + 1]
+                i, j = min(u, v), max(u, v)
+                x[i, j].Start = 1.0
+
             # Optimize model using lazy constraints to eliminate subtours
             m.Params.LazyConstraints = 1
             if self.timeout is not None:
@@ -151,6 +161,25 @@ class GurobiSolver(TSPSolver):
                 f"Solve complete. Status: {status_msg}, Gap: {self.result['additional_metadata'].get('gap', 'N/A')}"
             )
             return tour, (m.ObjVal if has_solution else None)
+
+    def _nearest_neighbor_tour(self) -> list[int]:
+        """Build a greedy nearest-neighbor tour used as a MIP start."""
+        n = len(self.node_idx_list)
+        visited = [False] * n
+        tour = [0]
+        visited[0] = True
+        for _ in range(n - 1):
+            last = tour[-1]
+            best_next = -1
+            best_dist = float("inf")
+            for j in range(n):
+                if not visited[j] and self.edges[last, j] < best_dist:
+                    best_dist = self.edges[last, j]
+                    best_next = j
+            tour.append(best_next)
+            visited[best_next] = True
+        tour.append(tour[0])  # close the cycle
+        return tour
 
     @classmethod
     def shortest_subtour(self, edges):
