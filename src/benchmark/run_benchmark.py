@@ -88,14 +88,15 @@ def run_benchmark(
     data_dirs = sorted(data_dirs, key=lambda d: int(d.name))
 
     active_solvers = list(solvers)
+    total_sizes = len(data_dirs)
 
-    for data_dir in data_dirs:
+    for size_idx, data_dir in enumerate(data_dirs, 1):
         if not active_solvers:
             logger.info("No active solvers remaining — stopping benchmark early.")
             break
 
         logger.info(
-            f"Running benchmark on {data_dir} (size {data_dir.name}). "
+            f"[{size_idx}/{total_sizes}] Running benchmark on {data_dir} (size {data_dir.name}). "
             f"Active solvers: {active_solvers}"
         )
         files = sorted(data_dir.rglob("*.tsp"))
@@ -250,10 +251,11 @@ def main():
     results_dir.mkdir(parents=True, exist_ok=True)
 
     if not all(
-        solver in ["gurobi", "concorde", "cuopt", "utsp"] for solver in args.solvers
+        solver in ["gurobi", "concorde", "cuopt", "utsp", "mcts_only"]
+        for solver in args.solvers
     ):
         raise ValueError(
-            "Invalid solver name. Must be one of 'gurobi', 'concorde', 'cuopt'."
+            "Invalid solver name. Must be one of 'gurobi', 'concorde', 'cuopt', 'utsp', 'mcts_only'."
         )
 
     timeouts = {}

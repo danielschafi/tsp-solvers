@@ -47,11 +47,12 @@ class MCTSOnlySolver(TSPSolver):
 
         self._start_time = time.perf_counter()
 
-        # MCTS Search, need dummy top k input
+        # MCTS Search, need dummy top k input.
+        # k must match compiled Rec_Num, but indices must be valid node ids (< n).
         k = inference.REC_NUM
-
-        # 1 sample, for all node, top k
-        dummy_top_k_idx = np.zeros((1, self.dim, k))
+        dummy_top_k_idx = np.tile(
+            np.arange(k) % self.dim, (1, self.dim, 1)
+        )  # [1, n, k]
         dummy_top_k_val = np.zeros((1, self.dim, k))
 
         dist_matrix = self.edges[np.newaxis, :, :].astype(np.int64)
