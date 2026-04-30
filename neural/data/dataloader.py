@@ -1,3 +1,10 @@
+"""
+Pytorch Dataset for tsp data
+Loads the hdf5 files into the Dataset
+
+the hdf5 file contains problems from one size e.g. data/gnn_data/200_test/processed.h5
+"""
+
 from pathlib import Path
 
 import h5py

@@ -125,7 +125,7 @@ def _heatmap_to_topk(heatmap: Tensor, k: int) -> tuple[np.ndarray, np.ndarray]:
 
     k = min(k, n - 1)
     topk = torch.topk(hm, k=k, dim=2)  # values/indices: [1, n, k]
-    # Use tolist() to avoid the PyTorch↔NumPy C bridge (broken with NumPy 2.x + compiled modules)
+
     topk_idx = np.array(topk.indices.tolist(), dtype=np.int64)
     topk_val = np.array(topk.values.tolist(), dtype=np.float32)
     return topk_idx, topk_val

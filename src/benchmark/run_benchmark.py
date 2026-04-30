@@ -40,6 +40,10 @@ def get_new_solver(
         from src.solvers.utsp_solver import UTSPSolver
 
         return UTSPSolver(results_dir=results_dir, timeout=timeout)
+    elif solver_name.lower() == "mcts_only":
+        from src.solvers.utsp_mcts_only_solver import MCTSOnlySolver
+
+        return MCTSOnlySolver(results_dir=results_dir, timeout=timeout)
     else:
         raise ValueError(f"Unknown solver: {solver_name}")
 
@@ -164,7 +168,7 @@ def main():
         nargs="+",
         help="List of solver names to run in the benchmark. one or more of 'gurobi', 'concorde', 'cuopt', 'utsp'",
         required=True,
-        choices=["gurobi", "concorde", "cuopt", "utsp"],
+        choices=["gurobi", "concorde", "cuopt", "utsp", "mcts_only"],
     )
     arg_parser.add_argument(
         "--sizes",
