@@ -23,7 +23,7 @@ def _valid_rows(df: pd.DataFrame) -> pd.DataFrame:
     return df[df["valid_solution"] == True].copy()  # type: ignore[return-value]  # noqa: E712
 
 
-def plot_cost_vs_size(df: pd.DataFrame, out_dir: Path) -> None:
+def plot_cost_vs_size(df: pd.DataFrame, out_dir: Path, log_scale: bool) -> None:
     """Mean tour cost per solver across problem sizes (log-log)."""
     data = _valid_rows(df)
     if data.empty:
@@ -41,7 +41,8 @@ def plot_cost_vs_size(df: pd.DataFrame, out_dir: Path) -> None:
         ax=ax,
     )
     ax.set_xscale("log")
-    # ax.set_yscale("log")
+    if log_scale:
+        ax.set_yscale("log")
     ax.set_xlabel("Problem size (n nodes)")
     ax.set_ylabel("Tour cost")
     ax.set_title("Tour cost vs problem size")
@@ -53,7 +54,7 @@ def plot_cost_vs_size(df: pd.DataFrame, out_dir: Path) -> None:
     logger.info(f"Saved {out_path}")
 
 
-def plot_time_vs_size(df: pd.DataFrame, out_dir: Path) -> None:
+def plot_time_vs_size(df: pd.DataFrame, out_dir: Path, log_scale: bool) -> None:
     """Mean solve time per solver across problem sizes (log-log)."""
     data = df[df["time_to_solve"].notna() & (df["time_to_solve"] > 0)].copy()
     if data.empty:
@@ -71,7 +72,8 @@ def plot_time_vs_size(df: pd.DataFrame, out_dir: Path) -> None:
         ax=ax,
     )
     ax.set_xscale("log")
-    # ax.set_yscale("log")
+    if log_scale:
+        ax.set_yscale("log")
     ax.set_xlabel("Problem size (n nodes)")
     ax.set_ylabel("Time to solve (s)")
     ax.set_title("Solve time vs problem size")
@@ -155,6 +157,7 @@ def plot_all(
     results_dir: Path,
     out_dir: Path,
     reference_solver: str = "concorde",
+    log_scale: bool = True,
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     df = load_results(results_dir)
@@ -162,8 +165,8 @@ def plot_all(
         logger.warning("No results found — nothing to plot.")
         return
 
-    plot_cost_vs_size(df, out_dir)
-    plot_time_vs_size(df, out_dir)
+    plot_cost_vs_size(df, out_dir, log_scale)
+    plot_time_vs_size(df, out_dir, log_scale)
     plot_optimality_gap(df, out_dir, reference_solver=reference_solver)
 
 
@@ -171,6 +174,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Plot aggregate benchmark results.")
     parser.add_argument("--results_dir", type=Path, default=Path("results"))
     parser.add_argument("--out_dir", type=Path, default=Path("results/plots"))
+    parser.add_argument(
+        "--log_scale",
+        type=bool,
+        default=True,
+        help="Use logarithmic scale for y-axis (default: True).",
+    )
     parser.add_argument(
         "--reference_solver",
         type=str,
@@ -180,7 +189,13 @@ def main() -> None:
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    plot_all(args.results_dir, args.out_dir, reference_solver=args.reference_solver)
+    print(args.log_scale)
+    plot_all(
+        args.results_dir,
+        args.out_dir,
+        reference_solver=args.reference_solver,
+        log_scale=args.log_scale == "True",
+    )
 
 
 if __name__ == "__main__":

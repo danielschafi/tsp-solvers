@@ -154,7 +154,7 @@ def _run_guided_local_search(heatmap: Tensor, adj_raw: np.ndarray) -> list[int]:
 
     topk_idx, topk_val = _heatmap_to_topk(heatmap, k=REC_NUM)  # [1, n, REC_NUM]
 
-    tours = run_mcts(dist_matrix, topk_idx, topk_val)
+    tours = run_mcts(dist_matrix, topk_idx, topk_val, n_threads=1)
     return tours[0]
 
 

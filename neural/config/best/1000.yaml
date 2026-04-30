@@ -1,0 +1,21 @@
+# Best hyperparameters for problem size 1000
+# Source: wandb sweep, size-1000 sweep
+
+model:
+  hidden_dim: 128
+  n_layers: 2
+  node_features: "coords"
+
+training:
+  lr: 0.00034212929945361565
+  weight_decay: 0
+  step_size: 20
+  gamma: 0.7613228521231573
+  lambda_1: 4.379119057245637
+  lambda_2: 0.00038401028192227665
+  temperature: 4.314594067280078
+  batch_size: 32
+  epochs: 50
+
+data:
+  path: "data/gnn_data/1000/processed.h5"

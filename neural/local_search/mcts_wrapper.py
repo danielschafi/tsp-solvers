@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 
-_MAX_INST = 128  # must match Max_Inst_Num in TSP_IO.h
+_MAX_INST = 1  # must match Max_Inst_Num in TSP_IO.h in the utsp paper they used 128 or 10000 for the smaller sizes to solve it in parallel batched.
 _N_THREADS = 32  # parallelism used by the shell scripts
 
 

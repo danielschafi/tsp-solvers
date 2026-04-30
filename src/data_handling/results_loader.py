@@ -67,6 +67,8 @@ def load_results(results_dir: Path = Path("results")) -> pd.DataFrame:
         .reset_index(drop=True)
     )
 
+    # df = df[df["solver"].isin(["concorde", "UTSPSolver"])]
+
     logger.info(
         f"Loaded {len(df)} results from {results_dir} "
         f"({df['solver'].nunique()} solvers, {df['problem_size'].nunique()} problem sizes)"
