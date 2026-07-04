@@ -158,6 +158,7 @@ def plot_all(
     out_dir: Path,
     reference_solver: str = "concorde",
     log_scale: bool = True,
+    solvers: list[str] | None = None,
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     df = load_results(results_dir)
@@ -165,9 +166,12 @@ def plot_all(
         logger.warning("No results found — nothing to plot.")
         return
 
-    plot_cost_vs_size(df, out_dir, log_scale)
+    if solvers is not None:
+        df = df[df["solver"].isin(solvers)]
+
+    # plot_cost_vs_size(df, out_dir, log_scale)
     plot_time_vs_size(df, out_dir, log_scale)
-    plot_optimality_gap(df, out_dir, reference_solver=reference_solver)
+    # plot_optimality_gap(df, out_dir, reference_solver=reference_solver)
 
 
 def main() -> None:
@@ -195,6 +199,7 @@ def main() -> None:
         args.out_dir,
         reference_solver=args.reference_solver,
         log_scale=args.log_scale == "True",
+        solvers=["MCTSOnly", "UTSPSolver"],
     )
 
 

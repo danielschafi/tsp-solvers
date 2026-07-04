@@ -1,0 +1,13 @@
+solver,problem_size,n_runs,n_valid,n_timed_out,valid_rate
+MCTSOnly,25,30,30,0,1.0
+MCTSOnly,50,30,30,0,1.0
+MCTSOnly,100,30,30,0,1.0
+MCTSOnly,200,30,30,0,1.0
+MCTSOnly,500,30,30,0,1.0
+MCTSOnly,1000,30,30,0,1.0
+UTSPSolver,25,30,30,0,1.0
+UTSPSolver,50,30,30,0,1.0
+UTSPSolver,100,30,30,0,1.0
+UTSPSolver,200,30,30,0,1.0
+UTSPSolver,500,30,30,0,1.0
+UTSPSolver,1000,30,30,0,1.0
