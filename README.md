@@ -1,16 +1,20 @@
 # TSP Solvers
 
-Solving the Traveling Salesperson Problem exactly using different solvers
+Benchmark and compare Traveling Salesperson Problem solvers on real-world road-network instances. The project includes exact solvers (Gurobi, Concorde, CuOpt), a neural UTSP pipeline (GNN heatmap + guided MCTS), and an MCTS-only ablation to measure how much the heatmap contributes.
 
-Solvers:
+## Solvers
 
-- Gurobi
-- Concorde
-- CuOpt
+| Solver | Module | Description |
+|--------|--------|-------------|
+| **Gurobi** | `src.solvers.gurobi_solver` | Exact MIP solver with lazy subtour elimination |
+| **Concorde** | `src.solvers.concorde_solver` | Exact TSP solver (external binary) |
+| **CuOpt** | `src.solvers.cuopt_solver` | NVIDIA GPU routing solver |
+| **UTSP** | `src.solvers.utsp_solver` | Scattering GNN heatmap + guided MCTS local search |
+| **MCTS-only** | `src.solvers.utsp_mcts_only_solver` | MCTS without heatmap guidance (ablation baseline) |
 
 ## Setup
 
-To install the necessary python packages, run:
+Requires Python 3.11 on Linux x86_64.
 
 ```bash
 uv sync
@@ -18,123 +22,156 @@ uv sync
 
 ### Concorde
 
-#### Create a folder for the solver
-
 ```bash
-mkdir -p bin/ && cd bin/
-```
-
-#### Download the pre-compiled binary
-
-```bash
+mkdir -p bin/concorde && cd bin/concorde
 wget https://www.math.uwaterloo.ca/tsp/concorde/downloads/codes/linux24/concorde.gz
-```
-
-#### Decompress and set permissions
-
-```bash
 gunzip concorde.gz
 chmod +x concorde
-```
-
-#### Verify it works
-
-```bash
 ./concorde -h
-./concorde -s 99 -k 100
 ```
+
+The solver expects the binary at `bin/concorde/concorde`.
 
 ### Gurobi
 
-**Installation**
-We will use Gurobi through its Python API.
-The free version of Gurobi only allows the solving of small problems.
-You can obtain an academic license on their website. *Where?*
+Gurobi is used through its Python API (`gurobipy`). The free tier only handles small instances; an [academic license](https://www.gurobi.com/academia/academic-program-and-licenses/) is needed for larger problems.
 
-Place the license file in one of the following locations that Gurobi searches for by default:
-
-- /opt/gurobi
-- /home/\{YourUsername\}
+Place the license file (`gurobi.lic`) in one of Gurobi's default search paths, e.g. `/opt/gurobi` or your home directory.
 
 ### CuOpt
 
-#### Installation
+Installed via `uv sync`. Requires a CUDA-capable GPU for large instances.
 
-- Already installed through uv
+### MCTS (UTSP local search)
+
+The UTSP and MCTS-only solvers call a compiled C++ MCTS binary. It must live at `bin/MCTS-UTSP/test`:
+
+```bash
+# Copy or clone the UTSP Search/ code into bin/MCTS-UTSP, then:
+cd bin/MCTS-UTSP
+make
+```
+
+Ensure `Rec_Num` in `code/include/TSP_IO.h` matches `REC_NUM = 20` in `neural/scripts/inference.py`. Trained models are loaded from `saved_models/{size}/best.pt` (one model per problem size).
 
 ## Data
 
-The data for the TSP instances is in the `data/` folder. The files are in the TSPLib format, which is a standard format for representing TSP instances.
-However, for visualization puroposes we save some extra fields compared to the Standard. Check `src/data_handling/tsplib_extension.py` for the implementation.
+TSP instances live under `data/`. Files use an extended TSPLib format that adds OpenStreetMap node IDs for street-map visualization — see `src/data_handling/tsplib_extension.py`.
 
-### Generating benchmark TSP data based on actual cities
-To generate the TSP Data based on real city graphs we rely on OpenStreetMaps and osmnx to download the city Graph and randomly select nodes to generate problems. 
-```bash
-uv run src/data_handling/build_dataset.py
-```
-There are a some command line args you can view with `uv run src/data_handling/build_dataset.py -h` that make it easy to generate problems of various sizes for different cities, sizes etc.
+### Generating benchmark instances from real cities
 
-The generated problems are saved to `data/tsp_dataset` by default. As TSPLib95 files. 
-The format has been extended to include the NodeIDs of the nodes that were used in the problem.
-They can then be used to do visualizations on the graph (the saved .graphml file)
-
-## Solving a TSP with a solver
-
-From the root of the project run:
+Instances are sampled from city road networks (OpenStreetMap via osmnx):
 
 ```bash
-uv run -m src.solvers.{gurobi_solver, cuopt_solver, concorde_solver, ...}
+uv run -m src.data_handling.build_dataset
+uv run -m src.data_handling.build_dataset -h   # all options
 ```
 
-TODO: Provide some cmd line args: like gurobi_solver --tsp-file zurich_10.tsp --outdir --vizualize  etc. 
+Common options: `--city`, `--sizes`, `--repetitions`, `--out_dir` (default `data/tsp_dataset`), `--clean_build`.
+
+Each size gets its own subdirectory (`data/tsp_dataset/25/`, etc.). A `.graphml` road network is saved alongside for visualization.
+
+## Running a single solver
+
+All solvers accept a `--path` to a `.tsp` file or a directory (all `.tsp` files inside are solved recursively):
+
+```bash
+uv run -m src.solvers.gurobi_solver     --path data/tsp_dataset/25/zurich_25_0.tsp
+uv run -m src.solvers.concorde_solver   --path data/tsp_dataset/25/
+uv run -m src.solvers.cuopt_solver      --path data/tsp_dataset/25/zurich_25_0.tsp
+uv run -m src.solvers.utsp_solver         --path data/tsp_dataset/25/zurich_25_0.tsp
+uv run -m src.solvers.utsp_mcts_only_solver --path data/tsp_dataset/25/zurich_25_0.tsp
+```
+
+Results are written to `results/{solver}/n{size}/{problem}.json`.
+
+## Benchmark
+
+Run multiple solvers across problem sizes:
+
+```bash
+uv run -m src.benchmark.run_benchmark \
+  --solvers gurobi concorde utsp mcts_only \
+  --sizes 25 50 100 200 \
+  --results_dir results
+```
+
+Useful flags:
+
+- `--force` — re-run even if a result JSON already exists (default: skip existing)
+- `--clean_build` — delete the results directory before starting
+- `--plot` — generate per-instance plots inline (off by default; prefer the viz scripts below)
+- `--timeouts gurobi=60 mcts_only=1200` — per-solver timeout in seconds
+
+Problem sizes are processed smallest-first. An aggregated `summary.csv` is written to the results directory when the run finishes.
 
 ## Visualizations
 
-Visualizations can either be done on street maps or plain.
+**Per-instance plots** from result JSONs:
 
 ```bash
-    uv run -m src.visualization.viz_streetmap --path results/20260304_002601/concorde
+uv run -m src.visualization.viz_streetmap --path results/UTSPSolver/n25
+uv run -m src.visualization.viz_plain      --path results/concorde/n25
 ```
 
-# Neural Network Solver
-## Data Preparation
+Both accept a single JSON or a directory (searched recursively). Existing PNGs are skipped. Use `--workers N` for parallel plotting.
 
-1. Generate .tsp instances
+**Aggregate benchmark plots and statistics:**
+
 ```bash
- uv run -m src.data_handling.build_dataset --repetitions 3000 --sizes 100  --out_dir data/gnn_data
+uv run -m src.visualization.viz_benchmark_results --results_dir results --out_dir results/plots
+uv run -m src.visualization.analysis --results_dir results --out_dir results/stats
 ```
-- Adjust sizes to the problem size you need
-- For a bigger/smaller dataset adjust repetitions. The UTSP Paper used 3000
 
-2. Load .tsp instances into numpy arrays/hdf5 file format for efficient model training
+The analysis script prints coverage, cost, time, and optimality-gap tables. With `--solvers MCTSOnly UTSPSolver` it also reports a head-to-head comparison.
+
+## Neural network solver (UTSP)
+
+Implementation details and differences from the UTSP reference paper are documented in [`neural/COMPARISON.md`](neural/COMPARISON.md).
+
+### 1. Generate training instances
+
 ```bash
- uv run -m scripts.prepare_data_for_gnn_training --src_dir data/gnn_data
+uv run -m src.data_handling.build_dataset \
+  --repetitions 3000 \
+  --sizes 100 \
+  --out_dir data/gnn_data
 ```
-- Generates one h5 file per problem size. 
 
-## Hyperparameter Tuning
+Adjust `--sizes` and `--repetitions` as needed. The UTSP paper used 3000 repetitions per size.
+
+### 2. Convert to HDF5 for training
+
 ```bash
-uv run wandb sweep neural/config/sweep.yaml
+uv run python scripts/prepare_data_for_gnn_training.py --src_dir data/gnn_data
+```
 
-# If slurm managed
+Creates one `processed.h5` per problem-size directory.
+
+### 3. Hyperparameter tuning
+
+Per-size sweep configs live in `neural/config/sweep_{size}.yaml`:
+
+```bash
+uv run wandb sweep neural/config/sweep_25.yaml
+
+# Local agent (replace with sweep output):
+uv run wandb agent --count 1 <entity>/<project>/<sweep_id>
+
+# On Slurm:
 sbatch slurm_neural_hyperparameter_tuning.sh
-
-# Else (might be possible to adjust count)
-uv run wandb agent --count 1 schafhdaniel-/tsp-solvers-neural_scripts/iwgpawd8 # replace with result from uv run wandb sweep neural/config/sweep.yaml
 ```
 
-## Storing Best Configs
+### 4. Store best configs
 
-After a sweep, save the winning hyperparameters in `neural/config/best/<size>.yaml` (one file per problem size):
+After a sweep, save winning hyperparameters to `neural/config/best/{size}.yaml`:
 
 ```yaml
 # neural/config/best/25.yaml
-# Source: wandb sweep <sweep_id>, run <run_id>
-
 model:
   hidden_dim: 64
   n_layers: 3
-  node_features: "node_stats"
+  node_features: "coords"
 
 training:
   lr: 0.003
@@ -151,33 +188,25 @@ data:
   path: "data/gnn_data/25/processed.h5"
 ```
 
-The `model` section is needed for both training and inference (to reconstruct the architecture). The `training` and `data` sections are only used during training.
+The `model` section is used for both training and inference. `training` and `data` are training-only.
 
-To train with a stored config:
+### 5. Train
+
 ```bash
-uv run -m neural.scripts.train --config 25              # uses best config for size 25
+uv run -m neural.scripts.train --config 25              # load best config for size 25
 uv run -m neural.scripts.train --config 25 --lr 0.001   # override specific params
 ```
 
-During inference, the model architecture is automatically loaded from the config matching the problem size.
+Checkpoints go to `checkpoints/`; the best model is saved to `saved_models/{size}/best.pt`.
 
-## Using the generated heatmap to produce optimal tours for problems of size n
-
-We give the heatmap to LKH-3 as a starting point. We need to download  and compile its binary to use it. 
-```bash
-mkdir bin/lkh3
-cd bin/lkh3
-
-wget http://akira.ruc.dk/~keld/research/LKH-3/LKH-3.0.13.tgz
-tar xvfz LKH-3.0.13.tgz
-cd LKH-3.0.13
-make
-
-```
-The model is trained on problems with a specific model dim. It needs to be retrained if you want to solve problems of another size. 
+### 6. Inference
 
 ```bash
-uv run -m src.solvers.neural_solver
+# Low-level pipeline (GNN + MCTS):
+uv run -m neural.scripts.inference --tsp_file data/tsp_dataset/25/zurich_25_0.tsp
+
+# Through the solver interface (loads model from saved_models/{size}/best.pt):
+uv run -m src.solvers.utsp_solver --path data/tsp_dataset/25/zurich_25_0.tsp
 ```
 
-## Running the Neural Network Solver in the benchmark
+Models are size-specific — train (or load) a separate checkpoint for each problem size you want to solve.
