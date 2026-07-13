@@ -2,8 +2,8 @@
 
 # Model architecture (needed for both training and inference)
 model:
-  hidden_dim: 64
-  n_layers: 2
+  hidden_dim: 128
+  n_layers: 4
   node_features: "coords"
 
 # Training

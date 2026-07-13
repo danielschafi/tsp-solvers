@@ -1,11 +1,11 @@
 {
-    "timestamp": "20260404_152156",
+    "timestamp": "20260713_161743",
     "problem": "zurich_25_26",
     "problem_size": 25,
     "type": "TSP",
     "comment": "TSP instance with 25 nodes. City: Zurich, Switzerland, Seed: 68",
     "solver": "UTSPSolver",
-    "time_to_solve": 18.089904343010858,
+    "time_to_solve": 0.26478157797828317,
     "cost": 15892.0,
     "tour": [
         0,
@@ -38,8 +38,21 @@
     "solution_status": "success",
     "timed_out_without_tour": false,
     "additional_metadata": {
-        "local_search_time": 18.084345645969734,
-        "model_inference_time": 0.005557372991461307
+        "local_search_time": 0.25796424003783613,
+        "model_inference_time": 0.006816494045779109,
+        "search_params": {
+            "alpha": 0.0,
+            "beta": 10.0,
+            "max_candidate_num": 8,
+            "param_h": 3.0,
+            "param_t": 0.01,
+            "k_lo": 10,
+            "k_hi": 11,
+            "restart": true,
+            "restart_reconly": true,
+            "problem_size": 25,
+            "paper_T": 75.0
+        }
     },
     "valid_solution": true,
     "tsp_file": "/home/schafhdaniel@edu.local/tsp-solvers/data/tsp_dataset/25/zurich_25_26.tsp"

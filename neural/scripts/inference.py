@@ -23,6 +23,28 @@ else:
 REC_NUM = 20
 
 
+def _infer_arch_from_state_dict(state_dict: dict) -> tuple[int, int, str]:
+    """Infer (hidden_dim, n_layers, node_features) from a checkpoint state_dict."""
+    weight = state_dict["embedding_module.dense_layer.weight"]
+    hidden_dim = int(weight.shape[0])
+    input_dim = int(weight.shape[1])
+    n_layers = sum(
+        1
+        for k in state_dict
+        if k.startswith("diffusion_module.diffusion_layers.")
+        and k.endswith(".attention_scores")
+    )
+    if input_dim == 2:
+        node_features = "coords"
+    elif input_dim == 8:
+        node_features = "node_stats"
+    else:
+        raise ValueError(
+            f"Cannot infer node_features from embedding input_dim={input_dim}"
+        )
+    return hidden_dim, n_layers, node_features
+
+
 def _load_model(
     model_path: str,
     problem_size: int,
@@ -32,10 +54,17 @@ def _load_model(
             f"Model file not found: {model_path} - train a model first"
         )
 
-    model_cfg = get_model_config(problem_size)
-    hidden_dim = model_cfg.get("hidden_dim", 64)
-    n_layers = model_cfg.get("n_layers", 3)
-    node_features = model_cfg.get("node_features", "node_stats")
+    checkpoint = torch.load(Path(model_path), weights_only=False, map_location=DEVICE)
+    state_dict = checkpoint.get("model_state_dict", checkpoint)
+
+    # Prefer architecture encoded in the weights over YAML (YAML can drift).
+    try:
+        hidden_dim, n_layers, node_features = _infer_arch_from_state_dict(state_dict)
+    except (KeyError, ValueError):
+        model_cfg = get_model_config(problem_size)
+        hidden_dim = model_cfg.get("hidden_dim", 64)
+        n_layers = model_cfg.get("n_layers", 3)
+        node_features = model_cfg.get("node_features", "node_stats")
 
     model = ScatteringAttentionGNN(
         hidden_dim=hidden_dim,
@@ -43,8 +72,6 @@ def _load_model(
         n_layers=n_layers,
         node_features=node_features,
     )
-    checkpoint = torch.load(Path(model_path), weights_only=False, map_location=DEVICE)
-    state_dict = checkpoint.get("model_state_dict", checkpoint)
     model.load_state_dict(state_dict)
     model.to(DEVICE)
     return model

@@ -86,7 +86,10 @@ def plot_time_vs_size(df: pd.DataFrame, out_dir: Path, log_scale: bool) -> None:
 
 
 def plot_optimality_gap(
-    df: pd.DataFrame, out_dir: Path, reference_solver: str = "concorde"
+    df: pd.DataFrame,
+    out_dir: Path,
+    reference_solver: str = "concorde",
+    solvers: list[str] | None = None,
 ) -> None:
     """
     Optimality gap (%) relative to a reference solver, per problem instance.
@@ -98,8 +101,8 @@ def plot_optimality_gap(
     """
     data = _valid_rows(df)
 
-    # Try reference_solver, fall back to gurobi
-    ref_solvers = [reference_solver, "gurobi"]
+    # Try reference_solver, fall back to gurobi / concorde
+    ref_solvers = [reference_solver, "gurobi", "concorde"]
     ref_df = None
     used_ref = None
     for ref in ref_solvers:
@@ -117,8 +120,10 @@ def plot_optimality_gap(
         )
         return
 
-    # Join and compute gap
+    # Join and compute gap (series = comparison solvers only)
     other = data[data["solver"] != used_ref].copy()
+    if solvers is not None:
+        other = other[other["solver"].isin(solvers)]
     merged = other.merge(ref_df, on="problem", how="inner")
     if merged.empty:
         logger.warning(
@@ -166,12 +171,23 @@ def plot_all(
         logger.warning("No results found — nothing to plot.")
         return
 
+    # Keep the reference solver in df so gap plots can join against it.
     if solvers is not None:
-        df = df[df["solver"].isin(solvers)]
+        keep = set(solvers) | {reference_solver, "gurobi", "concorde"}
+        plot_df = df[df["solver"].isin(solvers)]
+        gap_df = df[df["solver"].isin(keep)]
+    else:
+        plot_df = df
+        gap_df = df
 
-    # plot_cost_vs_size(df, out_dir, log_scale)
-    plot_time_vs_size(df, out_dir, log_scale)
-    # plot_optimality_gap(df, out_dir, reference_solver=reference_solver)
+    plot_cost_vs_size(plot_df, out_dir, log_scale)
+    plot_time_vs_size(plot_df, out_dir, log_scale)
+    plot_optimality_gap(
+        gap_df,
+        out_dir,
+        reference_solver=reference_solver,
+        solvers=solvers,
+    )
 
 
 def main() -> None:
