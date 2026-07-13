@@ -79,6 +79,10 @@ def run_mcts(
     beta: float = 10.0,
     param_h: float = 3.0,
     restart: bool = False,
+    restart_reconly: bool = False,
+    param_t: float = 0.08,
+    k_lo: int | None = None,
+    k_hi: int | None = None,
 ) -> list[list[int]]:
     """Run the C++ MCTS solver on a batch of TSP instances.
 
@@ -92,16 +96,27 @@ def run_mcts(
         n_threads:        Parallel solver processes (splits the batch across threads).
         use_rec:          Pass GNN heat map to MCTS as edge priors.
         rec_only:         Restrict the candidate set to GNN top-k edges only.
-        max_candidate_num: Size of the 2-opt / MCTS candidate neighbourhood.
-        max_depth:        Max action depth in MCTS.
+        max_candidate_num: Size of the 2-opt / MCTS candidate neighbourhood (M).
+        max_depth:        Initial Max_Depth (K); overridden by sampling from [k_lo, k_hi).
         alpha:            UCB exploration coefficient.
         beta:             Back-propagation update rate.
-        param_h:          Sampling multiplier (controls simulation budget per step).
+        param_h:          Sampling multiplier (paper T = param_h * n).
         restart:          Restart from random solution when no improvement is found.
+        restart_reconly:  On restart, randomly flip heatmap vs distance candidates.
+        param_t:          Wall-clock budget multiplier (Param_T * n seconds).
+        k_lo / k_hi:      Half-open K range sampled at start and on each restart.
+                          Defaults to [max_depth, max_depth + 1) if omitted.
 
     Returns:
         List of N tours, each a list of 0-based city indices.
     """
+    if k_lo is None:
+        k_lo = max_depth
+    if k_hi is None:
+        k_hi = max_depth + 1
+    if k_hi <= k_lo:
+        raise ValueError(f"k_hi must be > k_lo, got k_lo={k_lo}, k_hi={k_hi}")
+
     search_dir = Path(search_dir).resolve()
     binary = search_dir / "test"
     if not binary.exists():
@@ -146,7 +161,10 @@ def run_mcts(
                 str(beta),
                 str(param_h),
                 str(int(restart)),
-                "0",  # restart_reconly
+                str(int(restart_reconly)),
+                str(param_t),
+                str(k_lo),
+                str(k_hi),
             ]
             subprocess.run(
                 cmd,

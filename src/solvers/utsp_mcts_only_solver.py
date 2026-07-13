@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
+from neural.local_search.search_params import get_search_params
 from neural.scripts import inference
 from src.logger import setup_logging
 from src.solvers.solver_base import TSPSolver
@@ -55,6 +56,7 @@ class MCTSOnlySolver(TSPSolver):
         )  # [1, n, k]
         dummy_top_k_val = np.zeros((1, self.dim, k))
 
+        params = get_search_params(self.dim)
         dist_matrix = self.edges[np.newaxis, :, :].astype(np.int64)
         tours = inference.run_mcts(
             dist_matrix,
@@ -63,6 +65,7 @@ class MCTSOnlySolver(TSPSolver):
             n_threads=1,
             use_rec=False,
             rec_only=False,
+            **inference._mcts_kwargs_from_params(params),
         )
 
         tour = tours[0]
@@ -76,6 +79,9 @@ class MCTSOnlySolver(TSPSolver):
         self.result["solution_status"] = "success"
         self.result["tour"] = tour
         self.result["cost"] = self.calculate_tour_cost(tour)
+        self.result["additional_metadata"] = {
+            "search_params": params.as_metadata(self.dim),
+        }
 
 
 def main():

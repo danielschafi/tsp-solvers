@@ -8,6 +8,7 @@ from torch import Tensor
 
 from neural.config.loader import get_model_config
 from neural.local_search.mcts_wrapper import run_mcts
+from neural.local_search.search_params import SearchParams, get_search_params
 from neural.model.gnn import ScatteringAttentionGNN
 from src.data_handling.tsplib_extension import TSPProblemWithOSMIDs
 
@@ -139,7 +140,25 @@ def _compute_tour_length(adj_raw: np.ndarray, tour: list[int]) -> int:
     return int(sum(adj_sym[tour[i], tour[(i + 1) % n]] for i in range(n)))
 
 
-def _run_guided_local_search(heatmap: Tensor, adj_raw: np.ndarray) -> list[int]:
+def _mcts_kwargs_from_params(params: SearchParams) -> dict:
+    """Keyword args for run_mcts from paper SearchParams."""
+    return {
+        "max_candidate_num": params.max_candidate_num,
+        "max_depth": params.k_lo,
+        "alpha": params.alpha,
+        "beta": params.beta,
+        "param_h": params.param_h,
+        "param_t": params.param_t,
+        "k_lo": params.k_lo,
+        "k_hi": params.k_hi,
+        "restart": params.restart,
+        "restart_reconly": params.restart_reconly,
+    }
+
+
+def _run_guided_local_search(
+    heatmap: Tensor, adj_raw: np.ndarray
+) -> tuple[list[int], SearchParams]:
     """Run MCTS guided by the GNN heatmap to find a good tour.
 
     Args:
@@ -147,15 +166,23 @@ def _run_guided_local_search(heatmap: Tensor, adj_raw: np.ndarray) -> list[int]:
         adj_raw:  [n, n] raw (unnormalized) adjacency matrix from the .tsp file.
 
     Returns:
-        0-based tour as a list of city indices.
+        (tour, search_params) where tour is 0-based city indices.
     """
     adj_sym = np.maximum(adj_raw, adj_raw.T)  # same logic as _compute_tour_length
     dist_matrix = adj_sym[np.newaxis, :, :].astype(np.int64)  # [1, n, n]
+    n = adj_sym.shape[0]
+    params = get_search_params(n)
 
     topk_idx, topk_val = _heatmap_to_topk(heatmap, k=REC_NUM)  # [1, n, REC_NUM]
 
-    tours = run_mcts(dist_matrix, topk_idx, topk_val, n_threads=1)
-    return tours[0]
+    tours = run_mcts(
+        dist_matrix,
+        topk_idx,
+        topk_val,
+        n_threads=1,
+        **_mcts_kwargs_from_params(params),
+    )
+    return tours[0], params
 
 
 def main() -> None:
@@ -196,7 +223,7 @@ def run_utsp_pipeline(tsp_file: str, model_weights: str) -> list[int]:
 
     heatmap = _model_predict_problem(model, distances, coords)  # [1, n, n]
 
-    tour = _run_guided_local_search(heatmap, adj_raw)
+    tour, search_params = _run_guided_local_search(heatmap, adj_raw)
 
     # To follow the other solvers, include return to home
     if tour[0] != tour[-1]:
@@ -206,6 +233,7 @@ def run_utsp_pipeline(tsp_file: str, model_weights: str) -> list[int]:
 
     print(f"Tour (0-based): {tour}")
     print(f"Tour length:    {tour_length}")
+    print(f"Search params:  {search_params.as_metadata(dim)}")
 
     return tour
 

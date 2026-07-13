@@ -114,7 +114,7 @@ class UTSPSolver(TSPSolver):
 
         # Guided Local Search
         local_search_time_start = time.perf_counter()
-        tour = inference._run_guided_local_search(heatmap, self.edges)
+        tour, search_params = inference._run_guided_local_search(heatmap, self.edges)
         if tour[0] != tour[-1]:
             tour.append(tour[0])
         local_search_time_end = time.perf_counter()
@@ -132,6 +132,7 @@ class UTSPSolver(TSPSolver):
         self.result["additional_metadata"] = {
             "local_search_time": local_search_time_end - local_search_time_start,
             "model_inference_time": inference_time_end - inference_time_start,
+            "search_params": search_params.as_metadata(self.dim),
         }
         self.result["solution_status"] = "success"
         self.result["tour"] = tour
